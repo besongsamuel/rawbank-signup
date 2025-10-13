@@ -55,7 +55,7 @@ const SigninForm: React.FC = () => {
     error: authError,
     clearError,
   } = useAuth();
-  const { hasPersonalData } = useUserProfile(user);
+  const { hasSubmittedApplication } = useUserProfile(user);
 
   const [formData, setFormData] = useState<SigninFormData>({
     email: "",
@@ -100,19 +100,19 @@ const SigninForm: React.FC = () => {
   useEffect(() => {
     if (user && !authLoading) {
       console.log("User logged in:", user.email);
-      console.log("Has personal data:", hasPersonalData);
+      console.log("Has submitted application:", hasSubmittedApplication);
 
-      if (hasPersonalData) {
-        // User has complete profile - redirect to app
+      if (hasSubmittedApplication) {
+        // User has submitted application - redirect to app
         console.log("Redirecting to /app");
         navigate("/app");
       } else {
-        // User exists but no personal data - redirect to complete-profile (which redirects to id-card)
-        console.log("Redirecting to /profile/id-card");
-        navigate("/profile/id-card");
+        // User exists but no submitted application - redirect to account selection
+        console.log("Redirecting to /profile/account-selection");
+        navigate("/profile/account-selection");
       }
     }
-  }, [user, authLoading, hasPersonalData, navigate]);
+  }, [user, authLoading, hasSubmittedApplication, navigate]);
 
   return (
     <GradientBox>

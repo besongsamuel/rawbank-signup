@@ -15,6 +15,10 @@ const initialStep1Data: SignupStep1Data = {
 };
 
 const initialStep2Data: SignupStep2Data = {
+  accountSelection: {
+    accountType: "",
+    agencyId: "",
+  },
   idCard: {
     type: "carte_identite",
     number: "",
@@ -79,7 +83,7 @@ const initialStep2Data: SignupStep2Data = {
 };
 
 export const useSignupForm = (
-  initialStep: SignupStep = "step1",
+  currentStep: SignupStep = "step1",
   user?: User | null
 ) => {
   // Initialize step1Data with user email if user is provided
@@ -93,7 +97,6 @@ export const useSignupForm = (
     return initialStep1Data;
   };
 
-  const [currentStep, setCurrentStep] = useState<SignupStep>(initialStep);
   const [step1Data, setStep1Data] = useState<SignupStep1Data>(
     getInitialStep1Data()
   );
@@ -101,60 +104,9 @@ export const useSignupForm = (
   const [errors, setErrors] = useState<SignupFormErrors>({});
   const [loading, setLoading] = useState(false);
 
-  // Step navigation
-  const goToStep = useCallback((step: SignupStep) => {
-    setCurrentStep(step);
+  // Clear errors when step changes
+  const clearErrors = useCallback(() => {
     setErrors({});
-  }, []);
-
-  const nextStep = useCallback(() => {
-    const stepOrder: SignupStep[] = [
-      "step1",
-      "step2_id",
-      "step2_identity",
-      "step2_marital",
-      "step2_housing",
-      "step2_contact",
-      "step2_professional",
-      "step2_emergency",
-      "step2_fatca",
-      "step2_pep",
-      "complete",
-    ];
-
-    setCurrentStep((prevStep) => {
-      const currentIndex = stepOrder.indexOf(prevStep);
-      if (currentIndex < stepOrder.length - 1) {
-        setErrors({});
-        return stepOrder[currentIndex + 1];
-      }
-      return prevStep;
-    });
-  }, []);
-
-  const prevStep = useCallback(() => {
-    const stepOrder: SignupStep[] = [
-      "step1",
-      "step2_id",
-      "step2_identity",
-      "step2_marital",
-      "step2_housing",
-      "step2_contact",
-      "step2_professional",
-      "step2_emergency",
-      "step2_fatca",
-      "step2_pep",
-      "complete",
-    ];
-
-    setCurrentStep((prevStep) => {
-      const currentIndex = stepOrder.indexOf(prevStep);
-      if (currentIndex > 0) {
-        setErrors({});
-        return stepOrder[currentIndex - 1];
-      }
-      return prevStep;
-    });
   }, []);
 
   // Data update functions
@@ -210,7 +162,6 @@ export const useSignupForm = (
 
   // Reset form
   const resetForm = useCallback(() => {
-    setCurrentStep("step1");
     setStep1Data(initialStep1Data);
     setStep2Data(initialStep2Data);
     setErrors({});
@@ -227,14 +178,12 @@ export const useSignupForm = (
 
     // Actions
     setLoading,
-    goToStep,
-    nextStep,
-    prevStep,
     updateStep1Data,
     updateStep2Data,
     validateCurrentStep,
     getCompleteData,
     resetForm,
+    clearErrors,
 
     // Computed
     isFirstStep: currentStep === "step1",

@@ -45,9 +45,9 @@ const UserDashboard: React.FC = () => {
   const { user, signOut, loading: authLoading } = useAuth();
   const {
     profile,
+    application,
     loading: profileLoading,
-    hasPersonalData,
-    refreshProfile,
+    hasSubmittedApplication,
   } = useUserProfile(user);
 
   const handleSignOut = async () => {
@@ -147,29 +147,34 @@ const UserDashboard: React.FC = () => {
             </Box>
           </Box>
 
-          {/* Profile Status */}
-          {!hasPersonalData && (
+          {/* Application Status */}
+          {!hasSubmittedApplication && (
             <Alert severity="info" sx={{ mb: 3 }}>
               <Typography variant="body2">
-                {t("messages.emailVerification")}
+                Votre profil est complet. Vous pouvez maintenant soumettre votre
+                demande d'ouverture de compte.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={handleCompleteProfile}
+                sx={{ mt: 2 }}
+              >
+                Soumettre la demande
+              </Button>
+            </Alert>
+          )}
+
+          {hasSubmittedApplication && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              <Typography variant="body2">
+                Votre demande d'ouverture de compte a été soumise avec succès.
+                Statut: {application?.status}
               </Typography>
             </Alert>
           )}
 
           {/* Actions */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {!hasPersonalData && (
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={handleCompleteProfile}
-                sx={{ mb: 2 }}
-              >
-                {t("common.continue")} - {t("steps.step2_personal")}
-              </Button>
-            )}
-
             <Button
               variant="outlined"
               size="large"

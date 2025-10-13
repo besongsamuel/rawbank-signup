@@ -23,6 +23,14 @@ function App(): React.JSX.Element {
 
           {/* Profile completion routes - all require authentication */}
           <Route
+            path="/profile/account-selection"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_account" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/profile/id-card"
             element={
               <ProtectedRoute>
@@ -95,6 +103,14 @@ function App(): React.JSX.Element {
             element={
               <ProtectedRoute>
                 <CompleteProfile step="step2_pep" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/review"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_review" />
               </ProtectedRoute>
             }
           />

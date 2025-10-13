@@ -124,8 +124,15 @@ export interface PepInfo {
   signature?: string;
 }
 
+// Account Selection Data
+export interface AccountSelectionData {
+  accountType: string;
+  agencyId: string;
+}
+
 // Complete Profile Data (Step 2)
 export interface SignupStep2Data {
+  accountSelection: AccountSelectionData;
   idCard: IdCardInfo;
   personalInfo: PersonalInfo;
   maritalInfo: MaritalInfo;
@@ -145,17 +152,19 @@ export interface CompleteSignupData extends SignupStep1Data, SignupStep2Data {}
 // Step definitions
 export type SignupStep =
   | "step1"
+  | "step2_account" // Account type and agency selection
   | "step2_id"
-  | "step2_identity"        // Personal identity information
-  | "step2_marital"         // Marital status information
-  | "step2_housing"         // Housing information
-  | "step2_contact"         // Contact information
-  | "step2_professional"    // Professional information
-  | "step2_emergency"       // Emergency contact
-  | "step2_fatca"           // FATCA declaration
-  | "step2_pep"             // PEP declaration
-  | "step2_bank"            // Bank selection
-  | "step2_package"         // Package selection
+  | "step2_identity" // Personal identity information
+  | "step2_marital" // Marital status information
+  | "step2_housing" // Housing information
+  | "step2_contact" // Contact information
+  | "step2_professional" // Professional information
+  | "step2_emergency" // Emergency contact
+  | "step2_fatca" // FATCA declaration
+  | "step2_pep" // PEP declaration
+  | "step2_review" // Final review and submission
+  | "step2_bank" // Bank selection
+  | "step2_package" // Package selection
   | "complete";
 
 // Form validation errors

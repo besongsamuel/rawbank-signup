@@ -1,6 +1,6 @@
-import { Box, Button, Card, Typography } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 import React, { useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useSignupForm } from "../../hooks/useSignupForm";
 import { useUserProfile } from "../../hooks/useUserProfile";
@@ -9,12 +9,16 @@ import { SignupStep } from "../../types/signup";
 import IdCardUploadWithAI from "../signup/IdCardUploadWithAI";
 import SignupSkeleton from "../signup/SignupSkeleton";
 import SignupStepper from "./SignupStepper";
+import AccountSelectionStep from "./steps/AccountSelectionStep";
 import ContactStep from "./steps/ContactStep";
 import EmergencyContactStep from "./steps/EmergencyContactStep";
+import FatcaStep from "./steps/FatcaStep";
 import HousingStep from "./steps/HousingStep";
 import IdentityStep from "./steps/IdentityStep";
 import MaritalStep from "./steps/MaritalStep";
+import PepStep from "./steps/PepStep";
 import ProfessionalStep from "./steps/ProfessionalStep";
+import ReviewStep from "./steps/ReviewStep";
 
 interface CompleteProfileProps {
   step?: SignupStep;
@@ -22,14 +26,50 @@ interface CompleteProfileProps {
 
 const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { hasPersonalData, loading: profileLoading } = useUserProfile(user);
+  const { hasSubmittedApplication, loading: profileLoading } =
+    useUserProfile(user);
 
-  // Determine initial step based on route or default to id card
-  const initialStep = step || "step2_id";
+  // Determine current step from URL path
+  const getCurrentStepFromPath = (pathname: string): SignupStep => {
+    switch (pathname) {
+      case "/profile/account-selection":
+        return "step2_account";
+      case "/profile/id-card":
+        return "step2_id";
+      case "/profile/identity":
+        return "step2_identity";
+      case "/profile/marital":
+        return "step2_marital";
+      case "/profile/housing":
+        return "step2_housing";
+      case "/profile/contact":
+        return "step2_contact";
+      case "/profile/professional":
+        return "step2_professional";
+      case "/profile/emergency":
+        return "step2_emergency";
+      case "/profile/fatca":
+        return "step2_fatca";
+      case "/profile/pep":
+        return "step2_pep";
+      case "/profile/review":
+        return "step2_review";
+      default:
+        return "step2_account";
+    }
+  };
 
-  const { currentStep, step2Data, loading, setLoading, updateStep2Data } =
-    useSignupForm(initialStep, user);
+  const currentStep = getCurrentStepFromPath(location.pathname);
+
+  const { step2Data, loading, setLoading, updateStep2Data, clearErrors } =
+    useSignupForm(currentStep, user);
+
+  // Clear errors when step changes
+  useEffect(() => {
+    clearErrors();
+  }, [currentStep, clearErrors]);
 
   // Load existing data from database
   useEffect(() => {
@@ -157,14 +197,14 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       return;
     }
 
-    // Redirect to app if profile is complete
-    if (user && hasPersonalData) {
+    // Redirect to app if user has submitted application
+    if (user && hasSubmittedApplication) {
       console.log(
-        "CompleteProfile: User has personal data, redirecting to /app"
+        "CompleteProfile: User has submitted application, redirecting to /app"
       );
       navigate("/app", { replace: true });
     }
-  }, [user, hasPersonalData, profileLoading, navigate]);
+  }, [user, hasSubmittedApplication, profileLoading, navigate]);
 
   // Save specific step data to database
   const saveStepData = useCallback(
@@ -311,6 +351,20 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     },
     [user?.id]
   );
+
+  // Handle Account Selection next
+  const handleAccountSelectionNext = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Application is already created in AccountSelectionStep component
+      // Just navigate to ID card step
+      navigate("/profile/id-card");
+    } catch (error) {
+      console.error("Error in account selection:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, setLoading]);
 
   // Handle ID card upload next
   const handleIdCardNext = useCallback(async () => {
@@ -632,8 +686,16 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   const handlePepNext = useCallback(async () => {
     setLoading(true);
     try {
-      // Save PEP data to database and mark profile as complete
-      await handleFinalSubmit();
+      // Save PEP data to database
+      const result = await saveStepData(step2Data, "pepInfo");
+
+      if (!result.success) {
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+        return;
+      }
+
+      // Move to review step
+      navigate("/profile/review");
     } catch (error) {
       console.error("Error saving PEP data:", error);
       console.error(
@@ -646,7 +708,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     } finally {
       setLoading(false);
     }
-  }, [handleFinalSubmit, setLoading]);
+  }, [navigate, step2Data, saveStepData, setLoading]);
 
   // Show loading while checking authentication
   if (authLoading || profileLoading) {
@@ -672,6 +734,21 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
   // Render current step
   switch (currentStep) {
+    case "step2_account":
+      return renderStepWithStepper(
+        <AccountSelectionStep
+          data={step2Data.accountSelection}
+          onDataChange={(data) =>
+            updateStep2Data({
+              accountSelection: { ...step2Data.accountSelection, ...data },
+            })
+          }
+          onNext={handleAccountSelectionNext}
+          onPrev={() => navigate("/login")}
+          loading={loading}
+        />
+      );
+
     case "step2_id":
       return renderStepWithStepper(
         <IdCardUploadWithAI
@@ -777,82 +854,67 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
     case "step2_fatca":
       return renderStepWithStepper(
-        <Box sx={{ maxWidth: 800, margin: "0 auto" }}>
-          <Card sx={{ p: 4, textAlign: "center" }}>
-            <Typography variant="h4" gutterBottom>
-              Déclaration FATCA
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Cette étape sera bientôt disponible.
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              Current step: {currentStep}
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mt: 4,
-                gap: 2,
-              }}
-            >
-              <Button
-                variant="outlined"
-                onClick={() => navigate("/profile/emergency")}
-                sx={{ flex: 1 }}
-              >
-                Précédent
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleFatcaNext}
-                sx={{ flex: 1 }}
-              >
-                Continuer
-              </Button>
-            </Box>
-          </Card>
-        </Box>
+        <FatcaStep
+          fatcaInfo={
+            step2Data.fatcaInfo || {
+              isUSPerson: false,
+              usCitizenship: false,
+              usBirthPlace: false,
+              usResidence: false,
+              usAddress: false,
+              usPhone: false,
+              usPowerOfAttorney: false,
+            }
+          }
+          onDataChange={(data) =>
+            updateStep2Data({
+              fatcaInfo: {
+                ...(step2Data.fatcaInfo || {
+                  isUSPerson: false,
+                  usCitizenship: false,
+                  usBirthPlace: false,
+                  usResidence: false,
+                  usAddress: false,
+                  usPhone: false,
+                  usPowerOfAttorney: false,
+                }),
+                ...data,
+              },
+            })
+          }
+          onNext={handleFatcaNext}
+          onPrev={() => navigate("/profile/emergency")}
+          loading={loading}
+        />
       );
 
     case "step2_pep":
       return renderStepWithStepper(
-        <Box sx={{ maxWidth: 800, margin: "0 auto" }}>
-          <Card sx={{ p: 4, textAlign: "center" }}>
-            <Typography variant="h4" gutterBottom>
-              Personne Politiquement Exposée (PPE)
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Cette étape sera bientôt disponible.
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              Current step: {currentStep}
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mt: 4,
-                gap: 2,
-              }}
-            >
-              <Button
-                variant="outlined"
-                onClick={() => navigate("/profile/fatca")}
-                sx={{ flex: 1 }}
-              >
-                Précédent
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handlePepNext}
-                sx={{ flex: 1 }}
-              >
-                Terminer
-              </Button>
-            </Box>
-          </Card>
-        </Box>
+        <PepStep
+          pepInfo={
+            step2Data.pepInfo || {
+              isPep: false,
+            }
+          }
+          onDataChange={(data) =>
+            updateStep2Data({
+              pepInfo: {
+                ...(step2Data.pepInfo || {
+                  isPep: false,
+                }),
+                ...data,
+              },
+            })
+          }
+          onNext={handlePepNext}
+          onPrev={() => navigate("/profile/fatca")}
+          loading={loading}
+        />
+      );
+
+    case "step2_review":
+      return renderStepWithStepper(
+        <ReviewStep onPrev={() => navigate("/profile/pep")} loading={loading} />
       );
 
     default:

@@ -81,6 +81,7 @@ interface SignupStepperProps {
 const SignupStepper: React.FC<SignupStepperProps> = ({ currentStep }) => {
   // Define all steps in order
   const steps = [
+    { key: "step2_account", label: "Compte & Agence" },
     { key: "step2_id", label: "Pièce d'identité" },
     { key: "step2_identity", label: "Identité" },
     { key: "step2_marital", label: "Situation familiale" },
@@ -90,6 +91,7 @@ const SignupStepper: React.FC<SignupStepperProps> = ({ currentStep }) => {
     { key: "step2_emergency", label: "Contact d'urgence" },
     { key: "step2_fatca", label: "FATCA" },
     { key: "step2_pep", label: "PPE" },
+    { key: "step2_review", label: "Révision" },
   ];
 
   // Find current step index

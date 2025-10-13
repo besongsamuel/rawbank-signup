@@ -56,11 +56,25 @@ interface PersonalData {
   updated_at: string;
 }
 
+interface Application {
+  id: string;
+  user_id: string;
+  application_number: string;
+  account_type: string;
+  agency_id: string;
+  status: "draft" | "submitted" | "under_review" | "approved" | "rejected";
+  created_at: string;
+  updated_at: string;
+  submitted_at?: string;
+}
+
 interface ProfileState {
   profile: PersonalData | null;
+  application: Application | null;
   loading: boolean;
   error: string | null;
   hasPersonalData: boolean;
+  hasSubmittedApplication: boolean;
 }
 
 interface ProfileActions {
@@ -72,6 +86,7 @@ export const useUserProfile = (
   user: User | null
 ): ProfileState & ProfileActions => {
   const [profile, setProfile] = useState<PersonalData | null>(null);
+  const [application, setApplication] = useState<Application | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,21 +95,43 @@ export const useUserProfile = (
     setError(null);
 
     try {
-      const { data, error } = await supabase
+      // Fetch personal data
+      const { data: profileData, error: profileError } = await supabase
         .from("personal_data")
         .select("*")
         .eq("id", userId)
         .single();
 
-      if (error) {
+      if (profileError) {
         // If profile doesn't exist, that's okay - user needs to complete signup
-        if (error.code === "PGRST116") {
+        if (profileError.code === "PGRST116") {
           setProfile(null);
         } else {
-          setError(error.message);
+          setError(profileError.message);
         }
       } else {
-        setProfile(data);
+        setProfile(profileData);
+      }
+
+      // Fetch application data
+      const { data: applicationData, error: applicationError } = await supabase
+        .from("applications")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (applicationError) {
+        // If application doesn't exist, that's okay - user hasn't submitted yet
+        if (applicationError.code === "PGRST116") {
+          setApplication(null);
+        } else {
+          console.error("Error fetching application:", applicationError);
+          setApplication(null);
+        }
+      } else {
+        setApplication(applicationData);
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
@@ -131,20 +168,34 @@ export const useUserProfile = (
       profile?.email_1
   );
 
+  // Check if user has a submitted application
+  const hasSubmittedApplication = Boolean(
+    application?.status === "submitted" ||
+      application?.status === "under_review" ||
+      application?.status === "approved"
+  );
+
   // Debug logging
   useEffect(() => {
     if (user) {
       console.log("useUserProfile: User ID:", user.id);
       console.log("useUserProfile: Profile:", profile);
+      console.log("useUserProfile: Application:", application);
       console.log("useUserProfile: Has personal data:", hasPersonalData);
+      console.log(
+        "useUserProfile: Has submitted application:",
+        hasSubmittedApplication
+      );
     }
-  }, [user, profile, hasPersonalData]);
+  }, [user, profile, application, hasPersonalData, hasSubmittedApplication]);
 
   return {
     profile,
+    application,
     loading,
     error,
     hasPersonalData,
+    hasSubmittedApplication,
     fetchProfile,
     refreshProfile,
   };
