@@ -131,6 +131,8 @@ const Signup: React.FC = () => {
         if (error) {
           setError(error.message);
         } else if (data.user) {
+          // Save email to localStorage for email verification page
+          localStorage.setItem("signup_email", formData.email);
           // Redirect to email verification
           navigate("/verify-email");
         }

@@ -10,8 +10,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -37,13 +36,30 @@ const LogoSection = styled(Box)(({ theme }) => ({
 
 const EmailVerification: React.FC = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const location = useLocation();
+  const [email, setEmail] = useState<string>("");
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendError, setResendError] = useState<string | null>(null);
 
+  // Get email from URL params or localStorage
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const emailParam = urlParams.get("email");
+
+    if (emailParam) {
+      setEmail(emailParam);
+    } else {
+      // Try to get email from localStorage (set during signup)
+      const savedEmail = localStorage.getItem("signup_email");
+      if (savedEmail) {
+        setEmail(savedEmail);
+      }
+    }
+  }, [location.search]);
+
   const handleResendEmail = useCallback(async () => {
-    if (!user?.email) return;
+    if (!email) return;
 
     setResending(true);
     setResendError(null);
@@ -52,7 +68,7 @@ const EmailVerification: React.FC = () => {
     try {
       const { error } = await supabase.auth.resend({
         type: "signup",
-        email: user.email,
+        email: email,
       });
 
       if (error) {
@@ -67,30 +83,36 @@ const EmailVerification: React.FC = () => {
     } finally {
       setResending(false);
     }
-  }, [user?.email]);
+  }, [email]);
 
-  const handleSignOut = useCallback(async () => {
-    await signOut();
-    navigate("/login");
-  }, [signOut, navigate]);
-
-  // Check if user is verified
+  // Check if user is verified by listening to auth state changes
   useEffect(() => {
-    if (user?.email_confirmed_at) {
-      // User is verified, redirect to account selection
-      navigate("/profile/account-selection");
-    }
-  }, [user?.email_confirmed_at, navigate]);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user?.email_confirmed_at) {
+        // User is verified, redirect to account selection
+        navigate("/profile/account-selection");
+      }
+    });
 
-  // Redirect if no user
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
-  if (!user) {
-    return null;
+  // Show loading if no email yet
+  if (!email) {
+    return (
+      <ContentBox>
+        <StyledCard>
+          <CardContent sx={{ p: 4, textAlign: "center" }}>
+            <CircularProgress size={60} />
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Chargement...
+            </Typography>
+          </CardContent>
+        </StyledCard>
+      </ContentBox>
+    );
   }
 
   return (
@@ -131,7 +153,7 @@ const EmailVerification: React.FC = () => {
                 mb: 3,
               }}
             >
-              {user.email}
+              {email}
             </Typography>
           </Box>
 
@@ -186,7 +208,7 @@ const EmailVerification: React.FC = () => {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Button
               variant="contained"
-              onClick={() => window.location.reload()}
+              onClick={() => navigate("/login")}
               sx={{
                 backgroundColor: "#000000",
                 color: "#FFCC00",
@@ -199,7 +221,7 @@ const EmailVerification: React.FC = () => {
             </Button>
             <Button
               variant="outlined"
-              onClick={handleSignOut}
+              onClick={() => navigate("/login")}
               sx={{ width: "100%" }}
             >
               Se connecter avec un autre compte

@@ -334,44 +334,47 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
             </Box>
           )}
 
-          {/* Manual Entry Option */}
-          {!uploadedFile && (
-            <Box sx={{ mt: 3, textAlign: "center" }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Ou remplissez manuellement les informations
-              </Typography>
-              <Box sx={{ display: "flex", gap: 2, flexDirection: "column" }}>
+          {/* Manual Entry Fields - Always Visible */}
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+              Informations du document
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 2, textAlign: "center" }}
+            >
+              {uploadedFile
+                ? "Vérifiez et modifiez les informations extraites si nécessaire"
+                : "Remplissez manuellement les informations"}
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2, flexDirection: "column" }}>
+              <TextField
+                fullWidth
+                label="Numéro du document"
+                value={data.number || ""}
+                onChange={(e) => onDataChange({ number: e.target.value })}
+              />
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                 <TextField
-                  fullWidth
-                  label="Numéro du document"
-                  value={data.number || ""}
-                  onChange={(e) => onDataChange({ number: e.target.value })}
+                  sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
+                  label="Date d'émission"
+                  type="date"
+                  value={data.issueDate || ""}
+                  onChange={(e) => onDataChange({ issueDate: e.target.value })}
+                  InputLabelProps={{ shrink: true }}
                 />
-                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <TextField
-                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
-                    label="Date d'émission"
-                    type="date"
-                    value={data.issueDate || ""}
-                    onChange={(e) =>
-                      onDataChange({ issueDate: e.target.value })
-                    }
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <TextField
-                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
-                    label="Date d'expiration"
-                    type="date"
-                    value={data.expiryDate || ""}
-                    onChange={(e) =>
-                      onDataChange({ expiryDate: e.target.value })
-                    }
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Box>
+                <TextField
+                  sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
+                  label="Date d'expiration"
+                  type="date"
+                  value={data.expiryDate || ""}
+                  onChange={(e) => onDataChange({ expiryDate: e.target.value })}
+                  InputLabelProps={{ shrink: true }}
+                />
               </Box>
             </Box>
-          )}
+          </Box>
 
           {/* Errors */}
           {(uploadError || extractionError) && (

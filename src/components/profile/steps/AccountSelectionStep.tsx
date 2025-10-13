@@ -150,21 +150,12 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
       if (!validateForm() || !user?.id) return;
 
       try {
-        // Generate application number
-        const { data: lastApp } = await supabase
-          .from("applications")
-          .select("application_number")
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
-
-        let appNumber = "APP000001";
-        if (lastApp?.application_number) {
-          const lastNumber = parseInt(
-            lastApp.application_number.replace("APP", "")
-          );
-          appNumber = `APP${String(lastNumber + 1).padStart(6, "0")}`;
-        }
+        // Generate unique application number using timestamp and random component
+        const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+        const random = Math.floor(Math.random() * 1000)
+          .toString()
+          .padStart(3, "0"); // 3-digit random
+        const appNumber = `APP${timestamp}${random}`;
 
         // Create application record
         const { data: application, error } = await supabase

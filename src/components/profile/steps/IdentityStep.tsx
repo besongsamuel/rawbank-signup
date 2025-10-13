@@ -19,8 +19,9 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { City, Country, State } from "country-state-city";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../hooks/useAuth";
+import { supabase } from "../../../lib/supabase";
 import { PersonalInfo } from "../../../types/signup";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -61,12 +62,60 @@ const IdentityStep: React.FC<IdentityStepProps> = ({
 }) => {
   const { user } = useAuth();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoadingData, setIsLoadingData] = useState(false);
+  const hasLoadedData = useRef(false);
 
   // Country/State/City data
   const [selectedCountry, setSelectedCountry] = useState("CD"); // DRC (Congo - Kinshasa)
   const [selectedState, setSelectedState] = useState("");
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
+
+  // Fetch latest personal data when component loads
+  useEffect(() => {
+    const fetchPersonalData = async () => {
+      if (!user?.id || hasLoadedData.current) return;
+
+      hasLoadedData.current = true;
+      setIsLoadingData(true);
+      try {
+        const { data, error } = await supabase
+          .from("personal_data")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+
+        if (!error && data) {
+          // Prefill form with existing data
+          const existingData: Partial<PersonalInfo> = {
+            civility: data.civility,
+            firstName: data.first_name,
+            middleName: data.middle_name,
+            lastName: data.last_name,
+            birthDate: data.birth_date,
+            birthPlace: data.birth_place,
+            provinceOfOrigin: data.province_of_origin,
+            nationality: data.nationality,
+            countryOfResidence: data.country_of_residence,
+          };
+
+          // Only update if we have actual data (not empty strings)
+          const hasData = Object.values(existingData).some(
+            (value) => value && value !== ""
+          );
+          if (hasData) {
+            onDataChange(existingData);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching personal data:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchPersonalData();
+  }, [user?.id]);
 
   // Load states when country changes
   useEffect(() => {
@@ -141,6 +190,22 @@ const IdentityStep: React.FC<IdentityStepProps> = ({
     },
     [validateForm, onNext]
   );
+
+  // Show loading state while fetching data
+  if (isLoadingData) {
+    return (
+      <ContentBox>
+        <StyledCard>
+          <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 }, textAlign: "center" }}>
+            <CircularProgress size={60} />
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Chargement de vos données...
+            </Typography>
+          </CardContent>
+        </StyledCard>
+      </ContentBox>
+    );
+  }
 
   return (
     <ContentBox>
