@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Rawbank Demo",
+  "name": "Rawbank Demo - Ouverture de Compte Bancaire",
+  "description": "Démonstration d'ouverture de compte bancaire en ligne avec Rawbank",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,8 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#FFCC00",
+  "background_color": "#ffffff",
+  "lang": "fr",
+  "orientation": "portrait-primary"
 }

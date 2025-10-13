@@ -52,6 +52,10 @@ interface PersonalData {
   fatca_completed?: boolean;
   pep_completed?: boolean;
 
+  // FATCA and PEP Data
+  fatca_data?: any; // JSONB field for FATCA information
+  pep_data?: any; // JSONB field for PEP information
+
   created_at: string;
   updated_at: string;
 }

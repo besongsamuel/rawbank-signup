@@ -1,6 +1,8 @@
 {
   "name": "rawbank-signup",
   "version": "0.1.0",
+  "description": "Rawbank Demo - Démonstration d'ouverture de compte bancaire en ligne",
+  "homepage": ".",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",

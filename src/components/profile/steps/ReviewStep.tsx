@@ -537,6 +537,331 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
               </CardContent>
             </SectionCard>
 
+            {/* FATCA Information */}
+            {profile?.fatca_data && (
+              <SectionCard>
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <Edit color="primary" />
+                    Déclaration FATCA
+                  </Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  <Stack spacing={2}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Personne américaine:
+                      </Typography>
+                      <Chip
+                        label={profile.fatca_data.isUSPerson ? "Oui" : "Non"}
+                        color={
+                          profile.fatca_data.isUSPerson ? "warning" : "success"
+                        }
+                        size="small"
+                      />
+                    </Box>
+                    {profile.fatca_data.isUSPerson && (
+                      <>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography variant="body2" color="text.secondary">
+                            Citoyenneté américaine:
+                          </Typography>
+                          <Chip
+                            label={
+                              profile.fatca_data.usCitizenship ? "Oui" : "Non"
+                            }
+                            color={
+                              profile.fatca_data.usCitizenship
+                                ? "warning"
+                                : "success"
+                            }
+                            size="small"
+                          />
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography variant="body2" color="text.secondary">
+                            Lieu de naissance aux USA:
+                          </Typography>
+                          <Chip
+                            label={
+                              profile.fatca_data.usBirthPlace ? "Oui" : "Non"
+                            }
+                            color={
+                              profile.fatca_data.usBirthPlace
+                                ? "warning"
+                                : "success"
+                            }
+                            size="small"
+                          />
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography variant="body2" color="text.secondary">
+                            Résidence aux USA:
+                          </Typography>
+                          <Chip
+                            label={
+                              profile.fatca_data.usResidence ? "Oui" : "Non"
+                            }
+                            color={
+                              profile.fatca_data.usResidence
+                                ? "warning"
+                                : "success"
+                            }
+                            size="small"
+                          />
+                        </Box>
+                        {profile.fatca_data.usTin && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              TIN américain:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {profile.fatca_data.usTin}
+                            </Typography>
+                          </Box>
+                        )}
+                      </>
+                    )}
+                  </Stack>
+                </CardContent>
+              </SectionCard>
+            )}
+
+            {/* PEP Information */}
+            {profile?.pep_data && (
+              <SectionCard>
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <Edit color="primary" />
+                    Déclaration PEP (Personne Politiquement Exposée)
+                  </Typography>
+                  <Divider sx={{ mb: 2 }} />
+                  <Stack spacing={2}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Personne politiquement exposée:
+                      </Typography>
+                      <Chip
+                        label={profile.pep_data.isPep ? "Oui" : "Non"}
+                        color={profile.pep_data.isPep ? "warning" : "success"}
+                        size="small"
+                      />
+                    </Box>
+                    {profile.pep_data.isPep && (
+                      <>
+                        {profile.pep_data.pepCategory && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Catégorie PEP:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {profile.pep_data.pepCategory
+                                .replace(/_/g, " ")
+                                .replace(/\b\w/g, (l: string) =>
+                                  l.toUpperCase()
+                                )}
+                            </Typography>
+                          </Box>
+                        )}
+                        {profile.pep_data.position && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Position:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {profile.pep_data.position}
+                            </Typography>
+                          </Box>
+                        )}
+                        {profile.pep_data.organization && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Organisation:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {profile.pep_data.organization}
+                            </Typography>
+                          </Box>
+                        )}
+                        {profile.pep_data.country && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Pays:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {profile.pep_data.country}
+                            </Typography>
+                          </Box>
+                        )}
+                        {profile.pep_data.startDate && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Date de début:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {new Date(
+                                profile.pep_data.startDate
+                              ).toLocaleDateString("fr-FR")}
+                            </Typography>
+                          </Box>
+                        )}
+                        {profile.pep_data.endDate && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Date de fin:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {new Date(
+                                profile.pep_data.endDate
+                              ).toLocaleDateString("fr-FR")}
+                            </Typography>
+                          </Box>
+                        )}
+                        {profile.pep_data.relationshipToPep && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Relation avec PEP:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {profile.pep_data.relationshipToPep}
+                            </Typography>
+                          </Box>
+                        )}
+                        {profile.pep_data.pepName && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography variant="body2" color="text.secondary">
+                              Nom de la PEP:
+                            </Typography>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {profile.pep_data.pepName}
+                            </Typography>
+                          </Box>
+                        )}
+                      </>
+                    )}
+                  </Stack>
+                </CardContent>
+              </SectionCard>
+            )}
+
             {/* Action Buttons */}
             <Box
               sx={{
