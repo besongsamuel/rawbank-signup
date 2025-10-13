@@ -131,8 +131,8 @@ const Signup: React.FC = () => {
         if (error) {
           setError(error.message);
         } else if (data.user) {
-          // Redirect to account selection
-          navigate("/profile/account-selection");
+          // Redirect to email verification
+          navigate("/verify-email");
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : t("errors.unknownError"));

@@ -102,7 +102,12 @@ const SigninForm: React.FC = () => {
       console.log("User logged in:", user.email);
       console.log("Has submitted application:", hasSubmittedApplication);
 
-      if (hasSubmittedApplication) {
+      // Check if email is verified first
+      if (!user.email_confirmed_at) {
+        // User is not verified - redirect to email verification
+        console.log("Redirecting to /verify-email");
+        navigate("/verify-email");
+      } else if (hasSubmittedApplication) {
         // User has submitted application - redirect to app
         console.log("Redirecting to /app");
         navigate("/app");

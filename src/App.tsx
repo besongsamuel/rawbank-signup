@@ -6,6 +6,7 @@ import {
   Routes,
 } from "react-router-dom";
 import UserDashboard from "./components/app/UserDashboard";
+import EmailVerification from "./components/auth/EmailVerification";
 import SigninForm from "./components/auth/SigninForm";
 import Signup from "./components/auth/Signup";
 import Layout from "./components/common/Layout";
@@ -20,6 +21,7 @@ function App(): React.JSX.Element {
         <Routes>
           <Route path="/login" element={<SigninForm />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/verify-email" element={<EmailVerification />} />
 
           {/* Profile completion routes - all require authentication */}
           <Route
