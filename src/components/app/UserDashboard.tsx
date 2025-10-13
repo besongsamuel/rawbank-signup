@@ -526,7 +526,21 @@ const UserDashboard: React.FC = () => {
             <Divider sx={{ mb: 3 }} />
             <Alert severity="info" sx={{ mb: 3 }}>
               <Typography variant="body1" sx={{ fontWeight: 500, mb: 2 }}>
-                Planifiez un rendez-vous avec nous
+                Prochaines étapes pour finaliser votre compte
+              </Typography>
+
+              <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>
+                1. Signature électronique
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 3, pl: 2 }}>
+                Vous recevrez les détails de votre formulaire de demande par
+                email à l'adresse que vous avez fournie. Ce document devra être
+                signé via signature électronique avant de pouvoir procéder à
+                l'étape suivante.
+              </Typography>
+
+              <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>
+                2. Planifiez un rendez-vous avec nous
               </Typography>
               <Typography variant="body2" sx={{ mb: 2 }}>
                 Pour finaliser votre processus d'ouverture de compte et
