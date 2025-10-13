@@ -206,6 +206,59 @@ Important:
 
     console.log("Data saved to extracted_user_data table successfully");
 
+    // Also upsert extracted data to personal_data table for immediate use
+    const personalDataUpsert: any = {
+      id: userId,
+      updated_at: new Date().toISOString(),
+    };
+
+    // ID Information
+    if (mappedIdType) personalDataUpsert.id_type = mappedIdType;
+    if (extractedData.idNumber)
+      personalDataUpsert.id_number = extractedData.idNumber;
+    if (extractedData.issueDate)
+      personalDataUpsert.id_issue_date = extractedData.issueDate;
+    if (extractedData.expiryDate)
+      personalDataUpsert.id_expiry_date = extractedData.expiryDate;
+
+    // Personal Information
+    if (extractedData.firstName)
+      personalDataUpsert.first_name = extractedData.firstName;
+    if (extractedData.middleName)
+      personalDataUpsert.middle_name = extractedData.middleName;
+    if (extractedData.lastName)
+      personalDataUpsert.last_name = extractedData.lastName;
+    if (extractedData.birthDate)
+      personalDataUpsert.birth_date = extractedData.birthDate;
+    if (extractedData.birthPlace)
+      personalDataUpsert.birth_place = extractedData.birthPlace;
+    if (extractedData.nationality)
+      personalDataUpsert.nationality = extractedData.nationality;
+    if (extractedData.provinceOfOrigin)
+      personalDataUpsert.province_of_origin = extractedData.provinceOfOrigin;
+
+    // Address Information
+    if (extractedData.address)
+      personalDataUpsert.permanent_address = extractedData.address;
+    if (extractedData.country)
+      personalDataUpsert.country_of_residence = extractedData.country;
+
+    // Save to personal_data table
+    const { error: personalDataError } = await supabase
+      .from("personal_data")
+      .upsert(personalDataUpsert, {
+        onConflict: "id",
+        ignoreDuplicates: false,
+      });
+
+    if (personalDataError) {
+      console.error("Error saving to personal_data table:", personalDataError);
+      // Don't throw error - extracted_user_data is more important for the flow
+      console.log("Continuing despite personal_data error...");
+    } else {
+      console.log("Data also saved to personal_data table successfully");
+    }
+
     // Return the extracted data
     return new Response(
       JSON.stringify({
