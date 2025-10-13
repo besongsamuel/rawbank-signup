@@ -30,6 +30,10 @@ interface ExtractedData {
   province?: string;
   country?: string;
 
+  // Contact Information
+  phone2?: string;
+  email2?: string;
+
   // Additional Fields
   photo?: string; // base64 or URL
   rawData?: any;
@@ -207,41 +211,46 @@ Important:
     console.log("Data saved to extracted_user_data table successfully");
 
     // Also upsert extracted data to personal_data table for immediate use
+    // Strategy: Provide defaults for NOT NULL fields to prevent database constraint violations
+    // User will update these values in the PersonalInfoForm
     const personalDataUpsert: any = {
       id: userId,
       updated_at: new Date().toISOString(),
     };
 
-    // ID Information
-    if (mappedIdType) personalDataUpsert.id_type = mappedIdType;
-    if (extractedData.idNumber)
-      personalDataUpsert.id_number = extractedData.idNumber;
-    if (extractedData.issueDate)
-      personalDataUpsert.id_issue_date = extractedData.issueDate;
-    if (extractedData.expiryDate)
-      personalDataUpsert.id_expiry_date = extractedData.expiryDate;
+    // ID Information (with defaults for NOT NULL fields)
+    personalDataUpsert.id_type = mappedIdType || "autre"; // Default to 'autre' if not mapped
+    personalDataUpsert.id_number = extractedData.idNumber || ""; // Empty string default
+    personalDataUpsert.id_issue_date = extractedData.issueDate || "2020-01-01"; // Default date
+    personalDataUpsert.id_expiry_date =
+      extractedData.expiryDate || "2030-01-01"; // Default date
 
-    // Personal Information
-    if (extractedData.firstName)
-      personalDataUpsert.first_name = extractedData.firstName;
+    // Personal Information (with defaults for NOT NULL fields)
+    personalDataUpsert.first_name = extractedData.firstName || ""; // Empty string default
+    personalDataUpsert.last_name = extractedData.lastName || ""; // Empty string default
+    personalDataUpsert.birth_date = extractedData.birthDate || "1990-01-01"; // Default date
+    personalDataUpsert.birth_place = extractedData.birthPlace || ""; // Empty string default
+    personalDataUpsert.nationality =
+      extractedData.nationality || "Congolaise (RDC)"; // Default to DRC
+    personalDataUpsert.country_of_residence =
+      extractedData.country || "République Démocratique du Congo"; // Default to DRC
+
+    // Optional fields (only set if extracted)
     if (extractedData.middleName)
       personalDataUpsert.middle_name = extractedData.middleName;
-    if (extractedData.lastName)
-      personalDataUpsert.last_name = extractedData.lastName;
-    if (extractedData.birthDate)
-      personalDataUpsert.birth_date = extractedData.birthDate;
-    if (extractedData.birthPlace)
-      personalDataUpsert.birth_place = extractedData.birthPlace;
-    if (extractedData.nationality)
-      personalDataUpsert.nationality = extractedData.nationality;
     if (extractedData.provinceOfOrigin)
       personalDataUpsert.province_of_origin = extractedData.provinceOfOrigin;
 
-    // Address Information
-    if (extractedData.address)
-      personalDataUpsert.permanent_address = extractedData.address;
-    if (extractedData.country)
-      personalDataUpsert.country_of_residence = extractedData.country;
+    // Address Information (with defaults for NOT NULL fields)
+    personalDataUpsert.permanent_address = extractedData.address || ""; // Empty string default
+
+    // Contact Information (with defaults for NOT NULL fields)
+    personalDataUpsert.phone_1 = ""; // Empty string default - will need to be updated by user
+    personalDataUpsert.email_1 = ""; // Empty string default - will need to be updated by user
+
+    // Optional contact fields
+    if (extractedData.phone2) personalDataUpsert.phone_2 = extractedData.phone2;
+    if (extractedData.email2) personalDataUpsert.email_2 = extractedData.email2;
 
     // Save to personal_data table
     const { error: personalDataError } = await supabase

@@ -119,9 +119,8 @@ const UserDashboard: React.FC = () => {
               </Avatar>
               <Box>
                 <Typography variant="h6">
-                  {profile?.step2_data?.personalInfo?.firstName &&
-                  profile?.step2_data?.personalInfo?.lastName
-                    ? `${profile.step2_data.personalInfo.firstName} ${profile.step2_data.personalInfo.lastName}`
+                  {profile?.first_name && profile?.last_name
+                    ? `${profile.first_name} ${profile.last_name}`
                     : user.email}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">

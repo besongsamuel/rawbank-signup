@@ -1,21 +1,23 @@
 -- Create storage bucket for ID document uploads
 -- This bucket will store user ID images for AI extraction
 
--- Create the 'ids' bucket
+-- Create the 'ids' bucket (only if it doesn't exist)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES (
+SELECT 
   'ids',
   'ids',
   false, -- Private bucket - users can only access their own files
   10485760, -- 10MB file size limit
   ARRAY['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf']
-)
-ON CONFLICT (id) DO NOTHING;
+WHERE NOT EXISTS (
+  SELECT 1 FROM storage.buckets WHERE id = 'ids'
+);
 
 -- Create RLS policies for the ids bucket
 -- Users can only upload, view, update, and delete their own ID images
 
 -- Policy: Users can upload their own ID images
+DROP POLICY IF EXISTS "Users can upload their own ID images" ON storage.objects;
 CREATE POLICY "Users can upload their own ID images"
   ON storage.objects FOR INSERT
   WITH CHECK (
@@ -24,6 +26,7 @@ CREATE POLICY "Users can upload their own ID images"
   );
 
 -- Policy: Users can view their own ID images
+DROP POLICY IF EXISTS "Users can view their own ID images" ON storage.objects;
 CREATE POLICY "Users can view their own ID images"
   ON storage.objects FOR SELECT
   USING (
@@ -32,6 +35,7 @@ CREATE POLICY "Users can view their own ID images"
   );
 
 -- Policy: Users can update their own ID images
+DROP POLICY IF EXISTS "Users can update their own ID images" ON storage.objects;
 CREATE POLICY "Users can update their own ID images"
   ON storage.objects FOR UPDATE
   USING (
@@ -40,6 +44,7 @@ CREATE POLICY "Users can update their own ID images"
   );
 
 -- Policy: Users can delete their own ID images
+DROP POLICY IF EXISTS "Users can delete their own ID images" ON storage.objects;
 CREATE POLICY "Users can delete their own ID images"
   ON storage.objects FOR DELETE
   USING (

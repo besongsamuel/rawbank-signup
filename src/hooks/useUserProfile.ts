@@ -4,8 +4,54 @@ import { supabase } from "../lib/supabase";
 
 interface PersonalData {
   id: string;
-  step1_data: any;
-  step2_data: any;
+  // Identity Information
+  civility?: string;
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+  birth_date?: string;
+  birth_place?: string;
+  province_of_origin?: string;
+  nationality?: string;
+  country_of_residence?: string;
+
+  // Identification Document
+  id_type?: string;
+  id_number?: string;
+  id_issue_date?: string;
+  id_expiry_date?: string;
+
+  // Personal Situation
+  marital_status?: string;
+  marital_regime?: string;
+  number_of_children?: number;
+
+  // Housing Information
+  housing_status?: string;
+  permanent_address?: string;
+  mailing_address?: string;
+
+  // Contact Information
+  phone_1?: string;
+  phone_2?: string;
+  email_1?: string;
+  email_2?: string;
+
+  // Professional Information
+  profession?: string;
+  employer?: string;
+  monthly_gross_income?: number;
+  income_source?: string;
+
+  // Emergency Contact
+  emergency_contact_name?: string;
+  emergency_contact_phone?: string;
+
+  // Completion status
+  profile_completion_percentage?: number;
+  fatca_completed?: boolean;
+  pep_completed?: boolean;
+
   created_at: string;
   updated_at: string;
 }
@@ -74,9 +120,16 @@ export const useUserProfile = (
     }
   }, [user?.id, fetchProfile]);
 
-  // Check if user has personal data
-  const hasPersonalData =
-    profile?.step2_data && Object.keys(profile.step2_data).length > 0;
+  // Check if user has personal data (has essential fields filled)
+  const hasPersonalData = Boolean(
+    profile?.first_name &&
+      profile?.last_name &&
+      profile?.birth_date &&
+      profile?.nationality &&
+      profile?.id_number &&
+      profile?.phone_1 &&
+      profile?.email_1
+  );
 
   // Debug logging
   useEffect(() => {
