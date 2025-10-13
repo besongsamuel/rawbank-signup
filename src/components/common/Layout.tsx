@@ -36,9 +36,9 @@ const Layout: React.FC<LayoutProps> = ({
           },
         }}
       >
-        <strong>⚠️ DISCLAIMER:</strong> This is NOT an official Rawbank website.
-        This application was created solely for demonstration purposes. Please
-        visit{" "}
+        <strong>⚠️ AVERTISSEMENT :</strong> Ceci N'EST PAS le site officiel de
+        Rawbank. Cette application a été créée uniquement à des fins de
+        démonstration. Veuillez visiter{" "}
         <a
           href="https://rawbank.com"
           target="_blank"
@@ -47,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({
         >
           rawbank.com
         </a>{" "}
-        for official banking services.
+        pour les services bancaires officiels.
       </Alert>
 
       {showHeader && <Header />}
