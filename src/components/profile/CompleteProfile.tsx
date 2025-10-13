@@ -1,6 +1,5 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import React, { useCallback, useEffect, useState } from "react";
+import { Box, Button, Card, Typography } from "@mui/material";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useSignupForm } from "../../hooks/useSignupForm";
@@ -11,43 +10,20 @@ import IdCardUploadWithAI from "../signup/IdCardUploadWithAI";
 import SignupSkeleton from "../signup/SignupSkeleton";
 import PersonalInfoForm from "./PersonalInfoForm";
 
-const GradientBox = styled(Box)(({ theme }) => ({
-  minHeight: "100vh",
-  background: "#FFFFFF", // Clean Apple-like white background
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: theme.spacing(2),
-}));
-
 interface CompleteProfileProps {
   step?: SignupStep;
 }
 
 const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   const navigate = useNavigate();
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { hasPersonalData, loading: profileLoading } = useUserProfile(user);
 
   // Determine initial step based on route or default to id card
   const initialStep = step || "step2_id";
 
-  const {
-    currentStep,
-    step1Data,
-    step2Data,
-    errors,
-    loading,
-    setLoading,
-    updateStep2Data,
-    nextStep,
-    prevStep,
-    getCompleteData,
-    resetForm,
-    goToStep,
-  } = useSignupForm(initialStep, user);
-
-  const [message, setMessage] = useState<string>("");
+  const { currentStep, step2Data, loading, setLoading, updateStep2Data } =
+    useSignupForm(initialStep, user);
 
   // Load existing data from database
   useEffect(() => {
@@ -315,7 +291,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       const result = await saveStepData(step2Data);
 
       if (!result.success) {
-        setMessage(`Erreur lors de la sauvegarde: ${result.error}`);
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
         return;
       }
 
@@ -323,7 +299,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       navigate("/profile/personal-info");
     } catch (error) {
       console.error("Error processing ID card:", error);
-      setMessage(
+      console.error(
         `Erreur: ${
           error instanceof Error
             ? error.message
@@ -343,7 +319,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       const result = await saveStepData(step2Data);
 
       if (!result.success) {
-        setMessage(`Erreur lors de la sauvegarde: ${result.error}`);
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
         return;
       }
 
@@ -358,7 +334,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       }
     } catch (error) {
       console.error("Error saving personal info:", error);
-      setMessage(
+      console.error(
         `Erreur: ${
           error instanceof Error
             ? error.message
@@ -394,7 +370,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
         .single();
 
       if (fetchError && fetchError.code !== "PGRST116") {
-        setMessage(`Erreur: ${fetchError.message}`);
+        console.error(`Erreur: ${fetchError.message}`);
         return;
       }
 
@@ -477,7 +453,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
           .eq("id", user.id);
 
         if (updateError) {
-          setMessage(`Erreur: ${updateError.message}`);
+          console.error(`Erreur: ${updateError.message}`);
           return;
         }
       } else {
@@ -490,19 +466,19 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
           });
 
         if (insertError) {
-          setMessage(`Erreur: ${insertError.message}`);
+          console.error(`Erreur: ${insertError.message}`);
           return;
         }
       }
 
-      setMessage(
+      console.error(
         "Votre profil a été complété avec succès! Bienvenue chez Rawbank."
       );
 
       // Redirect to app after successful profile completion
       navigate("/app");
     } catch (error) {
-      setMessage(
+      console.error(
         `Erreur: ${
           error instanceof Error
             ? error.message
@@ -520,7 +496,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       const result = await saveStepData(step2Data);
 
       if (!result.success) {
-        setMessage(`Erreur lors de la sauvegarde: ${result.error}`);
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
         return;
       }
 
@@ -528,7 +504,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       navigate("/profile/pep");
     } catch (error) {
       console.error("Error saving FATCA data:", error);
-      setMessage(
+      console.error(
         `Erreur: ${
           error instanceof Error
             ? error.message
@@ -548,7 +524,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       await handleFinalSubmit();
     } catch (error) {
       console.error("Error saving PEP data:", error);
-      setMessage(
+      console.error(
         `Erreur: ${
           error instanceof Error
             ? error.message
@@ -560,26 +536,9 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [handleFinalSubmit, setLoading]);
 
-  // Handle sign out
-  const handleSignOut = useCallback(async () => {
-    await signOut();
-    setMessage("");
-    resetForm();
-  }, [signOut, resetForm]);
-
   // Show loading while checking authentication
   if (authLoading || profileLoading) {
-    return (
-      <GradientBox>
-        <Card sx={{ maxWidth: 600, margin: "0 auto" }}>
-          <CardContent sx={{ p: 4, textAlign: "center" }}>
-            <Typography variant="h6" gutterBottom>
-              Vérification de l'authentification...
-            </Typography>
-          </CardContent>
-        </Card>
-      </GradientBox>
-    );
+    return <SignupSkeleton />;
   }
 
   // Show loading skeleton
@@ -660,59 +619,99 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
     case "step2_fatca":
       return (
-        <GradientBox>
-          <Card sx={{ maxWidth: 800, margin: "0 auto" }}>
-            <CardContent sx={{ p: 4, textAlign: "center" }}>
-              <Typography variant="h4" gutterBottom>
-                Déclaration FATCA
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Cette étape sera bientôt disponible.
-              </Typography>
-              <Typography variant="body2" sx={{ mt: 2 }}>
-                Current step: {currentStep}
-              </Typography>
-            </CardContent>
+        <Box sx={{ maxWidth: 800, margin: "0 auto" }}>
+          <Card sx={{ p: 4, textAlign: "center" }}>
+            <Typography variant="h4" gutterBottom>
+              Déclaration FATCA
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Cette étape sera bientôt disponible.
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              Current step: {currentStep}
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mt: 4,
+                gap: 2,
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={() => navigate("/profile/personal-info")}
+                sx={{ flex: 1 }}
+              >
+                Précédent
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleFatcaNext}
+                sx={{ flex: 1 }}
+              >
+                Continuer
+              </Button>
+            </Box>
           </Card>
-        </GradientBox>
+        </Box>
       );
 
     case "step2_pep":
       return (
-        <GradientBox>
-          <Card sx={{ maxWidth: 800, margin: "0 auto" }}>
-            <CardContent sx={{ p: 4, textAlign: "center" }}>
-              <Typography variant="h4" gutterBottom>
-                Personne Politiquement Exposée (PPE)
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Cette étape sera bientôt disponible.
-              </Typography>
-              <Typography variant="body2" sx={{ mt: 2 }}>
-                Current step: {currentStep}
-              </Typography>
-            </CardContent>
+        <Box sx={{ maxWidth: 800, margin: "0 auto" }}>
+          <Card sx={{ p: 4, textAlign: "center" }}>
+            <Typography variant="h4" gutterBottom>
+              Personne Politiquement Exposée (PPE)
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Cette étape sera bientôt disponible.
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              Current step: {currentStep}
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mt: 4,
+                gap: 2,
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={() => navigate("/profile/fatca")}
+                sx={{ flex: 1 }}
+              >
+                Précédent
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handlePepNext}
+                sx={{ flex: 1 }}
+              >
+                Terminer
+              </Button>
+            </Box>
           </Card>
-        </GradientBox>
+        </Box>
       );
 
     default:
       return (
-        <GradientBox>
-          <Card sx={{ maxWidth: 600, margin: "0 auto" }}>
-            <CardContent sx={{ p: 4, textAlign: "center" }}>
-              <Typography variant="h4" gutterBottom>
-                Étape en cours de développement
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Cette étape sera bientôt disponible.
-              </Typography>
-              <Typography variant="body2" sx={{ mt: 2 }}>
-                Current step: {currentStep}
-              </Typography>
-            </CardContent>
+        <Box sx={{ maxWidth: 600, margin: "0 auto" }}>
+          <Card sx={{ p: 4, textAlign: "center" }}>
+            <Typography variant="h4" gutterBottom>
+              Étape en cours de développement
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Cette étape sera bientôt disponible.
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              Current step: {currentStep}
+            </Typography>
           </Card>
-        </GradientBox>
+        </Box>
       );
   }
 };
