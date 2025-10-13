@@ -374,7 +374,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   }
 
   // Render current step
-    switch (currentStep) {
+  switch (currentStep) {
     case "step2_id":
       return (
         <IdCardUploadWithAI
