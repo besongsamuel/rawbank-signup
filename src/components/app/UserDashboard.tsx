@@ -1,4 +1,13 @@
-import { CalendarToday, Email, Logout, Person } from "@mui/icons-material";
+import {
+  AccountBalance,
+  CheckCircle,
+  Email,
+  Event,
+  Logout,
+  Person,
+  Phone,
+  Work,
+} from "@mui/icons-material";
 import {
   Alert,
   Avatar,
@@ -6,8 +15,10 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   CircularProgress,
   Divider,
+  Stack,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -18,20 +29,19 @@ import { useAuth } from "../../hooks/useAuth";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import LanguageSwitcher from "../common/LanguageSwitcher";
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: 20,
-  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
-  maxWidth: 600,
-  margin: "0 auto",
+const ContentBox = styled(Box)(({ theme }) => ({
+  minHeight: "100vh",
+  background: "#FFFFFF",
+  padding: theme.spacing(2),
 }));
 
-const GradientBox = styled(Box)(({ theme }) => ({
-  minHeight: "100vh",
-  background: "#FFFFFF", // Clean Apple-like white background
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: theme.spacing(2),
+const StyledCard = styled(Card)(({ theme }) => ({
+  borderRadius: 20,
+  boxShadow: "0 8px 40px rgba(0,0,0,0.12)",
+  marginBottom: theme.spacing(3),
+  [theme.breakpoints.down("sm")]: {
+    borderRadius: theme.spacing(1.5),
+  },
 }));
 
 const LogoSection = styled(Box)(({ theme }) => ({
@@ -47,7 +57,6 @@ const UserDashboard: React.FC = () => {
     profile,
     application,
     loading: profileLoading,
-    hasSubmittedApplication,
   } = useUserProfile(user);
 
   const handleSignOut = async () => {
@@ -55,22 +64,79 @@ const UserDashboard: React.FC = () => {
     navigate("/login");
   };
 
-  const handleCompleteProfile = () => {
-    navigate("/profile/id-card");
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("fr-FR");
+  };
+
+  const getAccountTypeLabel = (type: string) => {
+    const types: Record<string, string> = {
+      individual: "Compte Individuel",
+      joint: "Compte Joint",
+      business: "Compte Professionnel",
+      corporate: "Compte Entreprise",
+    };
+    return types[type] || type;
+  };
+
+  const getAgencyName = (agencyId: string) => {
+    const agencies: Record<string, string> = {
+      kinshasa_center: "Agence Kinshasa Centre",
+      kinshasa_gombe: "Agence Kinshasa Gombe",
+      kinshasa_limete: "Agence Kinshasa Limete",
+      lubumbashi_center: "Agence Lubumbashi Centre",
+      lubumbashi_katanga: "Agence Lubumbashi Katanga",
+      goma_center: "Agence Goma Centre",
+      bukavu_center: "Agence Bukavu Centre",
+      matadi_center: "Agence Matadi Centre",
+    };
+    return agencies[agencyId] || agencyId;
+  };
+
+  const getCivilityLabel = (civility: string) => {
+    const civilities: Record<string, string> = {
+      monsieur: "Monsieur",
+      madame: "Madame",
+      mademoiselle: "Mademoiselle",
+    };
+    return civilities[civility] || civility;
+  };
+
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, "success" | "warning" | "info" | "error"> = {
+      submitted: "info",
+      under_review: "warning",
+      approved: "success",
+      rejected: "error",
+      draft: "warning",
+    };
+    return colors[status] || "info";
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      submitted: "Soumise",
+      under_review: "En cours d'examen",
+      approved: "Approuvée",
+      rejected: "Rejetée",
+      draft: "Brouillon",
+    };
+    return labels[status] || status;
   };
 
   if (authLoading || profileLoading) {
     return (
-      <GradientBox>
-        <StyledCard>
-          <CardContent sx={{ p: 4, textAlign: "center" }}>
-            <CircularProgress size={60} />
-            <Typography variant="h6" sx={{ mt: 2 }}>
-              {t("common.loading")}
-            </Typography>
-          </CardContent>
-        </StyledCard>
-      </GradientBox>
+      <ContentBox>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "50vh",
+          }}
+        >
+          <CircularProgress size={60} />
+        </Box>
+      </ContentBox>
     );
   }
 
@@ -80,114 +146,450 @@ const UserDashboard: React.FC = () => {
   }
 
   return (
-    <GradientBox>
-      <StyledCard>
-        <CardContent sx={{ p: 4 }}>
-          {/* Language Switcher */}
-          <Box sx={{ position: "absolute", top: 16, right: 16 }}>
-            <LanguageSwitcher />
-          </Box>
+    <ContentBox>
+      <Box sx={{ maxWidth: 1200, margin: "0 auto" }}>
+        {/* Language Switcher */}
+        <Box sx={{ position: "absolute", top: 16, right: 16 }}>
+          <LanguageSwitcher />
+        </Box>
 
-          {/* Header */}
-          <LogoSection>
-            <Typography
-              variant="h1"
-              gutterBottom
-              sx={{ color: "primary.main", fontWeight: 700 }}
-            >
-              Rawbank
-            </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.8, fontWeight: 300 }}>
-              Une banque portée par des valeurs fortes
-            </Typography>
-          </LogoSection>
+        {/* Header */}
+        <LogoSection>
+          <Typography
+            variant="h1"
+            gutterBottom
+            sx={{ color: "primary.main", fontWeight: 700 }}
+          >
+            Rawbank
+          </Typography>
+          <Typography variant="h6" sx={{ opacity: 0.8, fontWeight: 300 }}>
+            Une banque portée par des valeurs fortes
+          </Typography>
+        </LogoSection>
 
-          <Box sx={{ textAlign: "center", mb: 4 }}>
-            <Typography variant="h2" gutterBottom>
-              {t("messages.welcome")}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {t("messages.connectedAs")}
-            </Typography>
-          </Box>
+        {/* Welcome Section */}
+        <StyledCard>
+          <CardContent sx={{ p: 4 }}>
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <CheckCircle sx={{ fontSize: 64, color: "#FFCC00", mb: 2 }} />
+              <Typography variant="h3" gutterBottom>
+                Félicitations !
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Votre demande d'ouverture de compte a été soumise avec succès
+              </Typography>
+            </Box>
 
-          {/* User Info */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mb: 4 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Avatar sx={{ bgcolor: "primary.main", width: 56, height: 56 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+              <Avatar sx={{ bgcolor: "primary.main", width: 64, height: 64 }}>
                 <Person fontSize="large" />
               </Avatar>
               <Box>
-                <Typography variant="h6">
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
                   {profile?.first_name && profile?.last_name
                     ? `${profile.first_name} ${profile.last_name}`
                     : user.email}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body1" color="text.secondary">
                   {user.email}
                 </Typography>
               </Box>
             </Box>
+          </CardContent>
+        </StyledCard>
 
-            <Divider />
+        {/* Account Information */}
+        <StyledCard>
+          <CardContent sx={{ p: 4 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+            >
+              <AccountBalance color="primary" />
+              Informations du Compte
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <Stack spacing={3}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Numéro de demande:
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {application?.application_number}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Type de compte:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {application?.account_type
+                    ? getAccountTypeLabel(application.account_type)
+                    : "Non spécifié"}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Agence:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {application?.agency_id
+                    ? getAgencyName(application.agency_id)
+                    : "Non spécifiée"}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Statut:
+                </Typography>
+                <Chip
+                  label={
+                    application?.status
+                      ? getStatusLabel(application.status)
+                      : "Inconnu"
+                  }
+                  color={
+                    application?.status
+                      ? getStatusColor(application.status)
+                      : "info"
+                  }
+                  size="medium"
+                />
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Date de soumission:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {application?.submitted_at
+                    ? formatDate(application.submitted_at)
+                    : "Non spécifiée"}
+                </Typography>
+              </Box>
+            </Stack>
+          </CardContent>
+        </StyledCard>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <Email color="primary" />
-              <Typography variant="body1">
-                <strong>{t("auth.signin.email")}:</strong> {user.email}
+        {/* Personal Information */}
+        <StyledCard>
+          <CardContent sx={{ p: 4 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+            >
+              <Person color="primary" />
+              Informations Personnelles
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <Stack spacing={3}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Civilité:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {profile?.civility
+                    ? getCivilityLabel(profile.civility)
+                    : "Non spécifiée"}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Nom complet:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {profile?.first_name && profile?.last_name
+                    ? `${profile.first_name} ${
+                        profile.middle_name ? profile.middle_name + " " : ""
+                      }${profile.last_name}`
+                    : "Non spécifié"}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Date de naissance:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {profile?.birth_date
+                    ? formatDate(profile.birth_date)
+                    : "Non spécifiée"}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body1" color="text.secondary">
+                  Nationalité:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {profile?.nationality || "Non spécifiée"}
+                </Typography>
+              </Box>
+            </Stack>
+          </CardContent>
+        </StyledCard>
+
+        {/* Contact Information */}
+        <StyledCard>
+          <CardContent sx={{ p: 4 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+            >
+              <Phone color="primary" />
+              Informations de Contact
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
+            <Stack spacing={3}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Phone color="primary" />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Téléphone principal
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {profile?.phone_1 || "Non spécifié"}
+                  </Typography>
+                </Box>
+              </Box>
+              {profile?.phone_2 && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Phone color="primary" />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Téléphone secondaire
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {profile.phone_2}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Email color="primary" />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Email principal
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {profile?.email_1 || user.email}
+                  </Typography>
+                </Box>
+              </Box>
+              {profile?.email_2 && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Email color="primary" />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Email secondaire
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {profile.email_2}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+            </Stack>
+          </CardContent>
+        </StyledCard>
+
+        {/* Professional Information */}
+        {profile?.profession && (
+          <StyledCard>
+            <CardContent sx={{ p: 4 }}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+              >
+                <Work color="primary" />
+                Informations Professionnelles
               </Typography>
-            </Box>
+              <Divider sx={{ mb: 3 }} />
+              <Stack spacing={3}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="body1" color="text.secondary">
+                    Profession:
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {profile.profession}
+                  </Typography>
+                </Box>
+                {profile.employer && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="body1" color="text.secondary">
+                      Employeur:
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {profile.employer}
+                    </Typography>
+                  </Box>
+                )}
+                {profile.monthly_gross_income && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="body1" color="text.secondary">
+                      Revenus mensuels:
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {profile.monthly_gross_income.toLocaleString()} CDF
+                    </Typography>
+                  </Box>
+                )}
+              </Stack>
+            </CardContent>
+          </StyledCard>
+        )}
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <CalendarToday color="primary" />
-              <Typography variant="body1">
-                <strong>{t("auth.signup.title")}:</strong>{" "}
-                {new Date(user.created_at).toLocaleDateString()}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Application Status */}
-          {!hasSubmittedApplication && (
+        {/* Next Steps */}
+        <StyledCard>
+          <CardContent sx={{ p: 4 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+            >
+              <Event color="primary" />
+              Prochaines Étapes
+            </Typography>
+            <Divider sx={{ mb: 3 }} />
             <Alert severity="info" sx={{ mb: 3 }}>
-              <Typography variant="body2">
-                Votre profil est complet. Vous pouvez maintenant soumettre votre
-                demande d'ouverture de compte.
+              <Typography variant="body1" sx={{ fontWeight: 500, mb: 2 }}>
+                Planifiez un rendez-vous avec nous
               </Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Pour finaliser votre processus d'ouverture de compte et
+                récupérer votre carte bancaire, vous devez prendre rendez-vous
+                avec notre équipe Rawbank.
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                <strong>Documents requis :</strong> La pièce d'identité que vous
+                avez téléchargée lors du processus de candidature.
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 500, color: "primary.main" }}
+              >
+                Durée estimée : environ 15 minutes
+              </Typography>
+            </Alert>
+            <Box sx={{ textAlign: "center" }}>
               <Button
                 variant="contained"
-                onClick={handleCompleteProfile}
-                sx={{ mt: 2 }}
+                size="large"
+                startIcon={<Event />}
+                sx={{
+                  backgroundColor: "#000000",
+                  color: "#FFCC00",
+                  px: 4,
+                  py: 1.5,
+                  fontSize: "1.1rem",
+                  "&:hover": {
+                    backgroundColor: "#1a1a1a",
+                  },
+                }}
+                onClick={() => {
+                  // In a real app, this would open a calendar booking system
+                  alert(
+                    "Fonctionnalité de réservation à venir. Contactez Rawbank directement."
+                  );
+                }}
               >
-                Soumettre la demande
+                Planifier un Rendez-vous
               </Button>
-            </Alert>
-          )}
+            </Box>
+          </CardContent>
+        </StyledCard>
 
-          {hasSubmittedApplication && (
-            <Alert severity="success" sx={{ mb: 3 }}>
-              <Typography variant="body2">
-                Votre demande d'ouverture de compte a été soumise avec succès.
-                Statut: {application?.status}
-              </Typography>
-            </Alert>
-          )}
-
-          {/* Actions */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Button
-              variant="outlined"
-              size="large"
-              fullWidth
-              startIcon={<Logout />}
-              onClick={handleSignOut}
-            >
-              {t("messages.signout")}
-            </Button>
-          </Box>
-        </CardContent>
-      </StyledCard>
-    </GradientBox>
+        {/* Actions */}
+        <StyledCard>
+          <CardContent sx={{ p: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                variant="outlined"
+                size="large"
+                startIcon={<Logout />}
+                onClick={handleSignOut}
+                sx={{ px: 4 }}
+              >
+                {t("messages.signout")}
+              </Button>
+            </Box>
+          </CardContent>
+        </StyledCard>
+      </Box>
+    </ContentBox>
   );
 };
 
