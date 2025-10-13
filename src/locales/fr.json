@@ -1,0 +1,214 @@
+{
+  "common": {
+    "continue": "Continuer",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "submit": "Envoyer",
+    "cancel": "Annuler",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "required": "Requis",
+    "optional": "Optionnel"
+  },
+  "auth": {
+    "signin": {
+      "title": "Se connecter",
+      "subtitle": "Accédez à votre compte Rawbank",
+      "email": "Adresse email",
+      "password": "Mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "signinButton": "Se connecter",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "signupLink": "Créer un compte"
+    },
+    "signup": {
+      "title": "Ouvrir un compte",
+      "subtitle": "Créez votre compte Rawbank en quelques étapes simples",
+      "email": "Adresse email",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "signupButton": "Créer un compte",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "signinLink": "Se connecter",
+      "terms": "En continuant, vous acceptez nos",
+      "termsLink": "conditions d'utilisation",
+      "and": "et notre",
+      "privacyLink": "politique de confidentialité"
+    }
+  },
+  "steps": {
+    "step1": "Informations de connexion",
+    "step2_id": "Pièce d'identité",
+    "step2_personal": "Données personnelles",
+    "step2_marital": "Situation familiale",
+    "step2_housing": "Informations de logement",
+    "step2_contact": "Coordonnées",
+    "step2_professional": "Informations professionnelles",
+    "step2_emergency": "Contact d'urgence",
+    "step2_bank": "Sélection de la banque",
+    "step2_package": "Choix du package"
+  },
+  "idCard": {
+    "title": "Pièce d'identité",
+    "subtitle": "Téléchargez votre pièce d'identité pour vérification",
+    "type": "Type de pièce d'identité",
+    "types": {
+      "carte_electeur": "Carte d'électeur",
+      "carte_identite": "Carte d'identité nationale",
+      "permis_conduire": "Permis de conduire",
+      "passeport": "Passeport",
+      "autre": "Autre (précisez)"
+    },
+    "otherType": "Précisez le type",
+    "upload": "Télécharger la pièce d'identité",
+    "uploadHint": "Cliquez pour télécharger",
+    "uploadDescription": "Formats acceptés: JPG, PNG, WebP (max 5MB)",
+    "number": "Numéro de la pièce",
+    "issueDate": "Date de délivrance",
+    "expiryDate": "Date d'expiration",
+    "info": "Votre pièce d'identité sera utilisée pour vérifier votre identité et pré-remplir vos informations personnelles."
+  },
+  "personalInfo": {
+    "title": "Données personnelles",
+    "subtitle": "Renseignez vos informations personnelles",
+    "civility": "Civilité",
+    "civilities": {
+      "madame": "Mme",
+      "mademoiselle": "Mlle",
+      "monsieur": "M."
+    },
+    "lastName": "Nom",
+    "middleName": "Postnom",
+    "firstName": "Prénom",
+    "birthDate": "Date de naissance",
+    "birthPlace": "Lieu de naissance",
+    "provinceOfOrigin": "Province d'origine",
+    "nationality": "Nationalité",
+    "countryOfResidence": "Pays de résidence"
+  },
+  "maritalInfo": {
+    "title": "Situation familiale",
+    "subtitle": "Informations sur votre situation familiale",
+    "maritalStatus": "Situation familiale",
+    "maritalStatuses": {
+      "celibataire": "Célibataire",
+      "marie": "Marié(e)",
+      "divorce": "Divorcé(e)",
+      "veuf": "Veuf(ve)"
+    },
+    "maritalRegime": "Régime matrimonial",
+    "maritalRegimes": {
+      "separation_biens": "Séparation des biens",
+      "communaute_universelle": "Communauté universelle",
+      "communaute_reduite": "Com. réduite aux acquêts"
+    },
+    "numberOfChildren": "Nombre d'enfants"
+  },
+  "housingInfo": {
+    "title": "Informations de logement",
+    "subtitle": "Renseignez vos informations de logement",
+    "housingStatus": "Logement",
+    "housingStatuses": {
+      "proprietaire": "Propriétaire",
+      "locataire": "Locataire",
+      "loge_gratuit": "Logé à titre gratuit",
+      "loge_parents": "Logé chez les parents"
+    },
+    "permanentAddress": "Adresse permanente",
+    "mailingAddress": "Adresse courrier"
+  },
+  "contactInfo": {
+    "title": "Coordonnées",
+    "subtitle": "Vos informations de contact",
+    "phone1": "Téléphone 1",
+    "phone2": "Téléphone 2",
+    "email1": "E-mail 1",
+    "email2": "E-mail 2",
+    "note": "Toute souscription à un service ou produit digital se fera automatiquement et exclusivement sur votre numéro de téléphone 1 ou adresse email 1."
+  },
+  "professionalInfo": {
+    "title": "Informations professionnelles",
+    "subtitle": "Vos informations professionnelles et financières",
+    "profession": "Profession",
+    "employer": "Employeur",
+    "monthlyIncome": "Revenus mensuels (brut)",
+    "incomeOrigin": "Origine"
+  },
+  "emergencyContact": {
+    "title": "Contact d'urgence",
+    "subtitle": "Personne à contacter en cas d'urgence",
+    "contactPerson": "Personne à contacter",
+    "contactPhone": "Tél."
+  },
+  "bankSelection": {
+    "title": "Sélection de la banque",
+    "subtitle": "Comment avez-vous choisi Rawbank ?",
+    "howDidYouChooseRawbank": "Comment avez-vous choisi la RAWBANK",
+    "choices": {
+      "connaissance": "Connaissance",
+      "relation_affaires": "Relation d'affaires",
+      "publicite": "Publicité",
+      "autres": "Autres"
+    }
+  },
+  "packageSelection": {
+    "title": "Choix du package",
+    "subtitle": "Sélectionnez votre package bancaire",
+    "packages": {
+      "pack_eco": "PACK ECO",
+      "pack_standard": "PACK STANDARD",
+      "pack_premium": "PACK PREMIUM"
+    },
+    "packEcoDescription": "Flux créditeur mensuel <1,000 USD",
+    "account": "Compte",
+    "card": "Carte",
+    "digitalProducts": "Produits Digitaux",
+    "accountTypes": {
+      "usd": "Compte à vue USD",
+      "cdf": "Compte à vue CDF"
+    },
+    "cardTypes": {
+      "visa_classic_usd": "VISA CLASSIC USD",
+      "visa_classic_cdf": "VISA CLASSIC CDF",
+      "visa_gold_usd": "VISA GOLD USD",
+      "visa_gold_cdf": "VISA GOLD CDF",
+      "visa_platinum_usd": "VISA PLATINUM USD",
+      "visa_platinum_cdf": "VISA PLATINUM CDF"
+    },
+    "digitalProductsList": {
+      "alert_sms": "Alert SMS"
+    }
+  },
+  "messages": {
+    "signupSuccess": "Votre demande d'ouverture de compte a été envoyée avec succès! Vérifiez votre email pour la confirmation.",
+    "signinSuccess": "Connexion réussie! Bienvenue chez Rawbank.",
+    "signoutSuccess": "Déconnexion réussie.",
+    "emailVerification": "Vérifiez votre email pour confirmer votre compte, puis continuez avec votre profil.",
+    "accountCreated": "Votre compte a été créé avec succès! Bienvenue chez Rawbank.",
+    "welcome": "Bienvenue chez Rawbank!",
+    "connectedAs": "Vous êtes connecté en tant que:",
+    "signout": "Se déconnecter",
+    "stepInDevelopment": "Étape en cours de développement",
+    "stepComingSoon": "Cette étape sera bientôt disponible.",
+    "return": "Retour"
+  },
+  "errors": {
+    "emailRequired": "Email est requis",
+    "emailInvalid": "Email invalide",
+    "passwordRequired": "Mot de passe requis",
+    "passwordMinLength": "Mot de passe doit contenir au moins 8 caractères",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "termsRequired": "Veuillez accepter les conditions d'utilisation",
+    "fileRequired": "Veuillez télécharger votre pièce d'identité.",
+    "fileTypeInvalid": "Format de fichier non supporté. Utilisez JPG, PNG ou WebP.",
+    "fileSizeTooLarge": "Fichier trop volumineux. Taille maximale: 5MB.",
+    "unknownError": "Une erreur inconnue s'est produite"
+  },
+  "language": {
+    "switch": "Changer de langue",
+    "french": "Français",
+    "english": "English"
+  }
+}

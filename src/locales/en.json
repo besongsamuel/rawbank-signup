@@ -1,0 +1,214 @@
+{
+  "common": {
+    "continue": "Continue",
+    "previous": "Previous",
+    "next": "Next",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "auth": {
+    "signin": {
+      "title": "Sign In",
+      "subtitle": "Access your Rawbank account",
+      "email": "Email address",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signinButton": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Create account"
+    },
+    "signup": {
+      "title": "Open Account",
+      "subtitle": "Create your Rawbank account in a few simple steps",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "signupButton": "Create account",
+      "hasAccount": "Already have an account?",
+      "signinLink": "Sign in",
+      "terms": "By continuing, you accept our",
+      "termsLink": "terms of use",
+      "and": "and our",
+      "privacyLink": "privacy policy"
+    }
+  },
+  "steps": {
+    "step1": "Login Information",
+    "step2_id": "Identity Document",
+    "step2_personal": "Personal Data",
+    "step2_marital": "Family Situation",
+    "step2_housing": "Housing Information",
+    "step2_contact": "Contact Details",
+    "step2_professional": "Professional Information",
+    "step2_emergency": "Emergency Contact",
+    "step2_bank": "Bank Selection",
+    "step2_package": "Package Choice"
+  },
+  "idCard": {
+    "title": "Identity Document",
+    "subtitle": "Upload your identity document for verification",
+    "type": "Type of identity document",
+    "types": {
+      "carte_electeur": "Voter Card",
+      "carte_identite": "National ID Card",
+      "permis_conduire": "Driver's License",
+      "passeport": "Passport",
+      "autre": "Other (specify)"
+    },
+    "otherType": "Specify type",
+    "upload": "Upload identity document",
+    "uploadHint": "Click to upload",
+    "uploadDescription": "Accepted formats: JPG, PNG, WebP (max 5MB)",
+    "number": "Document number",
+    "issueDate": "Issue date",
+    "expiryDate": "Expiry date",
+    "info": "Your identity document will be used to verify your identity and pre-fill your personal information."
+  },
+  "personalInfo": {
+    "title": "Personal Data",
+    "subtitle": "Enter your personal information",
+    "civility": "Title",
+    "civilities": {
+      "madame": "Mrs.",
+      "mademoiselle": "Ms.",
+      "monsieur": "Mr."
+    },
+    "lastName": "Last Name",
+    "middleName": "Middle Name",
+    "firstName": "First Name",
+    "birthDate": "Date of Birth",
+    "birthPlace": "Place of Birth",
+    "provinceOfOrigin": "Province of Origin",
+    "nationality": "Nationality",
+    "countryOfResidence": "Country of Residence"
+  },
+  "maritalInfo": {
+    "title": "Family Situation",
+    "subtitle": "Information about your family situation",
+    "maritalStatus": "Marital Status",
+    "maritalStatuses": {
+      "celibataire": "Single",
+      "marie": "Married",
+      "divorce": "Divorced",
+      "veuf": "Widowed"
+    },
+    "maritalRegime": "Marital Regime",
+    "maritalRegimes": {
+      "separation_biens": "Separation of Assets",
+      "communaute_universelle": "Universal Community",
+      "communaute_reduite": "Community of Acquests"
+    },
+    "numberOfChildren": "Number of Children"
+  },
+  "housingInfo": {
+    "title": "Housing Information",
+    "subtitle": "Enter your housing information",
+    "housingStatus": "Housing",
+    "housingStatuses": {
+      "proprietaire": "Owner",
+      "locataire": "Tenant",
+      "loge_gratuit": "Housed for Free",
+      "loge_parents": "Living with Parents"
+    },
+    "permanentAddress": "Permanent Address",
+    "mailingAddress": "Mailing Address"
+  },
+  "contactInfo": {
+    "title": "Contact Details",
+    "subtitle": "Your contact information",
+    "phone1": "Phone 1",
+    "phone2": "Phone 2",
+    "email1": "Email 1",
+    "email2": "Email 2",
+    "note": "Any subscription to a digital service or product will be automatically and exclusively done via your phone number 1 or email address 1."
+  },
+  "professionalInfo": {
+    "title": "Professional Information",
+    "subtitle": "Your professional and financial information",
+    "profession": "Profession",
+    "employer": "Employer",
+    "monthlyIncome": "Gross Monthly Income",
+    "incomeOrigin": "Origin"
+  },
+  "emergencyContact": {
+    "title": "Emergency Contact",
+    "subtitle": "Person to contact in case of emergency",
+    "contactPerson": "Contact Person",
+    "contactPhone": "Phone"
+  },
+  "bankSelection": {
+    "title": "Bank Selection",
+    "subtitle": "How did you choose Rawbank?",
+    "howDidYouChooseRawbank": "How did you choose RAWBANK",
+    "choices": {
+      "connaissance": "Acquaintance",
+      "relation_affaires": "Business Relationship",
+      "publicite": "Advertising",
+      "autres": "Other"
+    }
+  },
+  "packageSelection": {
+    "title": "Package Choice",
+    "subtitle": "Select your banking package",
+    "packages": {
+      "pack_eco": "ECO PACK",
+      "pack_standard": "STANDARD PACK",
+      "pack_premium": "PREMIUM PACK"
+    },
+    "packEcoDescription": "Monthly credit flow <1,000 USD",
+    "account": "Account",
+    "card": "Card",
+    "digitalProducts": "Digital Products",
+    "accountTypes": {
+      "usd": "USD Current Account",
+      "cdf": "CDF Current Account"
+    },
+    "cardTypes": {
+      "visa_classic_usd": "VISA CLASSIC USD",
+      "visa_classic_cdf": "VISA CLASSIC CDF",
+      "visa_gold_usd": "VISA GOLD USD",
+      "visa_gold_cdf": "VISA GOLD CDF",
+      "visa_platinum_usd": "VISA PLATINUM USD",
+      "visa_platinum_cdf": "VISA PLATINUM CDF"
+    },
+    "digitalProductsList": {
+      "alert_sms": "SMS Alert"
+    }
+  },
+  "messages": {
+    "signupSuccess": "Your account opening request has been sent successfully! Check your email for confirmation.",
+    "signinSuccess": "Login successful! Welcome to Rawbank.",
+    "signoutSuccess": "Logout successful.",
+    "emailVerification": "Check your email to confirm your account, then continue with your profile.",
+    "accountCreated": "Your account has been created successfully! Welcome to Rawbank.",
+    "welcome": "Welcome to Rawbank!",
+    "connectedAs": "You are logged in as:",
+    "signout": "Sign Out",
+    "stepInDevelopment": "Step under development",
+    "stepComingSoon": "This step will be available soon.",
+    "return": "Return"
+  },
+  "errors": {
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must contain at least 8 characters",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "termsRequired": "Please accept the terms of use",
+    "fileRequired": "Please upload your identity document.",
+    "fileTypeInvalid": "Unsupported file format. Use JPG, PNG or WebP.",
+    "fileSizeTooLarge": "File too large. Maximum size: 5MB.",
+    "unknownError": "An unknown error occurred"
+  },
+  "language": {
+    "switch": "Switch language",
+    "french": "Français",
+    "english": "English"
+  }
+}
