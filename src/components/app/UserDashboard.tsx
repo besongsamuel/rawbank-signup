@@ -1,13 +1,4 @@
-import {
-  AccountBalance,
-  CheckCircle,
-  Email,
-  Event,
-  Logout,
-  Person,
-  Phone,
-  Work,
-} from "@mui/icons-material";
+import { Email, Event, Logout, Person, Phone } from "@mui/icons-material";
 import {
   Alert,
   Avatar,
@@ -28,6 +19,242 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import LanguageSwitcher from "../common/LanguageSwitcher";
+
+// Vector Illustrations
+const SuccessIllustration: React.FC<{ size?: number }> = ({ size = 80 }) => (
+  <Box sx={{ width: size, height: size, color: "#FFCC00" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <circle
+        cx="50"
+        cy="50"
+        r="45"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        opacity="0.3"
+      />
+      <circle
+        cx="50"
+        cy="50"
+        r="35"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        opacity="0.5"
+      />
+      <circle cx="50" cy="50" r="25" fill="currentColor" opacity="0.8" />
+      <path
+        d="M40 50 L47 57 L60 44"
+        stroke="white"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </Box>
+);
+
+const AccountIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
+  <Box sx={{ width: size, height: size, color: "#000000" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <rect
+        x="20"
+        y="30"
+        width="60"
+        height="40"
+        rx="8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <rect
+        x="25"
+        y="35"
+        width="50"
+        height="30"
+        rx="4"
+        fill="#FFCC00"
+        opacity="0.8"
+      />
+      <circle cx="35" cy="50" r="3" fill="currentColor" />
+      <circle cx="45" cy="50" r="3" fill="currentColor" />
+      <circle cx="55" cy="50" r="3" fill="currentColor" />
+      <circle cx="65" cy="50" r="3" fill="currentColor" />
+      <rect x="30" y="20" width="40" height="8" rx="4" fill="currentColor" />
+    </svg>
+  </Box>
+);
+
+const PersonalIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
+  <Box sx={{ width: size, height: size, color: "#FFCC00" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <circle cx="50" cy="35" r="15" fill="currentColor" />
+      <path
+        d="M25 75 Q25 55 50 55 Q75 55 75 75 L75 85 L25 85 Z"
+        fill="currentColor"
+      />
+      <circle cx="40" cy="30" r="2" fill="white" />
+      <circle cx="60" cy="30" r="2" fill="white" />
+      <path
+        d="M45 40 Q50 45 55 40"
+        stroke="white"
+        strokeWidth="2"
+        fill="none"
+      />
+    </svg>
+  </Box>
+);
+
+const ContactIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
+  <Box sx={{ width: size, height: size, color: "#000000" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <rect
+        x="20"
+        y="20"
+        width="60"
+        height="40"
+        rx="8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <rect
+        x="25"
+        y="25"
+        width="50"
+        height="30"
+        rx="4"
+        fill="#FFCC00"
+        opacity="0.8"
+      />
+      <circle cx="35" cy="35" r="2" fill="currentColor" />
+      <circle cx="45" cy="35" r="2" fill="currentColor" />
+      <circle cx="55" cy="35" r="2" fill="currentColor" />
+      <circle cx="65" cy="35" r="2" fill="currentColor" />
+      <rect x="30" y="45" width="40" height="4" rx="2" fill="currentColor" />
+      <rect x="30" y="50" width="30" height="4" rx="2" fill="currentColor" />
+      <circle cx="50" cy="70" r="8" fill="currentColor" />
+      <path
+        d="M45 70 L50 75 L55 70"
+        stroke="white"
+        strokeWidth="2"
+        fill="none"
+      />
+    </svg>
+  </Box>
+);
+
+const ProfessionalIllustration: React.FC<{ size?: number }> = ({
+  size = 60,
+}) => (
+  <Box sx={{ width: size, height: size, color: "#FFCC00" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <rect x="25" y="30" width="50" height="35" rx="4" fill="currentColor" />
+      <rect x="30" y="35" width="40" height="25" rx="2" fill="white" />
+      <rect x="35" y="40" width="30" height="3" rx="1" fill="currentColor" />
+      <rect x="35" y="45" width="25" height="3" rx="1" fill="currentColor" />
+      <rect x="35" y="50" width="20" height="3" rx="1" fill="currentColor" />
+      <circle cx="50" cy="20" r="8" fill="currentColor" />
+      <rect x="45" y="15" width="10" height="10" rx="2" fill="white" />
+    </svg>
+  </Box>
+);
+
+const FatcaIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
+  <Box sx={{ width: size, height: size, color: "#000000" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <rect
+        x="20"
+        y="20"
+        width="60"
+        height="60"
+        rx="8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <rect
+        x="25"
+        y="25"
+        width="50"
+        height="50"
+        rx="4"
+        fill="#FFCC00"
+        opacity="0.8"
+      />
+      <text
+        x="50"
+        y="40"
+        textAnchor="middle"
+        fontSize="12"
+        fill="currentColor"
+        fontWeight="bold"
+      >
+        FATCA
+      </text>
+      <rect x="30" y="45" width="40" height="2" rx="1" fill="currentColor" />
+      <rect x="30" y="50" width="35" height="2" rx="1" fill="currentColor" />
+      <rect x="30" y="55" width="30" height="2" rx="1" fill="currentColor" />
+      <rect x="30" y="60" width="25" height="2" rx="1" fill="currentColor" />
+    </svg>
+  </Box>
+);
+
+const PepIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
+  <Box sx={{ width: size, height: size, color: "#FFCC00" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <circle cx="50" cy="50" r="30" fill="currentColor" />
+      <circle cx="50" cy="40" r="8" fill="white" />
+      <rect x="35" y="50" width="30" height="15" rx="3" fill="white" />
+      <rect x="40" y="55" width="20" height="3" rx="1" fill="currentColor" />
+      <rect x="40" y="60" width="15" height="3" rx="1" fill="currentColor" />
+      <path
+        d="M30 30 L70 30 M30 70 L70 70"
+        stroke="currentColor"
+        strokeWidth="2"
+        opacity="0.5"
+      />
+    </svg>
+  </Box>
+);
+
+const NextStepsIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
+  <Box sx={{ width: size, height: size, color: "#000000" }}>
+    <svg viewBox="0 0 100 100" fill="currentColor">
+      <circle cx="25" cy="30" r="8" fill="#FFCC00" />
+      <circle cx="50" cy="30" r="8" fill="#FFCC00" opacity="0.7" />
+      <circle cx="75" cy="30" r="8" fill="#FFCC00" opacity="0.5" />
+      <path
+        d="M33 30 L42 30 M58 30 L67 30"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <rect
+        x="20"
+        y="50"
+        width="60"
+        height="30"
+        rx="4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <rect
+        x="25"
+        y="55"
+        width="50"
+        height="20"
+        rx="2"
+        fill="#FFCC00"
+        opacity="0.8"
+      />
+      <circle cx="35" cy="65" r="3" fill="currentColor" />
+      <circle cx="50" cy="65" r="3" fill="currentColor" />
+      <circle cx="65" cy="65" r="3" fill="currentColor" />
+    </svg>
+  </Box>
+);
 
 const ContentBox = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
@@ -171,8 +398,8 @@ const UserDashboard: React.FC = () => {
         <StyledCard>
           <CardContent sx={{ p: 4 }}>
             <Box sx={{ textAlign: "center", mb: 4 }}>
-              <CheckCircle sx={{ fontSize: 64, color: "#FFCC00", mb: 2 }} />
-              <Typography variant="h3" gutterBottom>
+              <SuccessIllustration size={100} />
+              <Typography variant="h3" gutterBottom sx={{ mt: 2 }}>
                 Félicitations !
               </Typography>
               <Typography variant="h6" color="text.secondary">
@@ -201,14 +428,12 @@ const UserDashboard: React.FC = () => {
         {/* Account Information */}
         <StyledCard>
           <CardContent sx={{ p: 4 }}>
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
-            >
-              <AccountBalance color="primary" />
-              Informations du Compte
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+              <AccountIllustration size={50} />
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Informations du Compte
+              </Typography>
+            </Box>
             <Divider sx={{ mb: 3 }} />
             <Stack spacing={3}>
               <Box
@@ -304,14 +529,12 @@ const UserDashboard: React.FC = () => {
         {/* Personal Information */}
         <StyledCard>
           <CardContent sx={{ p: 4 }}>
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
-            >
-              <Person color="primary" />
-              Informations Personnelles
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+              <PersonalIllustration size={50} />
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Informations Personnelles
+              </Typography>
+            </Box>
             <Divider sx={{ mb: 3 }} />
             <Stack spacing={3}>
               <Box
@@ -385,14 +608,12 @@ const UserDashboard: React.FC = () => {
         {/* Contact Information */}
         <StyledCard>
           <CardContent sx={{ p: 4 }}>
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
-            >
-              <Phone color="primary" />
-              Informations de Contact
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+              <ContactIllustration size={50} />
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Informations de Contact
+              </Typography>
+            </Box>
             <Divider sx={{ mb: 3 }} />
             <Stack spacing={3}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -451,14 +672,14 @@ const UserDashboard: React.FC = () => {
         {profile?.profession && (
           <StyledCard>
             <CardContent sx={{ p: 4 }}>
-              <Typography
-                variant="h5"
-                gutterBottom
-                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}
               >
-                <Work color="primary" />
-                Informations Professionnelles
-              </Typography>
+                <ProfessionalIllustration size={50} />
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  Informations Professionnelles
+                </Typography>
+              </Box>
               <Divider sx={{ mb: 3 }} />
               <Stack spacing={3}>
                 <Box
@@ -516,14 +737,14 @@ const UserDashboard: React.FC = () => {
         {profile?.fatca_data && (
           <StyledCard>
             <CardContent sx={{ p: 4 }}>
-              <Typography
-                variant="h5"
-                gutterBottom
-                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}
               >
-                <AccountBalance color="primary" />
-                Déclaration FATCA
-              </Typography>
+                <FatcaIllustration size={50} />
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  Déclaration FATCA
+                </Typography>
+              </Box>
               <Divider sx={{ mb: 3 }} />
               <Stack spacing={3}>
                 <Box
@@ -631,14 +852,14 @@ const UserDashboard: React.FC = () => {
         {profile?.pep_data && (
           <StyledCard>
             <CardContent sx={{ p: 4 }}>
-              <Typography
-                variant="h5"
-                gutterBottom
-                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}
               >
-                <Person color="primary" />
-                Déclaration PEP (Personne Politiquement Exposée)
-              </Typography>
+                <PepIllustration size={50} />
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  Déclaration PEP (Personne Politiquement Exposée)
+                </Typography>
+              </Box>
               <Divider sx={{ mb: 3 }} />
               <Stack spacing={3}>
                 <Box
@@ -800,66 +1021,207 @@ const UserDashboard: React.FC = () => {
           </StyledCard>
         )}
 
-        {/* Next Steps */}
-        <StyledCard>
+        {/* Next Steps - Subtle Highlight */}
+        <StyledCard
+          sx={{
+            border: "2px solid #FFCC00",
+            boxShadow: "0 8px 30px rgba(255, 204, 0, 0.15)",
+            background: "linear-gradient(135deg, #FFFEF7 0%, #FFFFFF 100%)",
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "3px",
+              background:
+                "linear-gradient(90deg, #FFCC00 0%, #FFD633 50%, #FFCC00 100%)",
+            },
+          }}
+        >
           <CardContent sx={{ p: 4 }}>
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+              <NextStepsIllustration size={55} />
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 600,
+                  color: "#000000",
+                }}
+              >
+                Prochaines Étapes
+              </Typography>
+            </Box>
+            <Divider
+              sx={{
+                mb: 3,
+                borderColor: "#FFCC00",
+                opacity: 0.6,
+              }}
+            />
+            <Alert
+              severity="info"
+              sx={{
+                mb: 3,
+                backgroundColor: "rgba(255, 204, 0, 0.05)",
+                border: "1px solid #FFCC00",
+                borderRadius: 2,
+                opacity: 0.8,
+                "& .MuiAlert-icon": {
+                  color: "#FFCC00",
+                  fontSize: "1.2rem",
+                },
+              }}
             >
-              <Event color="primary" />
-              Prochaines Étapes
-            </Typography>
-            <Divider sx={{ mb: 3 }} />
-            <Alert severity="info" sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ fontWeight: 500, mb: 2 }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 600, mb: 3, color: "#000000" }}
+              >
                 Prochaines étapes pour finaliser votre compte
               </Typography>
 
-              <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>
-                1. Signature électronique
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 3, pl: 2 }}>
-                Vous recevrez les détails de votre formulaire de demande par
-                email à l'adresse que vous avez fournie. Ce document devra être
-                signé via signature électronique avant de pouvoir procéder à
-                l'étape suivante.
-              </Typography>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontWeight: 600,
+                    color: "#000000",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "50%",
+                      backgroundColor: "#FFCC00",
+                      color: "#000000",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      opacity: 0.9,
+                    }}
+                  >
+                    1
+                  </Box>
+                  Signature électronique
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mb: 3,
+                    pl: 4,
+                    lineHeight: 1.6,
+                    color: "#333333",
+                  }}
+                >
+                  Vous recevrez les détails de votre formulaire de demande par
+                  email à l'adresse que vous avez fournie. Ce document devra
+                  être signé via signature électronique avant de pouvoir
+                  procéder à l'étape suivante.
+                </Typography>
+              </Box>
 
-              <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>
-                2. Planifiez un rendez-vous avec nous
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
-                Pour finaliser votre processus d'ouverture de compte et
-                récupérer votre carte bancaire, vous devez prendre rendez-vous
-                avec notre équipe Rawbank.
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 2 }}>
-                <strong>Documents requis :</strong> La pièce d'identité que vous
-                avez téléchargée lors du processus de candidature.
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 500, color: "primary.main" }}
-              >
-                Durée estimée : environ 15 minutes
-              </Typography>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontWeight: 600,
+                    color: "#000000",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "50%",
+                      backgroundColor: "#FFCC00",
+                      color: "#000000",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      opacity: 0.9,
+                    }}
+                  >
+                    2
+                  </Box>
+                  Planifiez un rendez-vous avec nous
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mb: 2,
+                    pl: 4,
+                    lineHeight: 1.6,
+                    color: "#333333",
+                  }}
+                >
+                  Pour finaliser votre processus d'ouverture de compte et
+                  récupérer votre carte bancaire, vous devez prendre rendez-vous
+                  avec notre équipe Rawbank.
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mb: 2,
+                    pl: 4,
+                    lineHeight: 1.6,
+                    color: "#333333",
+                  }}
+                >
+                  <strong>Documents requis :</strong> La pièce d'identité que
+                  vous avez téléchargée lors du processus de candidature.
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 600,
+                    color: "#FFCC00",
+                    pl: 4,
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  ⏱️ Durée estimée : environ 15 minutes
+                </Typography>
+              </Box>
             </Alert>
-            <Box sx={{ textAlign: "center" }}>
+            <Box sx={{ textAlign: "center", mt: 4 }}>
               <Button
                 variant="contained"
                 size="large"
                 startIcon={<Event />}
                 sx={{
-                  backgroundColor: "#000000",
-                  color: "#FFCC00",
-                  px: 4,
+                  backgroundColor: "#FFCC00",
+                  color: "#000000",
+                  px: 5,
                   py: 1.5,
                   fontSize: "1.1rem",
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  boxShadow: "0 4px 15px rgba(255, 204, 0, 0.3)",
+                  border: "1px solid #000000",
                   "&:hover": {
-                    backgroundColor: "#1a1a1a",
+                    backgroundColor: "#FFD633",
+                    boxShadow: "0 6px 20px rgba(255, 204, 0, 0.4)",
+                    transform: "translateY(-1px)",
                   },
+                  "&:active": {
+                    transform: "translateY(0px)",
+                  },
+                  transition: "all 0.2s ease",
                 }}
                 onClick={() => {
                   // In a real app, this would open a calendar booking system
