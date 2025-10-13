@@ -111,14 +111,14 @@ export const useSignupForm = (
     const stepOrder: SignupStep[] = [
       "step1",
       "step2_id",
-      "step2_personal",
+      "step2_identity",
       "step2_marital",
       "step2_housing",
       "step2_contact",
       "step2_professional",
       "step2_emergency",
-      "step2_bank",
-      "step2_package",
+      "step2_fatca",
+      "step2_pep",
       "complete",
     ];
 
@@ -136,14 +136,14 @@ export const useSignupForm = (
     const stepOrder: SignupStep[] = [
       "step1",
       "step2_id",
-      "step2_personal",
+      "step2_identity",
       "step2_marital",
       "step2_housing",
       "step2_contact",
       "step2_professional",
       "step2_emergency",
-      "step2_bank",
-      "step2_package",
+      "step2_fatca",
+      "step2_pep",
       "complete",
     ];
 

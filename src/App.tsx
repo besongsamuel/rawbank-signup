@@ -30,14 +30,58 @@ function App(): React.JSX.Element {
               </ProtectedRoute>
             }
           />
+
+          {/* Individual personal info steps */}
           <Route
-            path="/profile/personal-info"
+            path="/profile/identity"
             element={
               <ProtectedRoute>
-                <CompleteProfile step="step2_personal" />
+                <CompleteProfile step="step2_identity" />
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/profile/marital"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_marital" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/housing"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_housing" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/contact"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_contact" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/professional"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_professional" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/emergency"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_emergency" />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* FATCA and PEP steps */}
           <Route
             path="/profile/fatca"
             element={
@@ -55,7 +99,11 @@ function App(): React.JSX.Element {
             }
           />
 
-          {/* Legacy complete-profile route - redirects to first step */}
+          {/* Legacy routes - redirect to new structure */}
+          <Route
+            path="/profile/personal-info"
+            element={<Navigate to="/profile/identity" replace />}
+          />
           <Route
             path="/complete-profile"
             element={<Navigate to="/profile/id-card" replace />}

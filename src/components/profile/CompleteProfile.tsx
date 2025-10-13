@@ -8,7 +8,13 @@ import { supabase } from "../../lib/supabase";
 import { SignupStep } from "../../types/signup";
 import IdCardUploadWithAI from "../signup/IdCardUploadWithAI";
 import SignupSkeleton from "../signup/SignupSkeleton";
-import PersonalInfoForm from "./PersonalInfoForm";
+import SignupStepper from "./SignupStepper";
+import ContactStep from "./steps/ContactStep";
+import EmergencyContactStep from "./steps/EmergencyContactStep";
+import HousingStep from "./steps/HousingStep";
+import IdentityStep from "./steps/IdentityStep";
+import MaritalStep from "./steps/MaritalStep";
+import ProfessionalStep from "./steps/ProfessionalStep";
 
 interface CompleteProfileProps {
   step?: SignupStep;
@@ -160,9 +166,9 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [user, hasPersonalData, profileLoading, navigate]);
 
-  // Save current step data to database
+  // Save specific step data to database
   const saveStepData = useCallback(
-    async (stepData: any) => {
+    async (stepData: any, stepType: string) => {
       if (!user?.id) return { success: false, error: "User not authenticated" };
 
       try {
@@ -178,71 +184,97 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
           return { success: false, error: fetchError.message };
         }
 
-        // Map step data to individual columns
+        // Map step data to individual columns based on step type
         const updateData: any = {
           updated_at: new Date().toISOString(),
         };
 
-        // Map ID card data
-        if (stepData.idCard) {
-          updateData.id_type = stepData.idCard.type;
-          updateData.id_number = stepData.idCard.number;
-          updateData.id_issue_date = stepData.idCard.issueDate;
-          updateData.id_expiry_date = stepData.idCard.expiryDate;
-        }
+        // Map data based on step type
+        switch (stepType) {
+          case "idCard":
+            if (stepData.idCard) {
+              updateData.id_type = stepData.idCard.type;
+              updateData.id_number = stepData.idCard.number;
+              updateData.id_issue_date = stepData.idCard.issueDate;
+              updateData.id_expiry_date = stepData.idCard.expiryDate;
+            }
+            break;
 
-        // Map personal info data
-        if (stepData.personalInfo) {
-          updateData.civility = stepData.personalInfo.civility;
-          updateData.first_name = stepData.personalInfo.firstName;
-          updateData.middle_name = stepData.personalInfo.middleName;
-          updateData.last_name = stepData.personalInfo.lastName;
-          updateData.birth_date = stepData.personalInfo.birthDate;
-          updateData.birth_place = stepData.personalInfo.birthPlace;
-          updateData.province_of_origin =
-            stepData.personalInfo.provinceOfOrigin;
-          updateData.nationality = stepData.personalInfo.nationality;
-          updateData.country_of_residence =
-            stepData.personalInfo.countryOfResidence;
-        }
+          case "personalInfo":
+            if (stepData.personalInfo) {
+              updateData.civility = stepData.personalInfo.civility;
+              updateData.first_name = stepData.personalInfo.firstName;
+              updateData.middle_name = stepData.personalInfo.middleName;
+              updateData.last_name = stepData.personalInfo.lastName;
+              updateData.birth_date = stepData.personalInfo.birthDate;
+              updateData.birth_place = stepData.personalInfo.birthPlace;
+              updateData.province_of_origin =
+                stepData.personalInfo.provinceOfOrigin;
+              updateData.nationality = stepData.personalInfo.nationality;
+              updateData.country_of_residence =
+                stepData.personalInfo.countryOfResidence;
+            }
+            break;
 
-        // Map marital info data
-        if (stepData.maritalInfo) {
-          updateData.marital_status = stepData.maritalInfo.maritalStatus;
-          updateData.marital_regime = stepData.maritalInfo.maritalRegime;
-          updateData.number_of_children = stepData.maritalInfo.numberOfChildren;
-        }
+          case "maritalInfo":
+            if (stepData.maritalInfo) {
+              updateData.marital_status = stepData.maritalInfo.maritalStatus;
+              updateData.marital_regime = stepData.maritalInfo.maritalRegime;
+              updateData.number_of_children =
+                stepData.maritalInfo.numberOfChildren;
+            }
+            break;
 
-        // Map housing info data
-        if (stepData.housingInfo) {
-          updateData.housing_status = stepData.housingInfo.housingStatus;
-          updateData.permanent_address = stepData.housingInfo.permanentAddress;
-          updateData.mailing_address = stepData.housingInfo.mailingAddress;
-        }
+          case "housingInfo":
+            if (stepData.housingInfo) {
+              updateData.housing_status = stepData.housingInfo.housingStatus;
+              updateData.permanent_address =
+                stepData.housingInfo.permanentAddress;
+              updateData.mailing_address = stepData.housingInfo.mailingAddress;
+            }
+            break;
 
-        // Map contact info data
-        if (stepData.contactInfo) {
-          updateData.phone_1 = stepData.contactInfo.phone1;
-          updateData.phone_2 = stepData.contactInfo.phone2;
-          updateData.email_1 = stepData.contactInfo.email1;
-          updateData.email_2 = stepData.contactInfo.email2;
-        }
+          case "contactInfo":
+            if (stepData.contactInfo) {
+              updateData.phone_1 = stepData.contactInfo.phone1;
+              updateData.phone_2 = stepData.contactInfo.phone2;
+              updateData.email_1 = stepData.contactInfo.email1;
+              updateData.email_2 = stepData.contactInfo.email2;
+            }
+            break;
 
-        // Map professional info data
-        if (stepData.professionalInfo) {
-          updateData.profession = stepData.professionalInfo.profession;
-          updateData.employer = stepData.professionalInfo.employer;
-          updateData.monthly_gross_income =
-            stepData.professionalInfo.monthlyIncome;
-          updateData.income_source = stepData.professionalInfo.incomeOrigin;
-        }
+          case "professionalInfo":
+            if (stepData.professionalInfo) {
+              updateData.profession = stepData.professionalInfo.profession;
+              updateData.employer = stepData.professionalInfo.employer;
+              updateData.monthly_gross_income =
+                stepData.professionalInfo.monthlyIncome;
+              updateData.income_source = stepData.professionalInfo.incomeOrigin;
+            }
+            break;
 
-        // Map emergency contact data
-        if (stepData.emergencyContact) {
-          updateData.emergency_contact_name =
-            stepData.emergencyContact.contactPerson;
-          updateData.emergency_contact_phone =
-            stepData.emergencyContact.contactPhone;
+          case "emergencyContact":
+            if (stepData.emergencyContact) {
+              updateData.emergency_contact_name =
+                stepData.emergencyContact.contactPerson;
+              updateData.emergency_contact_phone =
+                stepData.emergencyContact.contactPhone;
+            }
+            break;
+
+          case "fatcaInfo":
+            if (stepData.fatcaInfo) {
+              updateData.fatca_data = stepData.fatcaInfo;
+              updateData.fatca_completed = true;
+            }
+            break;
+
+          case "pepInfo":
+            if (stepData.pepInfo) {
+              updateData.pep_data = stepData.pepInfo;
+              updateData.pep_completed = true;
+            }
+            break;
         }
 
         if (existingData) {
@@ -288,15 +320,15 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       console.log("Processing ID card...");
 
       // Save ID card data to database
-      const result = await saveStepData(step2Data);
+      const result = await saveStepData(step2Data, "idCard");
 
       if (!result.success) {
         console.error(`Erreur lors de la sauvegarde: ${result.error}`);
         return;
       }
 
-      // Move to personal info step
-      navigate("/profile/personal-info");
+      // Move to identity step
+      navigate("/profile/identity");
     } catch (error) {
       console.error("Error processing ID card:", error);
       console.error(
@@ -311,51 +343,131 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [navigate, setLoading, saveStepData, step2Data]);
 
-  // Handle personal info next
-  const handlePersonalInfoNext = useCallback(async () => {
+  // Handle Identity step next
+  const handleIdentityNext = useCallback(async () => {
     setLoading(true);
     try {
       // Save personal info data to database
-      const result = await saveStepData(step2Data);
+      const result = await saveStepData(step2Data, "personalInfo");
 
       if (!result.success) {
         console.error(`Erreur lors de la sauvegarde: ${result.error}`);
         return;
       }
 
-      // Check if FATCA is applicable (e.g., based on nationality or tax residency)
-      const fatcaApplicable = checkFatcaApplicable(step2Data.personalInfo);
-
-      if (fatcaApplicable) {
-        navigate("/profile/fatca");
-      } else {
-        // Check if PEP declaration is needed
-        navigate("/profile/pep");
-      }
+      // Move to marital step
+      navigate("/profile/marital");
     } catch (error) {
-      console.error("Error saving personal info:", error);
-      console.error(
-        `Erreur: ${
-          error instanceof Error
-            ? error.message
-            : "Une erreur inconnue s'est produite"
-        }`
-      );
+      console.error("Error saving identity data:", error);
     } finally {
       setLoading(false);
     }
-  }, [navigate, step2Data, saveStepData, setLoading]);
+  }, [navigate, setLoading, saveStepData, step2Data]);
 
-  // Check if FATCA is applicable
-  const checkFatcaApplicable = (personalInfo: any): boolean => {
-    // FATCA applies if:
-    // - US citizen
-    // - Born in US
-    // - US resident
-    // - US address or phone
-    // This is a simplified check - adjust based on requirements
-    return false; // Will be determined by actual data
-  };
+  // Handle Marital step next
+  const handleMaritalNext = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Save marital info data to database
+      const result = await saveStepData(step2Data, "maritalInfo");
+
+      if (!result.success) {
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+        return;
+      }
+
+      // Move to housing step
+      navigate("/profile/housing");
+    } catch (error) {
+      console.error("Error saving marital data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, setLoading, saveStepData, step2Data]);
+
+  // Handle Housing step next
+  const handleHousingNext = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Save housing info data to database
+      const result = await saveStepData(step2Data, "housingInfo");
+
+      if (!result.success) {
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+        return;
+      }
+
+      // Move to contact step
+      navigate("/profile/contact");
+    } catch (error) {
+      console.error("Error saving housing data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, setLoading, saveStepData, step2Data]);
+
+  // Handle Contact step next
+  const handleContactNext = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Save contact info data to database
+      const result = await saveStepData(step2Data, "contactInfo");
+
+      if (!result.success) {
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+        return;
+      }
+
+      // Move to professional step
+      navigate("/profile/professional");
+    } catch (error) {
+      console.error("Error saving contact data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, setLoading, saveStepData, step2Data]);
+
+  // Handle Professional step next
+  const handleProfessionalNext = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Save professional info data to database
+      const result = await saveStepData(step2Data, "professionalInfo");
+
+      if (!result.success) {
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+        return;
+      }
+
+      // Move to emergency step
+      navigate("/profile/emergency");
+    } catch (error) {
+      console.error("Error saving professional data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, setLoading, saveStepData, step2Data]);
+
+  // Handle Emergency Contact step next
+  const handleEmergencyNext = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Save emergency contact data to database
+      const result = await saveStepData(step2Data, "emergencyContact");
+
+      if (!result.success) {
+        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+        return;
+      }
+
+      // Move to FATCA step
+      navigate("/profile/fatca");
+    } catch (error) {
+      console.error("Error saving emergency contact data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, setLoading, saveStepData, step2Data]);
 
   // Handle final submission
   const handleFinalSubmit = useCallback(async () => {
@@ -493,7 +605,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     setLoading(true);
     try {
       // Save FATCA data to database
-      const result = await saveStepData(step2Data);
+      const result = await saveStepData(step2Data, "fatcaInfo");
 
       if (!result.success) {
         console.error(`Erreur lors de la sauvegarde: ${result.error}`);
@@ -546,10 +658,22 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     return <SignupSkeleton stepType={currentStep as any} />;
   }
 
+  // Render current step with stepper
+  const renderStepWithStepper = (stepComponent: React.ReactNode) => {
+    return (
+      <Box sx={{ width: "100%", minHeight: "calc(100vh - 160px)" }}>
+        <Box sx={{ maxWidth: 1200, margin: "0 auto", p: 2 }}>
+          <SignupStepper currentStep={currentStep} />
+          {stepComponent}
+        </Box>
+      </Box>
+    );
+  };
+
   // Render current step
   switch (currentStep) {
     case "step2_id":
-      return (
+      return renderStepWithStepper(
         <IdCardUploadWithAI
           data={step2Data.idCard}
           onDataChange={(data) =>
@@ -561,64 +685,98 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
         />
       );
 
-    case "step2_personal":
-      return (
-        <PersonalInfoForm
+    case "step2_identity":
+      return renderStepWithStepper(
+        <IdentityStep
           personalInfo={step2Data.personalInfo}
-          maritalInfo={step2Data.maritalInfo}
-          housingInfo={step2Data.housingInfo}
-          contactInfo={step2Data.contactInfo}
-          professionalInfo={step2Data.professionalInfo}
-          emergencyContact={step2Data.emergencyContact}
-          onDataChange={(data) => {
-            // Merge the partial data with existing data
-            const updatedData: any = {};
-            if (data.personalInfo) {
-              updatedData.personalInfo = {
-                ...step2Data.personalInfo,
-                ...data.personalInfo,
-              };
-            }
-            if (data.maritalInfo) {
-              updatedData.maritalInfo = {
-                ...step2Data.maritalInfo,
-                ...data.maritalInfo,
-              };
-            }
-            if (data.housingInfo) {
-              updatedData.housingInfo = {
-                ...step2Data.housingInfo,
-                ...data.housingInfo,
-              };
-            }
-            if (data.contactInfo) {
-              updatedData.contactInfo = {
-                ...step2Data.contactInfo,
-                ...data.contactInfo,
-              };
-            }
-            if (data.professionalInfo) {
-              updatedData.professionalInfo = {
-                ...step2Data.professionalInfo,
-                ...data.professionalInfo,
-              };
-            }
-            if (data.emergencyContact) {
-              updatedData.emergencyContact = {
-                ...step2Data.emergencyContact,
-                ...data.emergencyContact,
-              };
-            }
-            updateStep2Data(updatedData);
-          }}
-          onNext={handlePersonalInfoNext}
+          onDataChange={(data) =>
+            updateStep2Data({
+              personalInfo: { ...step2Data.personalInfo, ...data },
+            })
+          }
+          onNext={handleIdentityNext}
           onPrev={() => navigate("/profile/id-card")}
           loading={loading}
         />
       );
 
+    case "step2_marital":
+      return renderStepWithStepper(
+        <MaritalStep
+          maritalInfo={step2Data.maritalInfo}
+          onDataChange={(data) =>
+            updateStep2Data({
+              maritalInfo: { ...step2Data.maritalInfo, ...data },
+            })
+          }
+          onNext={handleMaritalNext}
+          onPrev={() => navigate("/profile/identity")}
+          loading={loading}
+        />
+      );
+
+    case "step2_housing":
+      return renderStepWithStepper(
+        <HousingStep
+          housingInfo={step2Data.housingInfo}
+          onDataChange={(data) =>
+            updateStep2Data({
+              housingInfo: { ...step2Data.housingInfo, ...data },
+            })
+          }
+          onNext={handleHousingNext}
+          onPrev={() => navigate("/profile/marital")}
+          loading={loading}
+        />
+      );
+
+    case "step2_contact":
+      return renderStepWithStepper(
+        <ContactStep
+          contactInfo={step2Data.contactInfo}
+          onDataChange={(data) =>
+            updateStep2Data({
+              contactInfo: { ...step2Data.contactInfo, ...data },
+            })
+          }
+          onNext={handleContactNext}
+          onPrev={() => navigate("/profile/housing")}
+          loading={loading}
+        />
+      );
+
+    case "step2_professional":
+      return renderStepWithStepper(
+        <ProfessionalStep
+          professionalInfo={step2Data.professionalInfo}
+          onDataChange={(data) =>
+            updateStep2Data({
+              professionalInfo: { ...step2Data.professionalInfo, ...data },
+            })
+          }
+          onNext={handleProfessionalNext}
+          onPrev={() => navigate("/profile/contact")}
+          loading={loading}
+        />
+      );
+
+    case "step2_emergency":
+      return renderStepWithStepper(
+        <EmergencyContactStep
+          emergencyContact={step2Data.emergencyContact}
+          onDataChange={(data) =>
+            updateStep2Data({
+              emergencyContact: { ...step2Data.emergencyContact, ...data },
+            })
+          }
+          onNext={handleEmergencyNext}
+          onPrev={() => navigate("/profile/professional")}
+          loading={loading}
+        />
+      );
+
     case "step2_fatca":
-      return (
+      return renderStepWithStepper(
         <Box sx={{ maxWidth: 800, margin: "0 auto" }}>
           <Card sx={{ p: 4, textAlign: "center" }}>
             <Typography variant="h4" gutterBottom>
@@ -640,7 +798,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             >
               <Button
                 variant="outlined"
-                onClick={() => navigate("/profile/personal-info")}
+                onClick={() => navigate("/profile/emergency")}
                 sx={{ flex: 1 }}
               >
                 Précédent
@@ -658,7 +816,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       );
 
     case "step2_pep":
-      return (
+      return renderStepWithStepper(
         <Box sx={{ maxWidth: 800, margin: "0 auto" }}>
           <Card sx={{ p: 4, textAlign: "center" }}>
             <Typography variant="h4" gutterBottom>
@@ -698,7 +856,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       );
 
     default:
-      return (
+      return renderStepWithStepper(
         <Box sx={{ maxWidth: 600, margin: "0 auto" }}>
           <Card sx={{ p: 4, textAlign: "center" }}>
             <Typography variant="h4" gutterBottom>

@@ -146,16 +146,16 @@ export interface CompleteSignupData extends SignupStep1Data, SignupStep2Data {}
 export type SignupStep =
   | "step1"
   | "step2_id"
-  | "step2_personal"
-  | "step2_fatca"
-  | "step2_pep"
-  | "step2_marital"
-  | "step2_housing"
-  | "step2_contact"
-  | "step2_professional"
-  | "step2_emergency"
-  | "step2_bank"
-  | "step2_package"
+  | "step2_identity"        // Personal identity information
+  | "step2_marital"         // Marital status information
+  | "step2_housing"         // Housing information
+  | "step2_contact"         // Contact information
+  | "step2_professional"    // Professional information
+  | "step2_emergency"       // Emergency contact
+  | "step2_fatca"           // FATCA declaration
+  | "step2_pep"             // PEP declaration
+  | "step2_bank"            // Bank selection
+  | "step2_package"         // Package selection
   | "complete";
 
 // Form validation errors
