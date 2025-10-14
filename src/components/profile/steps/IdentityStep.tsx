@@ -512,7 +512,7 @@ const IdentityStep: React.FC<IdentityStepProps> = ({
                 {loading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  "Continuer"
+                  "Sauvegarder et continuer"
                 )}
               </Button>
             </Box>

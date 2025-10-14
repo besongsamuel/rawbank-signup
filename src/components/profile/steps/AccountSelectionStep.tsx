@@ -372,7 +372,7 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
                     },
                   }}
                 >
-                  {loading ? "Création..." : "Continuer"}
+                  {loading ? "Création..." : "Sauvegarder et continuer"}
                 </Button>
               </Box>
             </Stack>

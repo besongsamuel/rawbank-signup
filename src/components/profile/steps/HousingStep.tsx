@@ -237,7 +237,7 @@ const HousingStep: React.FC<HousingStepProps> = ({
                 {loading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  "Continuer"
+                  "Sauvegarder et continuer"
                 )}
               </Button>
             </Box>

@@ -360,7 +360,7 @@ const FatcaStep: React.FC<FatcaStepProps> = ({
                     },
                   }}
                 >
-                  {loading ? "Enregistrement..." : "Continuer"}
+                  {loading ? "Enregistrement..." : "Sauvegarder et continuer"}
                 </Button>
               </Box>
             </Stack>

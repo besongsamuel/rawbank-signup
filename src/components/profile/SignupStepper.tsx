@@ -79,9 +79,13 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
 
 interface SignupStepperProps {
   currentStep: SignupStep;
+  onStepClick?: (step: SignupStep) => void;
 }
 
-const SignupStepper: React.FC<SignupStepperProps> = ({ currentStep }) => {
+const SignupStepper: React.FC<SignupStepperProps> = ({
+  currentStep,
+  onStepClick,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -188,6 +192,22 @@ const SignupStepper: React.FC<SignupStepperProps> = ({ currentStep }) => {
                 alignItems: "center",
                 flex: 1,
                 minWidth: 0,
+                cursor:
+                  index <= activeStep && onStepClick ? "pointer" : "default",
+                opacity: index <= activeStep ? 1 : 0.6,
+                transition: "all 0.2s ease",
+                "&:hover":
+                  index <= activeStep && onStepClick
+                    ? {
+                        transform: "scale(1.05)",
+                        opacity: 1,
+                      }
+                    : {},
+              }}
+              onClick={() => {
+                if (index <= activeStep && onStepClick) {
+                  onStepClick(step.key as SignupStep);
+                }
               }}
             >
               <Box
@@ -271,7 +291,30 @@ const SignupStepper: React.FC<SignupStepperProps> = ({ currentStep }) => {
         }}
       >
         {steps.map((step, index) => (
-          <Step key={step.key} {...getStepProps(index)}>
+          <Step
+            key={step.key}
+            {...getStepProps(index)}
+            sx={{
+              cursor:
+                index <= activeStep && onStepClick ? "pointer" : "default",
+              "&:hover":
+                index <= activeStep && onStepClick
+                  ? {
+                      "& .MuiStepLabel-root": {
+                        "& .MuiStepLabel-label": {
+                          color: "#FFCC00",
+                          fontWeight: 600,
+                        },
+                      },
+                    }
+                  : {},
+            }}
+            onClick={() => {
+              if (index <= activeStep && onStepClick) {
+                onStepClick(step.key as SignupStep);
+              }
+            }}
+          >
             <StepLabel StepIconComponent={QontoStepIcon}>
               {step.label}
             </StepLabel>

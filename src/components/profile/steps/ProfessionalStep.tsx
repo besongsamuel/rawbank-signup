@@ -257,7 +257,7 @@ const ProfessionalStep: React.FC<ProfessionalStepProps> = ({
                 {loading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  "Continuer"
+                  "Sauvegarder et continuer"
                 )}
               </Button>
             </Box>

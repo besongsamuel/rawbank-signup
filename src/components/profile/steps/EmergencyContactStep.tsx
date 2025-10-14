@@ -209,7 +209,7 @@ const EmergencyContactStep: React.FC<EmergencyContactStepProps> = ({
                 {loading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  "Continuer"
+                  "Sauvegarder et continuer"
                 )}
               </Button>
             </Box>

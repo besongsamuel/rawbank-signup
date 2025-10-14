@@ -247,7 +247,7 @@ const ContactStep: React.FC<ContactStepProps> = ({
                 {loading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  "Continuer"
+                  "Sauvegarder et continuer"
                 )}
               </Button>
             </Box>

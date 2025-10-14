@@ -416,8 +416,8 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
               }}
             >
               {uploadedFile && !extractedData
-                ? "Extraire et Continuer"
-                : "Continuer"}
+                ? "Extraire et Sauvegarder"
+                : "Sauvegarder et continuer"}
             </Button>
           </Box>
         </CardContent>

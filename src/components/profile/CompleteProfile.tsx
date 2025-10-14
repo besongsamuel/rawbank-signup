@@ -710,6 +710,42 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [navigate, step2Data, saveStepData, setLoading]);
 
+  // Helper function to get step index
+  const getStepIndex = (step: SignupStep): number => {
+    const stepMap: Record<SignupStep, number> = {
+      step1: -1,
+      step2_account: 0,
+      step2_id: 1,
+      step2_identity: 2,
+      step2_marital: 3,
+      step2_housing: 4,
+      step2_contact: 5,
+      step2_professional: 6,
+      step2_emergency: 7,
+      step2_fatca: 8,
+      step2_pep: 9,
+      step2_review: 10,
+      step2_bank: 11,
+      step2_package: 12,
+      complete: 13,
+    };
+    return stepMap[step] ?? 0;
+  };
+
+  // Handle step navigation from stepper
+  const handleStepClick = useCallback(
+    (step: SignupStep) => {
+      // Only allow navigation to completed steps or current step
+      const stepIndex = getStepIndex(step);
+      const currentStepIndex = getStepIndex(currentStep);
+
+      if (stepIndex <= currentStepIndex) {
+        navigate(`/profile/${step.replace("step2_", "")}`);
+      }
+    },
+    [currentStep, navigate]
+  );
+
   // Show loading while checking authentication
   if (authLoading || profileLoading) {
     return <SignupSkeleton />;
@@ -725,7 +761,10 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     return (
       <Box sx={{ width: "100%", minHeight: "calc(100vh - 160px)" }}>
         <Box sx={{ maxWidth: 1200, margin: "0 auto", p: 2 }}>
-          <SignupStepper currentStep={currentStep} />
+          <SignupStepper
+            currentStep={currentStep}
+            onStepClick={handleStepClick}
+          />
           {stepComponent}
         </Box>
       </Box>
