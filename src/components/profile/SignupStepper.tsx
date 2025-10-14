@@ -7,6 +7,9 @@ import {
   StepLabel,
   Stepper,
   styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React from "react";
 import { SignupStep } from "../../types/signup";
@@ -79,19 +82,31 @@ interface SignupStepperProps {
 }
 
 const SignupStepper: React.FC<SignupStepperProps> = ({ currentStep }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   // Define all steps in order
   const steps = [
-    { key: "step2_account", label: "Compte & Agence" },
-    { key: "step2_id", label: "Pièce d'identité" },
-    { key: "step2_identity", label: "Identité" },
-    { key: "step2_marital", label: "Situation familiale" },
-    { key: "step2_housing", label: "Logement" },
-    { key: "step2_contact", label: "Contact" },
-    { key: "step2_professional", label: "Professionnel" },
-    { key: "step2_emergency", label: "Contact d'urgence" },
-    { key: "step2_fatca", label: "FATCA" },
-    { key: "step2_pep", label: "PPE" },
-    { key: "step2_review", label: "Révision" },
+    { key: "step2_account", label: "Compte & Agence", shortLabel: "Compte" },
+    { key: "step2_id", label: "Pièce d'identité", shortLabel: "ID" },
+    { key: "step2_identity", label: "Identité", shortLabel: "Identité" },
+    {
+      key: "step2_marital",
+      label: "Situation familiale",
+      shortLabel: "Famille",
+    },
+    { key: "step2_housing", label: "Logement", shortLabel: "Logement" },
+    { key: "step2_contact", label: "Contact", shortLabel: "Contact" },
+    { key: "step2_professional", label: "Professionnel", shortLabel: "Pro" },
+    {
+      key: "step2_emergency",
+      label: "Contact d'urgence",
+      shortLabel: "Urgence",
+    },
+    { key: "step2_fatca", label: "FATCA", shortLabel: "FATCA" },
+    { key: "step2_pep", label: "PPE", shortLabel: "PPE" },
+    { key: "step2_review", label: "Révision", shortLabel: "Révision" },
   ];
 
   // Find current step index
@@ -113,6 +128,124 @@ const SignupStepper: React.FC<SignupStepperProps> = ({ currentStep }) => {
     return { completed: false };
   };
 
+  // For mobile, show a simplified progress indicator
+  if (isMobile) {
+    const currentStepData = steps[activeStep];
+    const progressPercentage = ((activeStep + 1) / steps.length) * 100;
+
+    return (
+      <Box sx={{ width: "100%", mb: 3 }}>
+        {/* Mobile Progress Header */}
+        <Box sx={{ textAlign: "center", mb: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 600, color: "#000000", mb: 1 }}
+          >
+            Étape {activeStep + 1} sur {steps.length}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {currentStepData?.label}
+          </Typography>
+        </Box>
+
+        {/* Mobile Progress Bar */}
+        <Box
+          sx={{
+            width: "100%",
+            height: 8,
+            backgroundColor: "#eaeaf0",
+            borderRadius: 4,
+            overflow: "hidden",
+            mb: 2,
+          }}
+        >
+          <Box
+            sx={{
+              width: `${progressPercentage}%`,
+              height: "100%",
+              backgroundColor: "#FFCC00",
+              borderRadius: 4,
+              transition: "width 0.3s ease",
+            }}
+          />
+        </Box>
+
+        {/* Mobile Step Indicators */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: 1,
+          }}
+        >
+          {steps.map((step, index) => (
+            <Box
+              key={step.key}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              <Box
+                sx={{
+                  width: isSmallMobile ? 20 : 24,
+                  height: isSmallMobile ? 20 : 24,
+                  borderRadius: "50%",
+                  backgroundColor: index <= activeStep ? "#FFCC00" : "#eaeaf0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mb: 0.5,
+                  transition: "all 0.3s ease",
+                }}
+              >
+                {index < activeStep ? (
+                  <Check
+                    sx={{ fontSize: isSmallMobile ? 12 : 14, color: "#000000" }}
+                  />
+                ) : (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: isSmallMobile ? 8 : 10,
+                      fontWeight: 600,
+                      color: index === activeStep ? "#000000" : "#666666",
+                    }}
+                  >
+                    {index + 1}
+                  </Typography>
+                )}
+              </Box>
+              {!isSmallMobile && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: 8,
+                    textAlign: "center",
+                    color: index <= activeStep ? "#000000" : "#666666",
+                    fontWeight: index === activeStep ? 600 : 400,
+                    lineHeight: 1,
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {step.shortLabel}
+                </Typography>
+              )}
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    );
+  }
+
+  // Desktop stepper (original implementation with improvements)
   return (
     <Box sx={{ width: "100%", mb: 4 }}>
       <Stepper
