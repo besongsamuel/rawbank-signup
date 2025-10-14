@@ -23,7 +23,7 @@ function App(): React.JSX.Element {
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email" element={<EmailVerification />} />
 
-          {/* Profile completion routes - all require authentication */}
+          {/* Profile completion routes - all require authentication (merged steps) */}
           <Route
             path="/profile/account-selection"
             element={
@@ -33,44 +33,26 @@ function App(): React.JSX.Element {
             }
           />
           <Route
-            path="/profile/id-card"
+            path="/profile/id-identity"
             element={
               <ProtectedRoute>
-                <CompleteProfile step="step2_id" />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Individual personal info steps */}
-          <Route
-            path="/profile/identity"
-            element={
-              <ProtectedRoute>
-                <CompleteProfile step="step2_identity" />
+                <CompleteProfile step="step2_id_identity" />
               </ProtectedRoute>
             }
           />
           <Route
-            path="/profile/marital"
+            path="/profile/marital-housing"
             element={
               <ProtectedRoute>
-                <CompleteProfile step="step2_marital" />
+                <CompleteProfile step="step2_marital_housing" />
               </ProtectedRoute>
             }
           />
           <Route
-            path="/profile/housing"
+            path="/profile/contact-emergency"
             element={
               <ProtectedRoute>
-                <CompleteProfile step="step2_housing" />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile/contact"
-            element={
-              <ProtectedRoute>
-                <CompleteProfile step="step2_contact" />
+                <CompleteProfile step="step2_contact_emergency" />
               </ProtectedRoute>
             }
           />
@@ -79,14 +61,6 @@ function App(): React.JSX.Element {
             element={
               <ProtectedRoute>
                 <CompleteProfile step="step2_professional" />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile/emergency"
-            element={
-              <ProtectedRoute>
-                <CompleteProfile step="step2_emergency" />
               </ProtectedRoute>
             }
           />
@@ -117,14 +91,38 @@ function App(): React.JSX.Element {
             }
           />
 
-          {/* Legacy routes - redirect to new structure */}
+          {/* Legacy routes - redirect to new merged structure */}
           <Route
             path="/profile/personal-info"
-            element={<Navigate to="/profile/identity" replace />}
+            element={<Navigate to="/profile/id-identity" replace />}
+          />
+          <Route
+            path="/profile/id-card"
+            element={<Navigate to="/profile/id-identity" replace />}
+          />
+          <Route
+            path="/profile/identity"
+            element={<Navigate to="/profile/id-identity" replace />}
+          />
+          <Route
+            path="/profile/marital"
+            element={<Navigate to="/profile/marital-housing" replace />}
+          />
+          <Route
+            path="/profile/housing"
+            element={<Navigate to="/profile/marital-housing" replace />}
+          />
+          <Route
+            path="/profile/contact"
+            element={<Navigate to="/profile/contact-emergency" replace />}
+          />
+          <Route
+            path="/profile/emergency"
+            element={<Navigate to="/profile/contact-emergency" replace />}
           />
           <Route
             path="/complete-profile"
-            element={<Navigate to="/profile/id-card" replace />}
+            element={<Navigate to="/profile/id-identity" replace />}
           />
 
           {/* App dashboard - requires complete profile */}

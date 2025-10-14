@@ -90,24 +90,25 @@ const SignupStepper: React.FC<SignupStepperProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Define all steps in order
+  // Define all steps in order (merged steps)
   const steps = [
     { key: "step2_account", label: "Compte & Agence", shortLabel: "Compte" },
-    { key: "step2_id", label: "Pièce d'identité", shortLabel: "ID" },
-    { key: "step2_identity", label: "Identité", shortLabel: "Identité" },
     {
-      key: "step2_marital",
-      label: "Situation familiale",
+      key: "step2_id_identity",
+      label: "Identité & Document",
+      shortLabel: "Identité",
+    },
+    {
+      key: "step2_marital_housing",
+      label: "Famille & Logement",
       shortLabel: "Famille",
     },
-    { key: "step2_housing", label: "Logement", shortLabel: "Logement" },
-    { key: "step2_contact", label: "Contact", shortLabel: "Contact" },
-    { key: "step2_professional", label: "Professionnel", shortLabel: "Pro" },
     {
-      key: "step2_emergency",
-      label: "Contact d'urgence",
-      shortLabel: "Urgence",
+      key: "step2_contact_emergency",
+      label: "Contacts",
+      shortLabel: "Contacts",
     },
+    { key: "step2_professional", label: "Professionnel", shortLabel: "Pro" },
     { key: "step2_fatca", label: "FATCA", shortLabel: "FATCA" },
     { key: "step2_pep", label: "PPE", shortLabel: "PPE" },
     { key: "step2_review", label: "Révision", shortLabel: "Révision" },

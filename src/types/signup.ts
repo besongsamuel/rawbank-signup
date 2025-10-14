@@ -19,6 +19,14 @@ export interface IdCardInfo {
   otherType?: string; // For "autre" option
 }
 
+// ID Card Data (simplified for forms)
+export interface IdCardData {
+  type: string;
+  number: string;
+  issueDate: string;
+  expiryDate: string;
+}
+
 // Personal Information
 export interface PersonalInfo {
   civility: "madame" | "mademoiselle" | "monsieur";
@@ -153,13 +161,10 @@ export interface CompleteSignupData extends SignupStep1Data, SignupStep2Data {}
 export type SignupStep =
   | "step1"
   | "step2_account" // Account type and agency selection
-  | "step2_id"
-  | "step2_identity" // Personal identity information
-  | "step2_marital" // Marital status information
-  | "step2_housing" // Housing information
-  | "step2_contact" // Contact information
+  | "step2_id_identity" // ID card upload + Personal identity information (merged)
+  | "step2_marital_housing" // Marital status + Housing information (merged)
+  | "step2_contact_emergency" // Contact + Emergency contact (merged)
   | "step2_professional" // Professional information
-  | "step2_emergency" // Emergency contact
   | "step2_fatca" // FATCA declaration
   | "step2_pep" // PEP declaration
   | "step2_review" // Final review and submission

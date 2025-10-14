@@ -6,16 +6,13 @@ import { useSignupForm } from "../../hooks/useSignupForm";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { supabase } from "../../lib/supabase";
 import { SignupStep } from "../../types/signup";
-import IdCardUploadWithAI from "../signup/IdCardUploadWithAI";
 import SignupSkeleton from "../signup/SignupSkeleton";
 import SignupStepper from "./SignupStepper";
 import AccountSelectionStep from "./steps/AccountSelectionStep";
-import ContactStep from "./steps/ContactStep";
-import EmergencyContactStep from "./steps/EmergencyContactStep";
+import ContactAndEmergencyStep from "./steps/ContactAndEmergencyStep";
 import FatcaStep from "./steps/FatcaStep";
-import HousingStep from "./steps/HousingStep";
-import IdentityStep from "./steps/IdentityStep";
-import MaritalStep from "./steps/MaritalStep";
+import IdCardAndIdentityStep from "./steps/IdCardAndIdentityStep";
+import MaritalAndHousingStep from "./steps/MaritalAndHousingStep";
 import PepStep from "./steps/PepStep";
 import ProfessionalStep from "./steps/ProfessionalStep";
 import ReviewStep from "./steps/ReviewStep";
@@ -31,25 +28,19 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   const { hasSubmittedApplication, loading: profileLoading } =
     useUserProfile(user);
 
-  // Determine current step from URL path
+  // Determine current step from URL path (merged steps)
   const getCurrentStepFromPath = (pathname: string): SignupStep => {
     switch (pathname) {
       case "/profile/account-selection":
         return "step2_account";
-      case "/profile/id-card":
-        return "step2_id";
-      case "/profile/identity":
-        return "step2_identity";
-      case "/profile/marital":
-        return "step2_marital";
-      case "/profile/housing":
-        return "step2_housing";
-      case "/profile/contact":
-        return "step2_contact";
+      case "/profile/id-identity":
+        return "step2_id_identity";
+      case "/profile/marital-housing":
+        return "step2_marital_housing";
+      case "/profile/contact-emergency":
+        return "step2_contact_emergency";
       case "/profile/professional":
         return "step2_professional";
-      case "/profile/emergency":
-        return "step2_emergency";
       case "/profile/fatca":
         return "step2_fatca";
       case "/profile/pep":
@@ -366,116 +357,84 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [navigate, setLoading]);
 
-  // Handle ID card upload next
-  const handleIdCardNext = useCallback(async () => {
+  // Handle ID Card + Identity (merged) step next
+  const handleIdCardAndIdentityNext = useCallback(async () => {
     setLoading(true);
     try {
-      // TODO: Process ID card with OpenAI
-      console.log("Processing ID card...");
-
-      // Save ID card data to database
-      const result = await saveStepData(step2Data, "idCard");
-
-      if (!result.success) {
-        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+      // Save ID card data
+      const idCardResult = await saveStepData(step2Data, "idCard");
+      if (!idCardResult.success) {
+        console.error(`Erreur lors de la sauvegarde: ${idCardResult.error}`);
         return;
       }
 
-      // Move to identity step
-      navigate("/profile/identity");
+      // Save personal info data
+      const personalInfoResult = await saveStepData(step2Data, "personalInfo");
+      if (!personalInfoResult.success) {
+        console.error(
+          `Erreur lors de la sauvegarde: ${personalInfoResult.error}`
+        );
+        return;
+      }
+
+      // Move to marital-housing step
+      navigate("/profile/marital-housing");
     } catch (error) {
-      console.error("Error processing ID card:", error);
-      console.error(
-        `Erreur: ${
-          error instanceof Error
-            ? error.message
-            : "Une erreur inconnue s'est produite"
-        }`
-      );
+      console.error("Error saving ID card and identity data:", error);
     } finally {
       setLoading(false);
     }
   }, [navigate, setLoading, saveStepData, step2Data]);
 
-  // Handle Identity step next
-  const handleIdentityNext = useCallback(async () => {
+  // Handle Marital + Housing (merged) step next
+  const handleMaritalAndHousingNext = useCallback(async () => {
     setLoading(true);
     try {
-      // Save personal info data to database
-      const result = await saveStepData(step2Data, "personalInfo");
-
-      if (!result.success) {
-        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+      // Save marital info data
+      const maritalResult = await saveStepData(step2Data, "maritalInfo");
+      if (!maritalResult.success) {
+        console.error(`Erreur lors de la sauvegarde: ${maritalResult.error}`);
         return;
       }
 
-      // Move to marital step
-      navigate("/profile/marital");
+      // Save housing info data
+      const housingResult = await saveStepData(step2Data, "housingInfo");
+      if (!housingResult.success) {
+        console.error(`Erreur lors de la sauvegarde: ${housingResult.error}`);
+        return;
+      }
+
+      // Move to contact-emergency step
+      navigate("/profile/contact-emergency");
     } catch (error) {
-      console.error("Error saving identity data:", error);
+      console.error("Error saving marital and housing data:", error);
     } finally {
       setLoading(false);
     }
   }, [navigate, setLoading, saveStepData, step2Data]);
 
-  // Handle Marital step next
-  const handleMaritalNext = useCallback(async () => {
+  // Handle Contact + Emergency (merged) step next
+  const handleContactAndEmergencyNext = useCallback(async () => {
     setLoading(true);
     try {
-      // Save marital info data to database
-      const result = await saveStepData(step2Data, "maritalInfo");
-
-      if (!result.success) {
-        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+      // Save contact info data
+      const contactResult = await saveStepData(step2Data, "contactInfo");
+      if (!contactResult.success) {
+        console.error(`Erreur lors de la sauvegarde: ${contactResult.error}`);
         return;
       }
 
-      // Move to housing step
-      navigate("/profile/housing");
-    } catch (error) {
-      console.error("Error saving marital data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, setLoading, saveStepData, step2Data]);
-
-  // Handle Housing step next
-  const handleHousingNext = useCallback(async () => {
-    setLoading(true);
-    try {
-      // Save housing info data to database
-      const result = await saveStepData(step2Data, "housingInfo");
-
-      if (!result.success) {
-        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
-        return;
-      }
-
-      // Move to contact step
-      navigate("/profile/contact");
-    } catch (error) {
-      console.error("Error saving housing data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, setLoading, saveStepData, step2Data]);
-
-  // Handle Contact step next
-  const handleContactNext = useCallback(async () => {
-    setLoading(true);
-    try {
-      // Save contact info data to database
-      const result = await saveStepData(step2Data, "contactInfo");
-
-      if (!result.success) {
-        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
+      // Save emergency contact data
+      const emergencyResult = await saveStepData(step2Data, "emergencyContact");
+      if (!emergencyResult.success) {
+        console.error(`Erreur lors de la sauvegarde: ${emergencyResult.error}`);
         return;
       }
 
       // Move to professional step
       navigate("/profile/professional");
     } catch (error) {
-      console.error("Error saving contact data:", error);
+      console.error("Error saving contact and emergency data:", error);
     } finally {
       setLoading(false);
     }
@@ -493,31 +452,10 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
         return;
       }
 
-      // Move to emergency step
-      navigate("/profile/emergency");
-    } catch (error) {
-      console.error("Error saving professional data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, setLoading, saveStepData, step2Data]);
-
-  // Handle Emergency Contact step next
-  const handleEmergencyNext = useCallback(async () => {
-    setLoading(true);
-    try {
-      // Save emergency contact data to database
-      const result = await saveStepData(step2Data, "emergencyContact");
-
-      if (!result.success) {
-        console.error(`Erreur lors de la sauvegarde: ${result.error}`);
-        return;
-      }
-
       // Move to FATCA step
       navigate("/profile/fatca");
     } catch (error) {
-      console.error("Error saving emergency contact data:", error);
+      console.error("Error saving professional data:", error);
     } finally {
       setLoading(false);
     }
@@ -710,24 +648,21 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [navigate, step2Data, saveStepData, setLoading]);
 
-  // Helper function to get step index
+  // Helper function to get step index (merged steps)
   const getStepIndex = (step: SignupStep): number => {
     const stepMap: Record<SignupStep, number> = {
       step1: -1,
       step2_account: 0,
-      step2_id: 1,
-      step2_identity: 2,
-      step2_marital: 3,
-      step2_housing: 4,
-      step2_contact: 5,
-      step2_professional: 6,
-      step2_emergency: 7,
-      step2_fatca: 8,
-      step2_pep: 9,
-      step2_review: 10,
-      step2_bank: 11,
-      step2_package: 12,
-      complete: 13,
+      step2_id_identity: 1,
+      step2_marital_housing: 2,
+      step2_contact_emergency: 3,
+      step2_professional: 4,
+      step2_fatca: 5,
+      step2_pep: 6,
+      step2_review: 7,
+      step2_bank: 8,
+      step2_package: 9,
+      complete: 10,
     };
     return stepMap[step] ?? 0;
   };
@@ -740,17 +675,14 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       const currentStepIndex = getStepIndex(currentStep);
 
       if (stepIndex <= currentStepIndex) {
-        // Map step keys to actual URLs
+        // Map step keys to actual URLs (merged steps)
         const stepUrlMap: Record<SignupStep, string> = {
           step1: "/login",
           step2_account: "/profile/account-selection",
-          step2_id: "/profile/id-card",
-          step2_identity: "/profile/identity",
-          step2_marital: "/profile/marital",
-          step2_housing: "/profile/housing",
-          step2_contact: "/profile/contact",
+          step2_id_identity: "/profile/id-identity",
+          step2_marital_housing: "/profile/marital-housing",
+          step2_contact_emergency: "/profile/contact-emergency",
           step2_professional: "/profile/professional",
-          step2_emergency: "/profile/emergency",
           step2_fatca: "/profile/fatca",
           step2_pep: "/profile/pep",
           step2_review: "/profile/review",
@@ -774,7 +706,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   }
 
   // Show loading skeleton
-  if (loading && currentStep !== "step2_id") {
+  if (loading && currentStep !== "step2_id_identity") {
     return <SignupSkeleton stepType={currentStep as any} />;
   }
 
@@ -835,75 +767,63 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
         />
       );
 
-    case "step2_id":
+    case "step2_id_identity":
       return renderStepWithStepper(
-        <IdCardUploadWithAI
-          data={step2Data.idCard}
-          onDataChange={(data) =>
+        <IdCardAndIdentityStep
+          idCardData={step2Data.idCard}
+          personalInfo={step2Data.personalInfo}
+          onIdCardChange={(data) =>
             updateStep2Data({ idCard: { ...step2Data.idCard, ...data } })
           }
-          onNext={handleIdCardNext}
-          onPrev={() => navigate("/login")}
-          loading={loading}
-        />
-      );
-
-    case "step2_identity":
-      return renderStepWithStepper(
-        <IdentityStep
-          personalInfo={step2Data.personalInfo}
-          onDataChange={(data) =>
+          onPersonalInfoChange={(data) =>
             updateStep2Data({
               personalInfo: { ...step2Data.personalInfo, ...data },
             })
           }
-          onNext={handleIdentityNext}
-          onPrev={() => navigate("/profile/id-card")}
+          onNext={handleIdCardAndIdentityNext}
+          onPrev={() => navigate("/profile/account-selection")}
           loading={loading}
         />
       );
 
-    case "step2_marital":
+    case "step2_marital_housing":
       return renderStepWithStepper(
-        <MaritalStep
+        <MaritalAndHousingStep
           maritalInfo={step2Data.maritalInfo}
-          onDataChange={(data) =>
+          housingInfo={step2Data.housingInfo}
+          onMaritalChange={(data) =>
             updateStep2Data({
               maritalInfo: { ...step2Data.maritalInfo, ...data },
             })
           }
-          onNext={handleMaritalNext}
-          onPrev={() => navigate("/profile/identity")}
-          loading={loading}
-        />
-      );
-
-    case "step2_housing":
-      return renderStepWithStepper(
-        <HousingStep
-          housingInfo={step2Data.housingInfo}
-          onDataChange={(data) =>
+          onHousingChange={(data) =>
             updateStep2Data({
               housingInfo: { ...step2Data.housingInfo, ...data },
             })
           }
-          onNext={handleHousingNext}
-          onPrev={() => navigate("/profile/marital")}
+          onNext={handleMaritalAndHousingNext}
+          onPrev={() => navigate("/profile/id-identity")}
           loading={loading}
         />
       );
 
-    case "step2_contact":
+    case "step2_contact_emergency":
       return renderStepWithStepper(
-        <ContactStep
+        <ContactAndEmergencyStep
           contactInfo={step2Data.contactInfo}
-          onDataChange={(data) =>
+          emergencyContact={step2Data.emergencyContact}
+          onContactChange={(data) =>
             updateStep2Data({
               contactInfo: { ...step2Data.contactInfo, ...data },
             })
           }
-          onNext={handleContactNext}
-          onPrev={() => navigate("/profile/housing")}
+          onEmergencyChange={(data) =>
+            updateStep2Data({
+              emergencyContact: { ...step2Data.emergencyContact, ...data },
+            })
+          }
+          onNext={handleContactAndEmergencyNext}
+          onPrev={() => navigate("/profile/marital-housing")}
           loading={loading}
         />
       );
@@ -918,22 +838,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleProfessionalNext}
-          onPrev={() => navigate("/profile/contact")}
-          loading={loading}
-        />
-      );
-
-    case "step2_emergency":
-      return renderStepWithStepper(
-        <EmergencyContactStep
-          emergencyContact={step2Data.emergencyContact}
-          onDataChange={(data) =>
-            updateStep2Data({
-              emergencyContact: { ...step2Data.emergencyContact, ...data },
-            })
-          }
-          onNext={handleEmergencyNext}
-          onPrev={() => navigate("/profile/professional")}
+          onPrev={() => navigate("/profile/contact-emergency")}
           loading={loading}
         />
       );
@@ -969,7 +874,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleFatcaNext}
-          onPrev={() => navigate("/profile/emergency")}
+          onPrev={() => navigate("/profile/professional")}
           loading={loading}
         />
       );
