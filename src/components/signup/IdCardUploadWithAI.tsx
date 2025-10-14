@@ -16,8 +16,10 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
 import { useIdExtraction } from "../../hooks/useIdExtraction";
+import { supabase } from "../../lib/supabase";
 import { IdCardInfo } from "../../types/signup";
 import ExtractionConfirmationModal from "../modals/ExtractionConfirmationModal";
 import ExtractionLoadingModal from "../modals/ExtractionLoadingModal";
@@ -76,10 +78,16 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
   onPrev,
   loading = false,
 }) => {
+  const { user } = useAuth();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [existingFiles, setExistingFiles] = useState<any[]>([]);
+  const [selectedExistingFile, setSelectedExistingFile] = useState<any | null>(
+    null
+  );
+  const [loadingExistingFiles, setLoadingExistingFiles] = useState(false);
 
   const {
     uploadAndExtract,
@@ -89,6 +97,67 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
     error: extractionError,
     extractedData,
   } = useIdExtraction();
+
+  // Fetch existing uploaded files from Supabase storage based on ID card type
+  useEffect(() => {
+    const fetchExistingFiles = async () => {
+      if (!user?.id || !data.type) return;
+
+      setLoadingExistingFiles(true);
+      try {
+        // Query files for the specific ID card type
+        const { data: files, error } = await supabase.storage
+          .from("ids")
+          .list(`${user.id}/${data.type}`, {
+            limit: 1, // Only get the last uploaded file
+            sortBy: { column: "created_at", order: "desc" },
+          });
+
+        if (error) {
+          console.error("Error fetching existing files:", error);
+          setExistingFiles([]);
+          return;
+        }
+
+        // Filter for image files and get signed URLs
+        const imageFiles = files.filter((file) =>
+          file.name.match(/\.(jpg|jpeg|png|webp)$/i)
+        );
+
+        if (imageFiles.length === 0) {
+          setExistingFiles([]);
+          return;
+        }
+
+        // Get signed URL for the most recent file
+        const latestFile = imageFiles[0];
+        const { data: urlData } = await supabase.storage
+          .from("ids")
+          .createSignedUrl(`${user.id}/${data.type}/${latestFile.name}`, 3600);
+
+        if (urlData?.signedUrl) {
+          const existingFile = {
+            ...latestFile,
+            signedUrl: urlData.signedUrl,
+            type: data.type,
+          };
+          setExistingFiles([existingFile]);
+          // Auto-select the existing file
+          setSelectedExistingFile(existingFile);
+          setPreviewUrl(urlData.signedUrl);
+        } else {
+          setExistingFiles([]);
+        }
+      } catch (error) {
+        console.error("Error fetching existing files:", error);
+        setExistingFiles([]);
+      } finally {
+        setLoadingExistingFiles(false);
+      }
+    };
+
+    fetchExistingFiles();
+  }, [user?.id, data.type]);
 
   const handleFileUpload = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,16 +198,21 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
   );
 
   const handleExtractData = async () => {
-    if (!uploadedFile || !data.type) {
-      setUploadError(
-        "Veuillez sélectionner un type de document et télécharger une image."
-      );
+    if ((!uploadedFile && !selectedExistingFile) || !data.type) {
+      setUploadError("Veuillez sélectionner un type de document et une image.");
       return;
     }
 
     try {
-      const extracted = await uploadAndExtract(uploadedFile, data.type);
-      setShowConfirmation(true);
+      if (uploadedFile) {
+        // Extract from newly uploaded file
+        const extracted = await uploadAndExtract(uploadedFile, data.type);
+        setShowConfirmation(true);
+      } else if (selectedExistingFile) {
+        // For existing files, extraction is optional
+        // User can manually fill the form or skip extraction
+        console.log("Extraction from existing file is optional");
+      }
     } catch (error) {
       console.error("Extraction error:", error);
       setUploadError(
@@ -177,6 +251,14 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
   const handleRemoveFile = () => {
     setUploadedFile(null);
     setPreviewUrl(null);
+    setUploadError(null);
+    setSelectedExistingFile(null);
+  };
+
+  const handleSelectExistingFile = (file: any) => {
+    setSelectedExistingFile(file);
+    setPreviewUrl(file.signedUrl);
+    setUploadedFile(null); // Clear new file selection
     setUploadError(null);
   };
 
@@ -231,8 +313,85 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
             </Typography>
           </FormControl>
 
+          {/* Existing Files Section */}
+          {existingFiles.length > 0 && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                Fichier précédemment téléchargé
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Vous pouvez utiliser votre dernier fichier téléchargé pour ce
+                type de document ou en télécharger un nouveau
+              </Typography>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+                {existingFiles.map((file, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      position: "relative",
+                      cursor: "pointer",
+                      border:
+                        selectedExistingFile?.name === file.name
+                          ? "2px solid #FFCC00"
+                          : "2px solid transparent",
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        borderColor: "#FFCC00",
+                        transform: "scale(1.02)",
+                      },
+                    }}
+                    onClick={() => handleSelectExistingFile(file)}
+                  >
+                    <img
+                      src={file.signedUrl}
+                      alt={`Document ${index + 1}`}
+                      style={{
+                        width: 120,
+                        height: 80,
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        background:
+                          "linear-gradient(transparent, rgba(0,0,0,0.7))",
+                        color: "white",
+                        p: 1,
+                      }}
+                    >
+                      <Typography variant="caption" sx={{ fontSize: "0.7rem" }}>
+                        {new Date(file.created_at).toLocaleDateString()}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ fontSize: "0.6rem", display: "block" }}
+                      >
+                        {file.type === "passeport"
+                          ? "Passeport"
+                          : file.type === "permis_conduire"
+                          ? "Permis de conduire"
+                          : file.type === "carte_identite"
+                          ? "Carte d'identité"
+                          : file.type === "carte_electeur"
+                          ? "Carte d'électeur"
+                          : file.type}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+
           {/* Upload Area */}
-          {!uploadedFile ? (
+          {!uploadedFile && !selectedExistingFile ? (
             <UploadArea
               onDragOver={handleDragOver}
               onDrop={handleDrop}
@@ -271,6 +430,24 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
                 }}
               >
                 <PreviewImage src={previewUrl || ""} alt="ID Preview" />
+                {selectedExistingFile && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      left: 8,
+                      backgroundColor: "rgba(255, 204, 0, 0.9)",
+                      color: "#000",
+                      px: 2,
+                      py: 1,
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                      Fichier existant
+                    </Typography>
+                  </Box>
+                )}
                 <Box
                   sx={{
                     position: "absolute",
@@ -304,10 +481,21 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  📄 {uploadedFile.name}
+                  📄{" "}
+                  {uploadedFile?.name ||
+                    selectedExistingFile?.name ||
+                    "Document"}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                  {uploadedFile
+                    ? `${(uploadedFile.size / 1024 / 1024).toFixed(2)} MB`
+                    : selectedExistingFile
+                    ? `${(
+                        selectedExistingFile.metadata?.size /
+                        1024 /
+                        1024
+                      ).toFixed(2)} MB`
+                    : "Taille inconnue"}
                 </Typography>
               </Box>
 
@@ -329,7 +517,11 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
                   },
                 }}
               >
-                Extraire les données automatiquement
+                {isExtracting
+                  ? "Extraction en cours..."
+                  : isUploading
+                  ? "Téléchargement..."
+                  : "Extraire automatiquement (optionnel)"}
               </Button>
             </Box>
           )}
@@ -344,9 +536,9 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
               color="text.secondary"
               sx={{ mb: 2, textAlign: "center" }}
             >
-              {uploadedFile
-                ? "Vérifiez et modifiez les informations extraites si nécessaire"
-                : "Remplissez manuellement les informations"}
+              {uploadedFile || selectedExistingFile
+                ? "Vous pouvez extraire automatiquement les données ou les saisir manuellement"
+                : "Remplissez manuellement les informations du document"}
             </Typography>
             <Box sx={{ display: "flex", gap: 2, flexDirection: "column" }}>
               <TextField
@@ -402,9 +594,7 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
             </Button>
             <Button
               variant="contained"
-              onClick={
-                uploadedFile && !extractedData ? handleExtractData : onNext
-              }
+              onClick={onNext}
               disabled={loading || isUploading || isExtracting || !data.type}
               sx={{
                 flex: 1,
@@ -415,9 +605,7 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
                 },
               }}
             >
-              {uploadedFile && !extractedData
-                ? "Extraire et Sauvegarder"
-                : "Sauvegarder et continuer"}
+              Sauvegarder et continuer
             </Button>
           </Box>
         </CardContent>

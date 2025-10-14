@@ -359,8 +359,46 @@ const IdentityStep: React.FC<IdentityStepProps> = ({
                   }}
                 />
 
-                {/* Origin and Nationality */}
+                {/* Nationality, Province and Birth Place */}
                 <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                  <FormControl
+                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
+                    error={!!errors.nationality}
+                  >
+                    <InputLabel>Nationalité *</InputLabel>
+                    <Select
+                      value={selectedCountry}
+                      onChange={(e) => {
+                        setSelectedCountry(e.target.value);
+                        const country = Country.getCountryByCode(
+                          e.target.value
+                        );
+                        if (country) {
+                          onDataChange({ nationality: country.name });
+                        }
+                      }}
+                      label="Nationalité *"
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <Public color="primary" />
+                        </InputAdornment>
+                      }
+                    >
+                      {Country.getAllCountries().map((country) => (
+                        <MenuItem key={country.isoCode} value={country.isoCode}>
+                          {country.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <Typography
+                      variant="caption"
+                      color={errors.nationality ? "error" : "text.secondary"}
+                      sx={{ mt: 0.5, ml: 1.75 }}
+                    >
+                      {errors.nationality || "Votre pays de citoyenneté"}
+                    </Typography>
+                  </FormControl>
+
                   <FormControl
                     sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
                   >
@@ -398,44 +436,6 @@ const IdentityStep: React.FC<IdentityStepProps> = ({
                       sx={{ mt: 0.5, ml: 1.75 }}
                     >
                       Province où vous êtes originaire
-                    </Typography>
-                  </FormControl>
-
-                  <FormControl
-                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
-                    error={!!errors.nationality}
-                  >
-                    <InputLabel>Nationalité *</InputLabel>
-                    <Select
-                      value={selectedCountry}
-                      onChange={(e) => {
-                        setSelectedCountry(e.target.value);
-                        const country = Country.getCountryByCode(
-                          e.target.value
-                        );
-                        if (country) {
-                          onDataChange({ nationality: country.name });
-                        }
-                      }}
-                      label="Nationalité *"
-                      startAdornment={
-                        <InputAdornment position="start">
-                          <Public color="primary" />
-                        </InputAdornment>
-                      }
-                    >
-                      {Country.getAllCountries().map((country) => (
-                        <MenuItem key={country.isoCode} value={country.isoCode}>
-                          {country.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <Typography
-                      variant="caption"
-                      color={errors.nationality ? "error" : "text.secondary"}
-                      sx={{ mt: 0.5, ml: 1.75 }}
-                    >
-                      {errors.nationality || "Votre pays de citoyenneté"}
                     </Typography>
                   </FormControl>
 

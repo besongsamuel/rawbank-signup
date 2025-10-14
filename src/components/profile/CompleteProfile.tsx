@@ -740,7 +740,29 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       const currentStepIndex = getStepIndex(currentStep);
 
       if (stepIndex <= currentStepIndex) {
-        navigate(`/profile/${step.replace("step2_", "")}`);
+        // Map step keys to actual URLs
+        const stepUrlMap: Record<SignupStep, string> = {
+          step1: "/login",
+          step2_account: "/profile/account-selection",
+          step2_id: "/profile/id-card",
+          step2_identity: "/profile/identity",
+          step2_marital: "/profile/marital",
+          step2_housing: "/profile/housing",
+          step2_contact: "/profile/contact",
+          step2_professional: "/profile/professional",
+          step2_emergency: "/profile/emergency",
+          step2_fatca: "/profile/fatca",
+          step2_pep: "/profile/pep",
+          step2_review: "/profile/review",
+          step2_bank: "/profile/bank",
+          step2_package: "/profile/package",
+          complete: "/app",
+        };
+
+        const targetUrl = stepUrlMap[step];
+        if (targetUrl) {
+          navigate(targetUrl);
+        }
       }
     },
     [currentStep, navigate]
@@ -761,6 +783,31 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     return (
       <Box sx={{ width: "100%", minHeight: "calc(100vh - 160px)" }}>
         <Box sx={{ maxWidth: 1200, margin: "0 auto", p: 2 }}>
+          {/* Main Heading */}
+          <Box sx={{ textAlign: "center", mb: 3 }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 700,
+                color: "#000000",
+                mb: 1,
+                fontSize: { xs: "1.8rem", md: "2.5rem" },
+              }}
+            >
+              Demande d'ouverture de compte
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "text.secondary",
+                fontWeight: 300,
+                fontSize: { xs: "1rem", md: "1.25rem" },
+              }}
+            >
+              Complétez votre profil pour finaliser votre demande
+            </Typography>
+          </Box>
+
           <SignupStepper
             currentStep={currentStep}
             onStepClick={handleStepClick}

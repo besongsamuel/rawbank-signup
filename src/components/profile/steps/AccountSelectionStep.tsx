@@ -19,8 +19,9 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../../hooks/useAuth";
+import { useUserProfile } from "../../../hooks/useUserProfile";
 import { supabase } from "../../../lib/supabase";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -79,8 +80,10 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
   loading = false,
 }) => {
   const { user } = useAuth();
+  const { application } = useUserProfile(user);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [agencies, setAgencies] = useState<any[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Mock agencies data - in production, this would come from the database
   const mockAgencies = [
@@ -129,6 +132,30 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
   React.useEffect(() => {
     setAgencies(mockAgencies);
   }, []);
+
+  // Pre-populate form fields based on existing application data
+  useEffect(() => {
+    if (application && !dataLoaded) {
+      const updateData: Partial<AccountSelectionData> = {};
+
+      // Pre-populate account type if available
+      if (application.account_type && !data.accountType) {
+        updateData.accountType = application.account_type;
+      }
+
+      // Pre-populate agency if available
+      if (application.agency_id && !data.agencyId) {
+        updateData.agencyId = application.agency_id;
+      }
+
+      // Update the form data if we have any changes
+      if (Object.keys(updateData).length > 0) {
+        onDataChange(updateData);
+      }
+
+      setDataLoaded(true);
+    }
+  }, [application, data, onDataChange, dataLoaded]);
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
