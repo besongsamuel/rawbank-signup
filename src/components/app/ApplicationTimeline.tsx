@@ -122,31 +122,18 @@ const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
       },
       {
         label: "Vérification des documents",
-        description: "Nos équipes vérifient vos informations",
+        description:
+          "Nos équipes vérifient vos informations. Votre carte vous sera remise à cette étape.",
         completed: ["under_review", "approved"].includes(status),
         active: status === "submitted",
-        estimatedDays: "5 minutes",
+        estimatedDays: "15 minutes",
       },
       {
         label: "Approbation du manager",
         description: "Validation finale de votre dossier",
         completed: status === "approved",
         active: status === "under_review",
-        estimatedDays: "5 minutes",
-      },
-      {
-        label: "Activation du compte",
-        description: "Configuration de votre compte bancaire",
-        completed: false,
-        active: false,
-        estimatedDays: "1 minute",
-      },
-      {
-        label: "Production de la carte",
-        description: "Fabrication de votre carte bancaire",
-        completed: false,
-        active: false,
-        estimatedDays: "2-3 jours",
+        estimatedDays: "24 heures",
       },
     ];
 
@@ -236,10 +223,10 @@ const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
       >
         <Typography variant="body2" color="text.secondary">
           {status === "approved"
-            ? "✅ Votre compte sera activé dans la prochaine minute"
+            ? "✅ Votre dossier a été approuvé! Vous recevrez votre carte lors de la vérification finale."
             : status === "under_review"
-            ? "🔄 Temps estimé restant: ~5 minutes"
-            : "⏳ Temps total estimé: ~11 minutes + 2-3 jours pour la carte (vérification ultra-rapide!)"}
+            ? "🔄 Temps estimé restant: ~24 heures"
+            : "⏳ Temps total estimé: ~15 minutes + 24 heures pour l'approbation du manager"}
         </Typography>
       </Box>
     </Box>
