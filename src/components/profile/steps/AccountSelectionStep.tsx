@@ -91,6 +91,7 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
       id: "kinshasa_center",
       name: "Agence Kinshasa Centre",
       address: "Avenue du 30 Juin, Kinshasa",
+      recommended: true, // Most popular agency
     },
     {
       id: "kinshasa_gombe",
@@ -133,19 +134,35 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
     setAgencies(mockAgencies);
   }, []);
 
-  // Pre-populate form fields based on existing application data
+  // Pre-populate form fields based on existing application data or smart defaults
   useEffect(() => {
-    if (application && !dataLoaded) {
+    if (!dataLoaded) {
       const updateData: Partial<AccountSelectionData> = {};
 
-      // Pre-populate account type if available
-      if (application.account_type && !data.accountType) {
-        updateData.accountType = application.account_type;
-      }
+      if (application) {
+        // Pre-populate account type if available
+        if (application.account_type && !data.accountType) {
+          updateData.accountType = application.account_type;
+        }
 
-      // Pre-populate agency if available
-      if (application.agency_id && !data.agencyId) {
-        updateData.agencyId = application.agency_id;
+        // Pre-populate agency if available
+        if (application.agency_id && !data.agencyId) {
+          updateData.agencyId = application.agency_id;
+        }
+      } else {
+        // Smart defaults for new applications
+        // Most users open individual accounts - pre-select it
+        if (!data.accountType) {
+          updateData.accountType = "individual";
+        }
+
+        // Pre-select the recommended agency (most popular/central)
+        if (!data.agencyId) {
+          const recommendedAgency = mockAgencies.find((a) => a.recommended);
+          if (recommendedAgency) {
+            updateData.agencyId = recommendedAgency.id;
+          }
+        }
       }
 
       // Update the form data if we have any changes
@@ -155,7 +172,7 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
 
       setDataLoaded(true);
     }
-  }, [application, data, onDataChange, dataLoaded]);
+  }, [application, data, onDataChange, dataLoaded, mockAgencies]);
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
@@ -339,13 +356,42 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
                     </MenuItem>
                     {agencies.map((agency) => (
                       <MenuItem key={agency.id} value={agency.id}>
-                        <Box>
-                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                            {agency.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {agency.address}
-                          </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <Box>
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {agency.name}
+                              {agency.recommended && (
+                                <Typography
+                                  component="span"
+                                  sx={{
+                                    ml: 1,
+                                    px: 1,
+                                    py: 0.25,
+                                    backgroundColor: "#FFCC00",
+                                    color: "#000",
+                                    borderRadius: 1,
+                                    fontSize: "0.7rem",
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  ⭐ Recommandé
+                                </Typography>
+                              )}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {agency.address}
+                            </Typography>
+                          </Box>
                         </Box>
                       </MenuItem>
                     ))}

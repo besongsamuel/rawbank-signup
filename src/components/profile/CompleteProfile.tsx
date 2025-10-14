@@ -6,6 +6,7 @@ import { useSignupForm } from "../../hooks/useSignupForm";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { supabase } from "../../lib/supabase";
 import { SignupStep } from "../../types/signup";
+import TrustSignals from "../common/TrustSignals";
 import SignupSkeleton from "../signup/SignupSkeleton";
 import SignupStepper from "./SignupStepper";
 import AccountSelectionStep from "./steps/AccountSelectionStep";
@@ -744,6 +745,12 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             currentStep={currentStep}
             onStepClick={handleStepClick}
           />
+
+          {/* Trust Signals */}
+          <Box sx={{ mb: 3 }}>
+            <TrustSignals />
+          </Box>
+
           {stepComponent}
         </Box>
       </Box>

@@ -33,6 +33,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { useIdExtraction } from "../../../hooks/useIdExtraction";
 import { supabase } from "../../../lib/supabase";
 import { IdCardInfo, PersonalInfo } from "../../../types/signup";
+import InfoTooltip from "../../common/InfoTooltip";
 import ExtractionConfirmationModal from "../../modals/ExtractionConfirmationModal";
 import ExtractionLoadingModal from "../../modals/ExtractionLoadingModal";
 
@@ -296,7 +297,56 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
     }
   };
 
-  const handleConfirmData = () => {
+  // Reload personal data from database
+  const reloadPersonalData = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data: personalData, error } = await supabase
+        .from("personal_data")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (!error && personalData) {
+        // Update ID card data
+        if (personalData.id_type || personalData.id_number) {
+          onIdCardChange({
+            type: personalData.id_type,
+            number: personalData.id_number,
+            issueDate: personalData.id_issue_date,
+            expiryDate: personalData.id_expiry_date,
+          });
+        }
+
+        // Update personal info with extracted data
+        const updatedData: Partial<PersonalInfo> = {
+          civility: personalData.civility,
+          firstName: personalData.first_name,
+          middleName: personalData.middle_name,
+          lastName: personalData.last_name,
+          birthDate: personalData.birth_date,
+          birthPlace: personalData.birth_place,
+          provinceOfOrigin: personalData.province_of_origin,
+          nationality: personalData.nationality,
+          countryOfResidence: personalData.country_of_residence,
+        };
+
+        const hasData = Object.values(updatedData).some(
+          (value) => value && value !== ""
+        );
+        if (hasData) {
+          onPersonalInfoChange(updatedData);
+        }
+
+        console.log("Personal data reloaded after extraction");
+      }
+    } catch (error) {
+      console.error("Error reloading personal data:", error);
+    }
+  }, [user?.id, onIdCardChange, onPersonalInfoChange]);
+
+  const handleConfirmData = async () => {
     if (extractedData) {
       onIdCardChange({
         number: extractedData.idNumber,
@@ -305,10 +355,15 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
       });
     }
     setShowConfirmation(false);
+
+    // Reload personal data to get all extracted information
+    await reloadPersonalData();
+
+    // Move to next step
     onNext();
   };
 
-  const handleEditData = () => {
+  const handleEditData = async () => {
     if (extractedData) {
       onIdCardChange({
         number: extractedData.idNumber,
@@ -317,6 +372,9 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
       });
     }
     setShowConfirmation(false);
+
+    // Reload personal data to get all extracted information
+    await reloadPersonalData();
   };
 
   const handleRemoveFile = () => {
@@ -601,9 +659,17 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
                 <Stack spacing={2}>
                   {/* Civility */}
                   <FormControl component="fieldset" error={!!errors.civility}>
-                    <Typography variant="body2" gutterBottom>
-                      Civilité *
-                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="body2">Civilité *</Typography>
+                      <InfoTooltip title="Nous utilisons votre civilité pour vous adresser correctement dans nos communications officielles." />
+                    </Box>
                     <RadioGroup
                       row
                       value={personalInfo.civility || ""}

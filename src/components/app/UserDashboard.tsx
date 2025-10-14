@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import LanguageSwitcher from "../common/LanguageSwitcher";
+import ApplicationTimeline from "./ApplicationTimeline";
 
 // Vector Illustrations
 const SuccessIllustration: React.FC<{ size?: number }> = ({ size = 80 }) => (
@@ -424,6 +425,15 @@ const UserDashboard: React.FC = () => {
             </Box>
           </CardContent>
         </StyledCard>
+
+        {/* Application Timeline */}
+        {application && (
+          <StyledCard>
+            <CardContent sx={{ p: 4 }}>
+              <ApplicationTimeline status={application.status} />
+            </CardContent>
+          </StyledCard>
+        )}
 
         {/* Account Information */}
         <StyledCard>
@@ -1198,30 +1208,26 @@ const UserDashboard: React.FC = () => {
                 </Typography>
               </Box>
             </Alert>
-            <Box sx={{ textAlign: "center", mt: 4 }}>
+            {/* Action Buttons */}
+            <Stack spacing={2} sx={{ mt: 4 }}>
               <Button
                 variant="contained"
                 size="large"
+                fullWidth
                 startIcon={<Event />}
                 sx={{
-                  backgroundColor: "#FFCC00",
-                  color: "#000000",
-                  px: 5,
-                  py: 1.5,
+                  backgroundColor: "#000000",
+                  color: "#FFCC00",
+                  py: 2,
                   fontSize: "1.1rem",
                   fontWeight: 600,
                   borderRadius: 2,
-                  boxShadow: "0 4px 15px rgba(255, 204, 0, 0.3)",
-                  border: "1px solid #000000",
                   "&:hover": {
-                    backgroundColor: "#FFD633",
-                    boxShadow: "0 6px 20px rgba(255, 204, 0, 0.4)",
-                    transform: "translateY(-1px)",
+                    backgroundColor: "#1a1a1a",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
                   },
-                  "&:active": {
-                    transform: "translateY(0px)",
-                  },
-                  transition: "all 0.2s ease",
+                  transition: "all 0.3s ease",
                 }}
                 onClick={() => {
                   // In a real app, this would open a calendar booking system
@@ -1230,9 +1236,36 @@ const UserDashboard: React.FC = () => {
                   );
                 }}
               >
-                Planifier un Rendez-vous
+                📅 Réserver Mon Rendez-vous Maintenant
               </Button>
-            </Box>
+
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                startIcon={<Phone />}
+                sx={{
+                  borderColor: "#FFCC00",
+                  color: "#000000",
+                  py: 1.5,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  "&:hover": {
+                    borderColor: "#000000",
+                    backgroundColor: "rgba(255, 204, 0, 0.05)",
+                  },
+                  transition: "all 0.3s ease",
+                }}
+                onClick={() => {
+                  window.location.href = `tel:+243${getAgencyName(
+                    application?.agency_id || ""
+                  ).replace(/\D/g, "")}`;
+                }}
+              >
+                📞 Contacter Mon Agence
+              </Button>
+            </Stack>
           </CardContent>
         </StyledCard>
 

@@ -1,6 +1,7 @@
 import { Check } from "@mui/icons-material";
 import {
   Box,
+  Chip,
   Step,
   StepConnector,
   StepIconProps,
@@ -90,28 +91,51 @@ const SignupStepper: React.FC<SignupStepperProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Define all steps in order (merged steps)
+  // Define all steps in order (merged steps) with estimated time
   const steps = [
-    { key: "step2_account", label: "Compte & Agence", shortLabel: "Compte" },
+    {
+      key: "step2_account",
+      label: "Compte & Agence",
+      shortLabel: "Compte",
+      time: "1 min",
+    },
     {
       key: "step2_id_identity",
       label: "Identité & Document",
       shortLabel: "Identité",
+      time: "3-5 min",
     },
     {
       key: "step2_marital_housing",
       label: "Famille & Logement",
       shortLabel: "Famille",
+      time: "2-3 min",
     },
     {
       key: "step2_contact_emergency",
       label: "Contacts",
       shortLabel: "Contacts",
+      time: "2 min",
     },
-    { key: "step2_professional", label: "Professionnel", shortLabel: "Pro" },
-    { key: "step2_fatca", label: "FATCA", shortLabel: "FATCA" },
-    { key: "step2_pep", label: "PPE", shortLabel: "PPE" },
-    { key: "step2_review", label: "Révision", shortLabel: "Révision" },
+    {
+      key: "step2_professional",
+      label: "Professionnel",
+      shortLabel: "Pro",
+      time: "2 min",
+    },
+    {
+      key: "step2_fatca",
+      label: "FATCA",
+      shortLabel: "FATCA",
+      time: "1-2 min",
+    },
+    { key: "step2_pep", label: "PPE", shortLabel: "PPE", time: "1-2 min" },
+    {
+      key: "step2_review",
+      label: "Révision",
+      shortLabel: "Révision",
+      time: "2-3 min",
+    },
   ];
 
   // Find current step index
@@ -148,9 +172,39 @@ const SignupStepper: React.FC<SignupStepperProps> = ({
           >
             Étape {activeStep + 1} sur {steps.length}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             {currentStepData?.label}
           </Typography>
+          {/* Progress Percentage & Time Estimate */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                color: "#FFCC00",
+              }}
+            >
+              {Math.round(progressPercentage)}% complété
+            </Typography>
+            <Chip
+              label={`⏱ ${currentStepData?.time}`}
+              size="small"
+              sx={{
+                backgroundColor: "rgba(255, 204, 0, 0.15)",
+                color: "#000",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+              }}
+            />
+          </Box>
         </Box>
 
         {/* Mobile Progress Bar */}
@@ -267,8 +321,28 @@ const SignupStepper: React.FC<SignupStepperProps> = ({
   }
 
   // Desktop stepper (original implementation with improvements)
+  const progressPercentage = ((activeStep + 1) / steps.length) * 100;
+
   return (
     <Box sx={{ width: "100%", mb: 4 }}>
+      {/* Progress Percentage - Desktop */}
+      <Box sx={{ textAlign: "center", mb: 2 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            color: "#FFCC00",
+            mb: 1,
+          }}
+        >
+          {Math.round(progressPercentage)}% de votre demande complétée
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          ⏱ Étape actuelle: ~{steps[activeStep]?.time} • Temps total estimé:
+          ~15-20 min
+        </Typography>
+      </Box>
+
       <Stepper
         alternativeLabel
         activeStep={activeStep}

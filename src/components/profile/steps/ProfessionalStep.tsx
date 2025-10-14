@@ -7,7 +7,6 @@ import {
   CircularProgress,
   FormControl,
   InputAdornment,
-  InputLabel,
   MenuItem,
   Select,
   Stack,
@@ -15,8 +14,13 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect } from "react";
+import {
+  useRealTimeValidation,
+  validators,
+} from "../../../hooks/useRealTimeValidation";
 import { ProfessionalInfo } from "../../../types/signup";
+import InfoTooltip from "../../common/InfoTooltip";
 
 const ContentBox = styled(Box)(({ theme }) => ({
   minHeight: "calc(100vh - 160px)",
@@ -54,39 +58,61 @@ const ProfessionalStep: React.FC<ProfessionalStepProps> = ({
   onPrev,
   loading = false,
 }) => {
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // Define validation rules
+  const validationRules = [
+    {
+      field: "profession" as keyof ProfessionalInfo,
+      validator: validators.required("La profession est requise"),
+      debounce: 500,
+    },
+    {
+      field: "employer" as keyof ProfessionalInfo,
+      validator: validators.required("L'employeur est requis"),
+      debounce: 500,
+    },
+    {
+      field: "monthlyIncome" as keyof ProfessionalInfo,
+      validator: validators.compose(
+        validators.required("Le revenu mensuel est requis"),
+        validators.min(0, "Le revenu doit être positif")
+      ),
+      debounce: 800,
+    },
+    {
+      field: "incomeOrigin" as keyof ProfessionalInfo,
+      validator: validators.required("L'origine du revenu est requise"),
+      debounce: 500,
+    },
+  ];
 
-  const validateForm = useCallback(() => {
-    const newErrors: Record<string, string> = {};
+  const { errors, validateAll, handleBlur, handleChange } =
+    useRealTimeValidation(professionalInfo, validationRules);
 
-    if (!professionalInfo.profession?.trim()) {
-      newErrors.profession = "La profession est requise";
-    }
-    if (!professionalInfo.employer?.trim()) {
-      newErrors.employer = "L'employeur est requis";
-    }
-    if (
-      !professionalInfo.monthlyIncome ||
-      professionalInfo.monthlyIncome <= 0
-    ) {
-      newErrors.monthlyIncome = "Le revenu mensuel est requis";
-    }
-    if (!professionalInfo.incomeOrigin?.trim()) {
-      newErrors.incomeOrigin = "L'origine du revenu est requise";
-    }
+  // Trigger validation on field changes
+  useEffect(() => {
+    handleChange("profession" as keyof ProfessionalInfo);
+  }, [professionalInfo.profession, handleChange]);
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [professionalInfo]);
+  useEffect(() => {
+    handleChange("employer" as keyof ProfessionalInfo);
+  }, [professionalInfo.employer, handleChange]);
+
+  useEffect(() => {
+    handleChange("monthlyIncome" as keyof ProfessionalInfo);
+  }, [professionalInfo.monthlyIncome, handleChange]);
+
+  useEffect(() => {
+    handleChange("incomeOrigin" as keyof ProfessionalInfo);
+  }, [professionalInfo.incomeOrigin, handleChange]);
 
   const handleSubmit = useCallback(
     (event: React.FormEvent) => {
       event.preventDefault();
-      if (validateForm()) {
+      if (validateAll()) {
         onNext();
       }
     },
-    [validateForm, onNext]
+    [validateAll, onNext]
   );
 
   return (
@@ -117,109 +143,183 @@ const ProfessionalStep: React.FC<ProfessionalStepProps> = ({
               </Box>
 
               <Stack spacing={2}>
-                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <TextField
-                    label="Profession *"
-                    placeholder="ex: Ingénieur, Médecin, Enseignant"
-                    value={professionalInfo.profession || ""}
-                    onChange={(e) =>
-                      onDataChange({ profession: e.target.value })
-                    }
-                    error={!!errors.profession}
-                    helperText={
-                      errors.profession || "Votre profession ou métier"
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Work color="primary" />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}
-                  />
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    flexWrap: "wrap",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        mb: 0.5,
+                      }}
+                    >
+                      <Typography
+                        component="label"
+                        variant="body2"
+                        sx={{ fontSize: "0.875rem" }}
+                      >
+                        Profession *
+                      </Typography>
+                      <InfoTooltip title="Votre profession nous aide à mieux comprendre votre profil et à vous proposer des services adaptés à votre situation." />
+                    </Box>
+                    <TextField
+                      fullWidth
+                      placeholder="ex: Ingénieur, Médecin, Enseignant"
+                      value={professionalInfo.profession || ""}
+                      onChange={(e) =>
+                        onDataChange({ profession: e.target.value })
+                      }
+                      onBlur={() =>
+                        handleBlur("profession" as keyof ProfessionalInfo)
+                      }
+                      error={!!errors.profession}
+                      helperText={
+                        errors.profession || "Votre profession ou métier"
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Work color="primary" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
 
-                  <TextField
-                    label="Employeur *"
-                    placeholder="ex: Ministère de la Santé, Entreprise ABC"
-                    value={professionalInfo.employer || ""}
-                    onChange={(e) => onDataChange({ employer: e.target.value })}
-                    error={!!errors.employer}
-                    helperText={
-                      errors.employer ||
-                      "Nom de votre employeur ou organisation"
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Business color="primary" />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}
-                  />
+                  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}>
+                    <TextField
+                      fullWidth
+                      label="Employeur *"
+                      placeholder="ex: Ministère de la Santé, Entreprise ABC"
+                      value={professionalInfo.employer || ""}
+                      onChange={(e) =>
+                        onDataChange({ employer: e.target.value })
+                      }
+                      error={!!errors.employer}
+                      helperText={
+                        errors.employer ||
+                        "Nom de votre employeur ou organisation"
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Business color="primary" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
                 </Box>
 
-                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <TextField
-                    label="Revenu mensuel brut *"
-                    type="number"
-                    placeholder="500000"
-                    value={professionalInfo.monthlyIncome || ""}
-                    onChange={(e) =>
-                      onDataChange({
-                        monthlyIncome: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                    error={!!errors.monthlyIncome}
-                    helperText={
-                      errors.monthlyIncome ||
-                      "Votre revenu mensuel en francs congolais"
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <MonetizationOn color="primary" />
-                        </InputAdornment>
-                      ),
-                      inputProps: { min: 0 },
-                    }}
-                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}
-                  />
-
-                  <FormControl
-                    sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}
-                    error={!!errors.incomeOrigin}
-                  >
-                    <InputLabel>Origine du revenu *</InputLabel>
-                    <Select
-                      value={professionalInfo.incomeOrigin || ""}
-                      label="Origine du revenu *"
-                      onChange={(e) =>
-                        onDataChange({ incomeOrigin: e.target.value })
-                      }
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    flexWrap: "wrap",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        mb: 0.5,
+                      }}
                     >
-                      <MenuItem value="salaire">Salaire</MenuItem>
-                      <MenuItem value="honoraires">Honoraires</MenuItem>
-                      <MenuItem value="pension">Pension</MenuItem>
-                      <MenuItem value="commerce">Commerce</MenuItem>
-                      <MenuItem value="agriculture">Agriculture</MenuItem>
-                      <MenuItem value="elevage">Élevage</MenuItem>
-                      <MenuItem value="transport">Transport</MenuItem>
-                      <MenuItem value="immobilier">Immobilier</MenuItem>
-                      <MenuItem value="investissement">Investissement</MenuItem>
-                      <MenuItem value="autre">Autre</MenuItem>
-                    </Select>
-                    {errors.incomeOrigin && (
+                      <Typography
+                        component="label"
+                        variant="body2"
+                        sx={{ fontSize: "0.875rem" }}
+                      >
+                        Revenu mensuel brut *
+                      </Typography>
+                      <InfoTooltip title="Cette information confidentielle nous permet d'évaluer votre éligibilité pour certains services bancaires et de vous proposer des produits adaptés à votre capacité financière." />
+                    </Box>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      placeholder="500000"
+                      value={professionalInfo.monthlyIncome || ""}
+                      onChange={(e) =>
+                        onDataChange({
+                          monthlyIncome: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      error={!!errors.monthlyIncome}
+                      helperText={
+                        errors.monthlyIncome ||
+                        "Votre revenu mensuel en francs congolais"
+                      }
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <MonetizationOn color="primary" />
+                          </InputAdornment>
+                        ),
+                        inputProps: { min: 0 },
+                      }}
+                    />
+                  </Box>
+
+                  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: 250 } }}>
+                    <Typography
+                      component="label"
+                      variant="body2"
+                      sx={{ fontSize: "0.875rem", display: "block", mb: 0.5 }}
+                    >
+                      Origine du revenu *
+                    </Typography>
+                    <FormControl fullWidth error={!!errors.incomeOrigin}>
+                      <Select
+                        value={professionalInfo.incomeOrigin || ""}
+                        displayEmpty
+                        onChange={(e) =>
+                          onDataChange({ incomeOrigin: e.target.value })
+                        }
+                      >
+                        <MenuItem value="" disabled>
+                          <em>Sélectionnez l'origine</em>
+                        </MenuItem>
+                        <MenuItem value="salaire">Salaire</MenuItem>
+                        <MenuItem value="honoraires">Honoraires</MenuItem>
+                        <MenuItem value="pension">Pension</MenuItem>
+                        <MenuItem value="commerce">Commerce</MenuItem>
+                        <MenuItem value="agriculture">Agriculture</MenuItem>
+                        <MenuItem value="elevage">Élevage</MenuItem>
+                        <MenuItem value="transport">Transport</MenuItem>
+                        <MenuItem value="immobilier">Immobilier</MenuItem>
+                        <MenuItem value="investissement">
+                          Investissement
+                        </MenuItem>
+                        <MenuItem value="autre">Autre</MenuItem>
+                      </Select>
+                      {errors.incomeOrigin && (
+                        <Typography
+                          variant="caption"
+                          color="error"
+                          sx={{ mt: 0.5, ml: 1.75 }}
+                        >
+                          {errors.incomeOrigin}
+                        </Typography>
+                      )}
                       <Typography
                         variant="caption"
-                        color="error"
-                        sx={{ mt: 0.5, ml: 1.75 }}
+                        color="text.secondary"
+                        sx={{ mt: 0.5, ml: 1.75, display: "block" }}
                       >
-                        {errors.incomeOrigin}
+                        Source principale de vos revenus
                       </Typography>
-                    )}
-                  </FormControl>
+                    </FormControl>
+                  </Box>
                 </Box>
               </Stack>
             </Stack>

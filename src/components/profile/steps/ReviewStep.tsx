@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { useUserProfile } from "../../../hooks/useUserProfile";
 import { supabase } from "../../../lib/supabase";
+import CelebrationModal from "../../common/CelebrationModal";
 
 const ContentBox = styled(Box)(({ theme }) => ({
   minHeight: "calc(100vh - 160px)",
@@ -58,6 +59,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
   const { user } = useAuth();
   const { profile, application, refreshProfile } = useUserProfile(user);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = useCallback(async () => {
@@ -83,9 +85,9 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
       // Refresh profile to get updated application status
       await refreshProfile();
 
-      // Close modal and redirect to app
+      // Close confirm modal and show celebration
       setShowConfirmModal(false);
-      navigate("/app");
+      setShowCelebration(true);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -972,6 +974,17 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Celebration Modal */}
+      <CelebrationModal
+        open={showCelebration}
+        onClose={() => {
+          setShowCelebration(false);
+          navigate("/app");
+        }}
+        title="🎉 Demande Soumise Avec Succès !"
+        message="Votre demande d'ouverture de compte a été soumise. Nos équipes examinent actuellement votre dossier et vous contacteront sous 2-3 jours ouvrables."
+      />
     </ContentBox>
   );
 };
