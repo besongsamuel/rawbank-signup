@@ -131,6 +131,12 @@ const SignupStepper: React.FC<SignupStepperProps> = ({
     },
     { key: "step2_pep", label: "PPE", shortLabel: "PPE", time: "1-2 min" },
     {
+      key: "step2_card",
+      label: "Carte bancaire",
+      shortLabel: "Carte",
+      time: "1 min",
+    },
+    {
       key: "step2_review",
       label: "Révision",
       shortLabel: "Révision",

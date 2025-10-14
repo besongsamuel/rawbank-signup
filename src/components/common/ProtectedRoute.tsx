@@ -45,14 +45,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" replace />;
   }
 
-  // Redirect to email verification if email is not confirmed
-  if (!user.email_confirmed_at) {
-    return <Navigate to="/verify-email" replace />;
-  }
-
-  // If complete profile is required but user doesn't have it, redirect to complete-profile
+  // If complete profile is required but user doesn't have it, redirect to account selection
   if (requireCompleteProfile && !hasPersonalData) {
-    return <Navigate to="/complete-profile" replace />;
+    return <Navigate to="/profile/account-selection" replace />;
   }
 
   // User is authenticated and meets requirements, render the protected component

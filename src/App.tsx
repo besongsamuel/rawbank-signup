@@ -6,9 +6,7 @@ import {
   Routes,
 } from "react-router-dom";
 import UserDashboard from "./components/app/UserDashboard";
-import EmailVerification from "./components/auth/EmailVerification";
 import SigninForm from "./components/auth/SigninForm";
-import Signup from "./components/auth/Signup";
 import Layout from "./components/common/Layout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import CompleteProfile from "./components/profile/CompleteProfile";
@@ -20,8 +18,6 @@ function App(): React.JSX.Element {
       <Layout>
         <Routes>
           <Route path="/login" element={<SigninForm />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/verify-email" element={<EmailVerification />} />
 
           {/* Profile completion routes - all require authentication (merged steps) */}
           <Route
@@ -65,7 +61,7 @@ function App(): React.JSX.Element {
             }
           />
 
-          {/* FATCA and PEP steps */}
+          {/* FATCA, PEP, and Card Selection steps */}
           <Route
             path="/profile/fatca"
             element={
@@ -79,6 +75,14 @@ function App(): React.JSX.Element {
             element={
               <ProtectedRoute>
                 <CompleteProfile step="step2_pep" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/card-selection"
+            element={
+              <ProtectedRoute>
+                <CompleteProfile step="step2_card" />
               </ProtectedRoute>
             }
           />
@@ -134,7 +138,7 @@ function App(): React.JSX.Element {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/signup" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </Layout>
     </Router>

@@ -136,6 +136,7 @@ export interface PepInfo {
 export interface AccountSelectionData {
   accountType: string;
   agencyId: string;
+  cardType?: string;
 }
 
 // Complete Profile Data (Step 2)
@@ -167,6 +168,7 @@ export type SignupStep =
   | "step2_professional" // Professional information
   | "step2_fatca" // FATCA declaration
   | "step2_pep" // PEP declaration
+  | "step2_card" // Banking card selection
   | "step2_review" // Final review and submission
   | "step2_bank" // Bank selection
   | "step2_package" // Package selection

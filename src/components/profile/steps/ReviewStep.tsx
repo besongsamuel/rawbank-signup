@@ -215,6 +215,22 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
                     }}
                   >
                     <Typography variant="body2" color="text.secondary">
+                      Carte bancaire:
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {application?.card_type
+                        ? getCardTypeName(application.card_type)
+                        : "Non sélectionnée"}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
                       Statut:
                     </Typography>
                     <Chip

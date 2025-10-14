@@ -2,20 +2,19 @@ import { CheckCircle, Gavel, Person, Public } from "@mui/icons-material";
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardContent,
   Checkbox,
-  FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
   InputAdornment,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FatcaInfo } from "../../../types/signup";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -64,6 +63,13 @@ const FatcaStep: React.FC<FatcaStepProps> = ({
 }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Set default value to false if not set
+  useEffect(() => {
+    if (fatcaInfo.isUSPerson === undefined) {
+      onDataChange({ isUSPerson: false });
+    }
+  }, [fatcaInfo.isUSPerson, onDataChange]);
+
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
@@ -86,6 +92,24 @@ const FatcaStep: React.FC<FatcaStepProps> = ({
     },
     [validateForm, onNext]
   );
+
+  const handleUSPersonChange = (isUSPerson: boolean) => {
+    // Reset all US-related fields when changing status
+    if (!isUSPerson) {
+      onDataChange({
+        isUSPerson: false,
+        usCitizenship: false,
+        usBirthPlace: false,
+        usResidence: false,
+        usAddress: false,
+        usPhone: false,
+        usPowerOfAttorney: false,
+        usTin: "",
+      });
+    } else {
+      onDataChange({ isUSPerson: true });
+    }
+  };
 
   const handleCheckboxChange = (field: keyof FatcaInfo, checked: boolean) => {
     onDataChange({ [field]: checked });
@@ -136,7 +160,7 @@ const FatcaStep: React.FC<FatcaStepProps> = ({
                 <Box sx={{ textAlign: "center", mb: 3 }}>
                   <Person sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
                   <Typography variant="h5" gutterBottom>
-                    1. Statut de personne américaine
+                    Statut de personne américaine
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Êtes-vous considéré(e) comme une personne américaine aux
@@ -144,31 +168,65 @@ const FatcaStep: React.FC<FatcaStepProps> = ({
                   </Typography>
                 </Box>
 
-                <FormControl component="fieldset" error={!!errors.isUSPerson}>
-                  <FormLabel component="legend" sx={{ mb: 2, fontWeight: 600 }}>
-                    Je suis une personne américaine si je réponds OUI à l'une
-                    des questions suivantes :
-                  </FormLabel>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={fatcaInfo.isUSPerson}
-                          onChange={(e) =>
-                            handleCheckboxChange("isUSPerson", e.target.checked)
-                          }
-                          color="primary"
-                        />
+                <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+                  <ButtonGroup
+                    size="large"
+                    sx={{ width: { xs: "100%", sm: "auto" } }}
+                  >
+                    <Button
+                      variant={
+                        fatcaInfo.isUSPerson === false
+                          ? "contained"
+                          : "outlined"
                       }
-                      label="Oui, je suis une personne américaine"
-                    />
-                  </FormGroup>
-                  {errors.isUSPerson && (
-                    <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-                      {errors.isUSPerson}
-                    </Typography>
-                  )}
-                </FormControl>
+                      onClick={() => handleUSPersonChange(false)}
+                      sx={{
+                        flex: { xs: 1, sm: "auto" },
+                        minWidth: 120,
+                        backgroundColor:
+                          fatcaInfo.isUSPerson === false
+                            ? "#000000"
+                            : "transparent",
+                        color:
+                          fatcaInfo.isUSPerson === false
+                            ? "#FFCC00"
+                            : "#000000",
+                        "&:hover": {
+                          backgroundColor:
+                            fatcaInfo.isUSPerson === false
+                              ? "#1a1a1a"
+                              : "rgba(0,0,0,0.04)",
+                        },
+                      }}
+                    >
+                      Non
+                    </Button>
+                    <Button
+                      variant={
+                        fatcaInfo.isUSPerson === true ? "contained" : "outlined"
+                      }
+                      onClick={() => handleUSPersonChange(true)}
+                      sx={{
+                        flex: { xs: 1, sm: "auto" },
+                        minWidth: 120,
+                        backgroundColor:
+                          fatcaInfo.isUSPerson === true
+                            ? "#000000"
+                            : "transparent",
+                        color:
+                          fatcaInfo.isUSPerson === true ? "#FFCC00" : "#000000",
+                        "&:hover": {
+                          backgroundColor:
+                            fatcaInfo.isUSPerson === true
+                              ? "#1a1a1a"
+                              : "rgba(0,0,0,0.04)",
+                        },
+                      }}
+                    >
+                      Oui
+                    </Button>
+                  </ButtonGroup>
+                </Box>
 
                 {/* US Person Details - Only show if user is US person */}
                 {fatcaInfo.isUSPerson && (
@@ -298,37 +356,42 @@ const FatcaStep: React.FC<FatcaStepProps> = ({
                 )}
               </Box>
 
-              {/* Declaration */}
-              <Box>
-                <Box sx={{ textAlign: "center", mb: 3 }}>
-                  <CheckCircle sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
-                  <Typography variant="h5" gutterBottom>
-                    2. Déclaration
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Je certifie que les informations fournies sont exactes et
-                    complètes
-                  </Typography>
-                </Box>
+              {/* Declaration - Only show if user is US person */}
+              {fatcaInfo.isUSPerson && (
+                <Box>
+                  <Box sx={{ textAlign: "center", mb: 3 }}>
+                    <CheckCircle
+                      sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }}
+                    />
+                    <Typography variant="h5" gutterBottom>
+                      Déclaration
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Je certifie que les informations fournies sont exactes et
+                      complètes
+                    </Typography>
+                  </Box>
 
-                <InfoCard>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    <strong>Déclaration :</strong> Je déclare sous peine de
-                    parjure que les informations fournies dans ce formulaire
-                    sont exactes et complètes. Je comprends que toute fausse
-                    déclaration peut entraîner des sanctions pénales et civiles.
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    <strong>Date de déclaration :</strong>{" "}
-                    {new Date().toLocaleDateString("fr-FR")}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Signature électronique :</strong> En soumettant ce
-                    formulaire, je confirme que j'ai lu et accepté cette
-                    déclaration.
-                  </Typography>
-                </InfoCard>
-              </Box>
+                  <InfoCard>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                      <strong>Déclaration :</strong> Je déclare sous peine de
+                      parjure que les informations fournies dans ce formulaire
+                      sont exactes et complètes. Je comprends que toute fausse
+                      déclaration peut entraîner des sanctions pénales et
+                      civiles.
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                      <strong>Date de déclaration :</strong>{" "}
+                      {new Date().toLocaleDateString("fr-FR")}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Signature électronique :</strong> En soumettant ce
+                      formulaire, je confirme que j'ai lu et accepté cette
+                      déclaration.
+                    </Typography>
+                  </InfoCard>
+                </Box>
+              )}
 
               {/* Action Buttons */}
               <Box

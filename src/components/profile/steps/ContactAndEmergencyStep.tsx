@@ -58,27 +58,54 @@ const ContactAndEmergencyStep: React.FC<ContactAndEmergencyStepProps> = ({
   const { user } = useAuth();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Pre-fill email from user auth
+  // Pre-fill email and phone from user auth
   useEffect(() => {
+    const updates: Partial<ContactInfo> = {};
+
+    // Prefill email if available and not already set
     if (user?.email && !contactInfo.email1) {
-      onContactChange({ email1: user.email });
+      updates.email1 = user.email;
     }
-  }, [user?.email, contactInfo.email1, onContactChange]);
+
+    // Prefill phone if available and not already set
+    if (user?.phone && !contactInfo.phone1) {
+      updates.phone1 = user.phone;
+    }
+
+    // Apply updates if any
+    if (Object.keys(updates).length > 0) {
+      onContactChange(updates);
+    }
+  }, [
+    user?.email,
+    user?.phone,
+    contactInfo.email1,
+    contactInfo.phone1,
+    onContactChange,
+  ]);
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
-    // Contact info validation
-    if (!contactInfo.phone1?.trim()) {
-      newErrors.phone1 = "Le numéro de téléphone principal est requis";
-    } else if (!/^\+?[0-9\s\-()]{8,}$/.test(contactInfo.phone1)) {
-      newErrors.phone1 = "Format de numéro invalide";
-    }
+    // Contact info validation - at least one (phone or email) is required
+    const hasPhone = contactInfo.phone1?.trim();
+    const hasEmail = contactInfo.email1?.trim();
 
-    if (!contactInfo.email1?.trim()) {
-      newErrors.email1 = "L'adresse email principale est requise";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactInfo.email1)) {
-      newErrors.email1 = "Format d'email invalide";
+    if (!hasPhone && !hasEmail) {
+      newErrors.phone1 =
+        "Au moins un numéro de téléphone ou un email est requis";
+      newErrors.email1 =
+        "Au moins un numéro de téléphone ou un email est requis";
+    } else {
+      // Validate phone format if provided
+      if (hasPhone && !/^\+?[0-9\s\-()]{8,}$/.test(contactInfo.phone1)) {
+        newErrors.phone1 = "Format de numéro invalide";
+      }
+
+      // Validate email format if provided
+      if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactInfo.email1)) {
+        newErrors.email1 = "Format d'email invalide";
+      }
     }
 
     if (
@@ -145,7 +172,7 @@ const ContactAndEmergencyStep: React.FC<ContactAndEmergencyStepProps> = ({
                     Coordonnées
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Vos numéros de téléphone et adresses email
+                    Au moins un téléphone ou un email est requis
                   </Typography>
                 </Box>
 
@@ -153,7 +180,7 @@ const ContactAndEmergencyStep: React.FC<ContactAndEmergencyStepProps> = ({
                   {/* Phone Numbers */}
                   <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                     <TextField
-                      label="Téléphone principal *"
+                      label="Téléphone principal"
                       placeholder="+243 XXX XXX XXX"
                       value={contactInfo.phone1 || ""}
                       onChange={(e) =>
@@ -162,7 +189,7 @@ const ContactAndEmergencyStep: React.FC<ContactAndEmergencyStepProps> = ({
                       error={!!errors.phone1}
                       helperText={
                         errors.phone1 ||
-                        "Numéro principal pour vous joindre (format: +243 XXX XXX XXX)"
+                        "Numéro pour vous joindre (requis si pas d'email)"
                       }
                       InputProps={{
                         startAdornment: (
@@ -198,7 +225,7 @@ const ContactAndEmergencyStep: React.FC<ContactAndEmergencyStepProps> = ({
                   {/* Email Addresses */}
                   <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                     <TextField
-                      label="Email principal *"
+                      label="Email principal"
                       placeholder="exemple@email.com"
                       value={contactInfo.email1 || ""}
                       onChange={(e) =>
@@ -207,7 +234,7 @@ const ContactAndEmergencyStep: React.FC<ContactAndEmergencyStepProps> = ({
                       error={!!errors.email1}
                       helperText={
                         errors.email1 ||
-                        "Adresse email principale (pré-remplie avec votre email de connexion)"
+                        "Email de contact (requis si pas de téléphone)"
                       }
                       disabled={!!user?.email}
                       InputProps={{

@@ -2,12 +2,10 @@ import { CheckCircle, Gavel, Person, Public } from "@mui/icons-material";
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardContent,
-  Checkbox,
   FormControl,
-  FormControlLabel,
-  FormGroup,
   FormLabel,
   InputAdornment,
   MenuItem,
@@ -17,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { PepInfo } from "../../../types/signup";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -66,6 +64,13 @@ const PepStep: React.FC<PepStepProps> = ({
 }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Set default value to false if not set
+  useEffect(() => {
+    if (pepInfo.isPep === undefined) {
+      onDataChange({ isPep: false });
+    }
+  }, [pepInfo.isPep, onDataChange]);
+
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
@@ -101,6 +106,25 @@ const PepStep: React.FC<PepStepProps> = ({
     },
     [validateForm, onNext]
   );
+
+  const handlePepChange = (isPep: boolean) => {
+    // Reset all PEP-related fields when changing status
+    if (!isPep) {
+      onDataChange({
+        isPep: false,
+        pepCategory: undefined,
+        position: "",
+        organization: "",
+        country: "",
+        startDate: "",
+        endDate: "",
+        pepName: "",
+        relationshipToPep: "",
+      });
+    } else {
+      onDataChange({ isPep: true });
+    }
+  };
 
   const handleCheckboxChange = (field: keyof PepInfo, checked: boolean) => {
     onDataChange({ [field]: checked });
@@ -162,7 +186,7 @@ const PepStep: React.FC<PepStepProps> = ({
                 <Box sx={{ textAlign: "center", mb: 3 }}>
                   <Person sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
                   <Typography variant="h5" gutterBottom>
-                    1. Statut PEP
+                    Statut PEP
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Êtes-vous considéré(e) comme une Personne Politiquement
@@ -170,31 +194,55 @@ const PepStep: React.FC<PepStepProps> = ({
                   </Typography>
                 </Box>
 
-                <FormControl component="fieldset" error={!!errors.isPep}>
-                  <FormLabel component="legend" sx={{ mb: 2, fontWeight: 600 }}>
-                    Je suis une PEP si je réponds OUI à l'une des questions
-                    suivantes :
-                  </FormLabel>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={pepInfo.isPep}
-                          onChange={(e) =>
-                            handleCheckboxChange("isPep", e.target.checked)
-                          }
-                          color="primary"
-                        />
+                <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+                  <ButtonGroup
+                    size="large"
+                    sx={{ width: { xs: "100%", sm: "auto" } }}
+                  >
+                    <Button
+                      variant={
+                        pepInfo.isPep === false ? "contained" : "outlined"
                       }
-                      label="Oui, je suis une Personne Politiquement Exposée"
-                    />
-                  </FormGroup>
-                  {errors.isPep && (
-                    <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-                      {errors.isPep}
-                    </Typography>
-                  )}
-                </FormControl>
+                      onClick={() => handlePepChange(false)}
+                      sx={{
+                        flex: { xs: 1, sm: "auto" },
+                        minWidth: 120,
+                        backgroundColor:
+                          pepInfo.isPep === false ? "#000000" : "transparent",
+                        color: pepInfo.isPep === false ? "#FFCC00" : "#000000",
+                        "&:hover": {
+                          backgroundColor:
+                            pepInfo.isPep === false
+                              ? "#1a1a1a"
+                              : "rgba(0,0,0,0.04)",
+                        },
+                      }}
+                    >
+                      Non
+                    </Button>
+                    <Button
+                      variant={
+                        pepInfo.isPep === true ? "contained" : "outlined"
+                      }
+                      onClick={() => handlePepChange(true)}
+                      sx={{
+                        flex: { xs: 1, sm: "auto" },
+                        minWidth: 120,
+                        backgroundColor:
+                          pepInfo.isPep === true ? "#000000" : "transparent",
+                        color: pepInfo.isPep === true ? "#FFCC00" : "#000000",
+                        "&:hover": {
+                          backgroundColor:
+                            pepInfo.isPep === true
+                              ? "#1a1a1a"
+                              : "rgba(0,0,0,0.04)",
+                        },
+                      }}
+                    >
+                      Oui
+                    </Button>
+                  </ButtonGroup>
+                </Box>
 
                 {/* PEP Details - Only show if user is PEP */}
                 {pepInfo.isPep && (
@@ -380,37 +428,42 @@ const PepStep: React.FC<PepStepProps> = ({
                 )}
               </Box>
 
-              {/* Declaration */}
-              <Box>
-                <Box sx={{ textAlign: "center", mb: 3 }}>
-                  <CheckCircle sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
-                  <Typography variant="h5" gutterBottom>
-                    2. Déclaration
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Je certifie que les informations fournies sont exactes et
-                    complètes
-                  </Typography>
-                </Box>
+              {/* Declaration - Only show if user is PEP */}
+              {pepInfo.isPep && (
+                <Box>
+                  <Box sx={{ textAlign: "center", mb: 3 }}>
+                    <CheckCircle
+                      sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }}
+                    />
+                    <Typography variant="h5" gutterBottom>
+                      Déclaration
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Je certifie que les informations fournies sont exactes et
+                      complètes
+                    </Typography>
+                  </Box>
 
-                <InfoCard>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    <strong>Déclaration :</strong> Je déclare sous peine de
-                    parjure que les informations fournies dans ce formulaire
-                    sont exactes et complètes. Je comprends que toute fausse
-                    déclaration peut entraîner des sanctions pénales et civiles.
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    <strong>Date de déclaration :</strong>{" "}
-                    {new Date().toLocaleDateString("fr-FR")}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Signature électronique :</strong> En soumettant ce
-                    formulaire, je confirme que j'ai lu et accepté cette
-                    déclaration.
-                  </Typography>
-                </InfoCard>
-              </Box>
+                  <InfoCard>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                      <strong>Déclaration :</strong> Je déclare sous peine de
+                      parjure que les informations fournies dans ce formulaire
+                      sont exactes et complètes. Je comprends que toute fausse
+                      déclaration peut entraîner des sanctions pénales et
+                      civiles.
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 2 }}>
+                      <strong>Date de déclaration :</strong>{" "}
+                      {new Date().toLocaleDateString("fr-FR")}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Signature électronique :</strong> En soumettant ce
+                      formulaire, je confirme que j'ai lu et accepté cette
+                      déclaration.
+                    </Typography>
+                  </InfoCard>
+                </Box>
+              )}
 
               {/* Action Buttons */}
               <Box
@@ -442,7 +495,7 @@ const PepStep: React.FC<PepStepProps> = ({
                     },
                   }}
                 >
-                  {loading ? "Enregistrement..." : "Terminer"}
+                  {loading ? "Enregistrement..." : "Sauvegarder et continuer"}
                 </Button>
               </Box>
             </Stack>

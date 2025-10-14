@@ -10,6 +10,7 @@ import TrustSignals from "../common/TrustSignals";
 import SignupSkeleton from "../signup/SignupSkeleton";
 import SignupStepper from "./SignupStepper";
 import AccountSelectionStep from "./steps/AccountSelectionStep";
+import CardSelectionStep from "./steps/CardSelectionStep";
 import ContactAndEmergencyStep from "./steps/ContactAndEmergencyStep";
 import FatcaStep from "./steps/FatcaStep";
 import IdCardAndIdentityStep from "./steps/IdCardAndIdentityStep";
@@ -46,6 +47,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
         return "step2_fatca";
       case "/profile/pep":
         return "step2_pep";
+      case "/profile/card-selection":
+        return "step2_card";
       case "/profile/review":
         return "step2_review";
       default:
@@ -633,8 +636,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
         return;
       }
 
-      // Move to review step
-      navigate("/profile/review");
+      // Move to card selection step
+      navigate("/profile/card-selection");
     } catch (error) {
       console.error("Error saving PEP data:", error);
       console.error(
@@ -649,6 +652,13 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [navigate, step2Data, saveStepData, setLoading]);
 
+  // Handle Card Selection next
+  const handleCardSelectionNext = useCallback(async () => {
+    // Card selection is handled in the CardSelectionStep component itself
+    // Just navigate to review step
+    navigate("/profile/review");
+  }, [navigate]);
+
   // Helper function to get step index (merged steps)
   const getStepIndex = (step: SignupStep): number => {
     const stepMap: Record<SignupStep, number> = {
@@ -660,10 +670,11 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       step2_professional: 4,
       step2_fatca: 5,
       step2_pep: 6,
-      step2_review: 7,
-      step2_bank: 8,
-      step2_package: 9,
-      complete: 10,
+      step2_card: 7,
+      step2_review: 8,
+      step2_bank: 9,
+      step2_package: 10,
+      complete: 11,
     };
     return stepMap[step] ?? 0;
   };
@@ -686,6 +697,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
           step2_professional: "/profile/professional",
           step2_fatca: "/profile/fatca",
           step2_pep: "/profile/pep",
+          step2_card: "/profile/card-selection",
           step2_review: "/profile/review",
           step2_bank: "/profile/bank",
           step2_package: "/profile/package",
@@ -910,9 +922,30 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
         />
       );
 
+    case "step2_card":
+      return renderStepWithStepper(
+        <CardSelectionStep
+          cardType={step2Data.accountSelection?.cardType}
+          onDataChange={(cardType) =>
+            updateStep2Data({
+              accountSelection: {
+                ...step2Data.accountSelection,
+                cardType,
+              },
+            })
+          }
+          onNext={handleCardSelectionNext}
+          onPrev={() => navigate("/profile/pep")}
+          loading={loading}
+        />
+      );
+
     case "step2_review":
       return renderStepWithStepper(
-        <ReviewStep onPrev={() => navigate("/profile/pep")} loading={loading} />
+        <ReviewStep
+          onPrev={() => navigate("/profile/card-selection")}
+          loading={loading}
+        />
       );
 
     default:

@@ -4,19 +4,18 @@ import {
   Button,
   Card,
   CardContent,
-  Checkbox,
   CircularProgress,
-  FormControlLabel,
-  Link as MuiLink,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { useUserProfile } from "../../hooks/useUserProfile";
+import { supabase } from "../../lib/supabase";
+import TrustSignals from "../common/TrustSignals";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 20,
@@ -25,9 +24,9 @@ const StyledCard = styled(Card)(({ theme }) => ({
   margin: "0 auto",
 }));
 
-const GradientBox = styled(Box)(({ theme }) => ({
+const ContentBox = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
-  background: "#FFFFFF", // Clean Apple-like white background
+  background: "#FFFFFF",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -39,199 +38,383 @@ const LogoSection = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
-interface SigninFormData {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
+type LoginMethod = "email" | "phone";
 
 const SigninForm: React.FC = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const {
-    user,
-    signIn,
-    loading: authLoading,
-    error: authError,
-    clearError,
-  } = useAuth();
-  const { hasSubmittedApplication } = useUserProfile(user);
-
-  const [formData, setFormData] = useState<SigninFormData>({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
+  const { user, loading: authLoading } = useAuth();
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>("email");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [otpSent, setOtpSent] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setLoading(true);
-      clearError();
-
-      try {
-        const { error } = await signIn(formData.email, formData.password);
-
-        if (error) {
-          // Error is handled by the auth hook
-          return;
-        }
-
-        // Success - redirect logic will be handled by useEffect
-      } catch (err) {
-        console.error("Signin error:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [formData, signIn, clearError]
-  );
-
-  // Handle redirects based on user state
+  // Redirect if already logged in
   useEffect(() => {
-    if (user && !authLoading) {
-      console.log("User logged in:", user.email);
-      console.log("Has submitted application:", hasSubmittedApplication);
+    const checkUserAndRedirect = async () => {
+      if (user && !authLoading) {
+        try {
+          // Check if user has personal_data
+          const { data: personalData, error } = await supabase
+            .from("personal_data")
+            .select("id")
+            .eq("id", user.id)
+            .single();
 
-      // Check if email is verified first
-      if (!user.email_confirmed_at) {
-        // User is not verified - redirect to email verification
-        console.log("Redirecting to /verify-email");
-        navigate("/verify-email");
-      } else if (hasSubmittedApplication) {
-        // User has submitted application - redirect to app
-        console.log("Redirecting to /app");
-        navigate("/app");
-      } else {
-        // User exists but no submitted application - redirect to account selection
-        console.log("Redirecting to /profile/account-selection");
-        navigate("/profile/account-selection");
+          if (error && error.code !== "PGRST116") {
+            console.error("Error checking personal data:", error);
+            return;
+          }
+
+          // If no personal data exists, go to profile completion
+          if (!personalData) {
+            navigate("/profile/account-selection", { replace: true });
+          } else {
+            // Check if they have a submitted application
+            const { data: application } = await supabase
+              .from("applications")
+              .select("status")
+              .eq("user_id", user.id)
+              .eq("status", "submitted")
+              .single();
+
+            if (application) {
+              navigate("/app", { replace: true });
+            } else {
+              navigate("/profile/account-selection", { replace: true });
+            }
+          }
+        } catch (error) {
+          console.error("Error during redirect check:", error);
+        }
       }
+    };
+
+    checkUserAndRedirect();
+  }, [user, authLoading, navigate]);
+
+  const handleSendMagicLink = useCallback(async () => {
+    if (!email) {
+      setError("Veuillez entrer votre adresse email");
+      return;
     }
-  }, [user, authLoading, hasSubmittedApplication, navigate]);
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+        },
+      });
+
+      if (error) throw error;
+
+      setSuccess(
+        "Un lien magique a été envoyé à votre email. Veuillez vérifier votre boîte de réception."
+      );
+    } catch (error: any) {
+      setError(error.message || "Erreur lors de l'envoi du lien magique");
+    } finally {
+      setLoading(false);
+    }
+  }, [email]);
+
+  const handleSendOTP = useCallback(async () => {
+    if (!phone) {
+      setError("Veuillez entrer votre numéro de téléphone");
+      return;
+    }
+
+    // Format phone number for Supabase (must start with country code)
+    const formattedPhone = phone.startsWith("+") ? phone : `+243${phone}`;
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: formattedPhone,
+      });
+
+      if (error) throw error;
+
+      setOtpSent(true);
+      setSuccess("Un code OTP a été envoyé à votre téléphone");
+    } catch (error: any) {
+      setError(error.message || "Erreur lors de l'envoi du code OTP");
+    } finally {
+      setLoading(false);
+    }
+  }, [phone]);
+
+  const handleVerifyOTP = useCallback(async () => {
+    if (!otp || otp.length !== 6) {
+      setError("Veuillez entrer un code OTP valide à 6 chiffres");
+      return;
+    }
+
+    const formattedPhone = phone.startsWith("+") ? phone : `+243${phone}`;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone: formattedPhone,
+        token: otp,
+        type: "sms",
+      });
+
+      if (error) throw error;
+
+      // Success! The auth state will update and useEffect will handle redirect
+      setSuccess("Connexion réussie!");
+    } catch (error: any) {
+      setError(error.message || "Code OTP invalide");
+    } finally {
+      setLoading(false);
+    }
+  }, [phone, otp]);
+
+  if (authLoading) {
+    return (
+      <ContentBox>
+        <CircularProgress />
+      </ContentBox>
+    );
+  }
 
   return (
-    <GradientBox>
-      <StyledCard>
-        <CardContent sx={{ p: 4 }}>
-          <LogoSection>
-            <Typography
-              variant="h1"
-              gutterBottom
-              sx={{ color: "primary.main", fontWeight: 700 }}
+    <ContentBox>
+      <Box sx={{ width: "100%", maxWidth: 600 }}>
+        <StyledCard>
+          <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+            {/* Logo Section */}
+            <LogoSection>
+              <Typography
+                variant="h2"
+                gutterBottom
+                sx={{ color: "primary.main", fontWeight: 700 }}
+              >
+                Rawbank
+              </Typography>
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: 600, color: "#000000" }}
+              >
+                Connexion
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Connectez-vous pour accéder à votre compte
+              </Typography>
+            </LogoSection>
+
+            {/* Tab Selection */}
+            <Tabs
+              value={loginMethod}
+              onChange={(_, newValue) => {
+                setLoginMethod(newValue);
+                setError(null);
+                setSuccess(null);
+                setOtpSent(false);
+              }}
+              centered
+              sx={{ mb: 3 }}
             >
-              Rawbank
-            </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.8, fontWeight: 300 }}>
-              Une banque portée par des valeurs fortes
-            </Typography>
-          </LogoSection>
+              <Tab label="Email" value="email" />
+              <Tab label="SMS" value="phone" />
+            </Tabs>
 
-          <Box sx={{ textAlign: "center", mb: 4 }}>
-            <Typography variant="h2" gutterBottom>
-              {t("auth.signin.title")}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {t("auth.signin.subtitle")}
-            </Typography>
-          </Box>
+            {/* Error/Success Messages */}
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            {success && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {success}
+              </Alert>
+            )}
 
-          <Box component="form" onSubmit={handleSubmit}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <TextField
-                fullWidth
-                label={t("auth.signin.email")}
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                placeholder="votre.email@exemple.com"
-              />
-
-              <TextField
-                fullWidth
-                label={t("auth.signin.password")}
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                placeholder="Votre mot de passe"
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleInputChange}
-                  />
-                }
-                label={t("auth.signin.rememberMe")}
-              />
-
-              <Button
-                type="submit"
-                variant="contained"
-                size="large"
-                disabled={loading || authLoading}
-                fullWidth
-                sx={{ mt: 2 }}
+            {/* Email Login Form */}
+            {loginMethod === "email" && (
+              <Box
+                component="form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSendMagicLink();
+                }}
               >
-                {loading || authLoading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  t("auth.signin.signinButton")
-                )}
-              </Button>
-
-              <Box sx={{ textAlign: "center", mt: 2 }}>
-                <MuiLink
-                  component="button"
-                  type="button"
-                  onClick={() => {
-                    // Handle forgot password
-                    alert("Forgot password functionality will be implemented");
+                <TextField
+                  fullWidth
+                  label="Adresse email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="exemple@email.com"
+                  disabled={loading}
+                  sx={{ mb: 3 }}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  onClick={handleSendMagicLink}
+                  disabled={loading}
+                  sx={{
+                    backgroundColor: "#000000",
+                    color: "#FFCC00",
+                    py: 1.5,
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    "&:hover": {
+                      backgroundColor: "#1a1a1a",
+                    },
                   }}
-                  sx={{ textDecoration: "underline" }}
                 >
-                  {t("auth.signin.forgotPassword")}
-                </MuiLink>
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: "#FFCC00" }} />
+                  ) : (
+                    "Envoyer le lien magique"
+                  )}
+                </Button>
               </Box>
-            </Box>
-          </Box>
+            )}
 
-          {authError && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {authError}
-            </Alert>
-          )}
-
-          <Box sx={{ mt: 3, textAlign: "center" }}>
-            <Typography variant="body2" color="text.secondary">
-              {t("auth.signin.noAccount")}{" "}
-              <MuiLink
-                component={Link}
-                to="/signup"
-                sx={{ textDecoration: "underline" }}
+            {/* Phone Login Form */}
+            {loginMethod === "phone" && !otpSent && (
+              <Box
+                component="form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSendOTP();
+                }}
               >
-                {t("auth.signin.signupLink")}
-              </MuiLink>
-            </Typography>
-          </Box>
-        </CardContent>
-      </StyledCard>
-    </GradientBox>
+                <TextField
+                  fullWidth
+                  label="Numéro de téléphone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+243 XXX XXX XXX"
+                  helperText="Format: +243XXXXXXXXX ou 0XXXXXXXXX"
+                  disabled={loading}
+                  sx={{ mb: 3 }}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  onClick={handleSendOTP}
+                  disabled={loading}
+                  sx={{
+                    backgroundColor: "#000000",
+                    color: "#FFCC00",
+                    py: 1.5,
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    "&:hover": {
+                      backgroundColor: "#1a1a1a",
+                    },
+                  }}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: "#FFCC00" }} />
+                  ) : (
+                    "Envoyer le code OTP"
+                  )}
+                </Button>
+              </Box>
+            )}
+
+            {/* OTP Verification Form */}
+            {loginMethod === "phone" && otpSent && (
+              <Box
+                component="form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleVerifyOTP();
+                }}
+              >
+                <TextField
+                  fullWidth
+                  label="Code OTP"
+                  type="text"
+                  value={otp}
+                  onChange={(e) =>
+                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  placeholder="000000"
+                  helperText="Entrez le code à 6 chiffres reçu par SMS"
+                  disabled={loading}
+                  inputProps={{ maxLength: 6, pattern: "[0-9]*" }}
+                  sx={{ mb: 2 }}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  onClick={handleVerifyOTP}
+                  disabled={loading || otp.length !== 6}
+                  sx={{
+                    backgroundColor: "#000000",
+                    color: "#FFCC00",
+                    py: 1.5,
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    mb: 2,
+                    "&:hover": {
+                      backgroundColor: "#1a1a1a",
+                    },
+                  }}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: "#FFCC00" }} />
+                  ) : (
+                    "Vérifier le code"
+                  )}
+                </Button>
+                <Button
+                  fullWidth
+                  variant="text"
+                  onClick={() => {
+                    setOtpSent(false);
+                    setOtp("");
+                    setError(null);
+                  }}
+                  disabled={loading}
+                >
+                  Renvoyer le code
+                </Button>
+              </Box>
+            )}
+
+            {/* Additional Info */}
+            <Box sx={{ mt: 3, textAlign: "center" }}>
+              <Typography variant="body2" color="text.secondary">
+                Première visite ? Vous serez automatiquement inscrit lors de la
+                connexion.
+              </Typography>
+            </Box>
+          </CardContent>
+        </StyledCard>
+
+        {/* Trust Signals */}
+        <Box sx={{ mt: 3 }}>
+          <TrustSignals />
+        </Box>
+      </Box>
+    </ContentBox>
   );
 };
 
