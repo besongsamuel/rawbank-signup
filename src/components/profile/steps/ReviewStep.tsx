@@ -1016,7 +1016,11 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
         title="🎉 Demande Soumise Avec Succès !"
         message={`Votre demande d'ouverture de compte a été soumise. Nos équipes examinent actuellement votre dossier et vous contacteront sous 2-3 jours ouvrables.
 
-Pour finaliser votre demande et récupérer votre carte bancaire, vous devrez prendre rendez-vous ou vous rendre à ${application?.agency_id ? getAgencyName(application.agency_id) : 'votre agence sélectionnée'}.`}
+Pour finaliser votre demande et récupérer votre carte bancaire, vous devrez prendre rendez-vous ou vous rendre à ${
+          application?.agency_id
+            ? getAgencyName(application.agency_id)
+            : "votre agence sélectionnée"
+        }.`}
       />
     </ContentBox>
   );
