@@ -1,5 +1,7 @@
 import {
+  AccountBalance,
   CalendarToday,
+  CreditCard,
   Email,
   Event,
   LocationOn,
@@ -644,14 +646,30 @@ const UserDashboard: React.FC = () => {
                   alignItems: "center",
                 }}
               >
-                <Typography variant="body1" color="text.secondary">
-                  Type de compte:
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  {application?.account_type
-                    ? getAccountTypeLabel(application.account_type)
-                    : "Non spécifié"}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <AccountBalance sx={{ fontSize: 20, color: "#FFCC00" }} />
+                  <Typography variant="body1" color="text.secondary">
+                    Type de compte:
+                  </Typography>
+                </Box>
+                <Chip
+                  icon={<AccountBalance sx={{ fontSize: 16 }} />}
+                  label={
+                    application?.account_type
+                      ? getAccountTypeLabel(application.account_type)
+                      : "Non spécifié"
+                  }
+                  size="small"
+                  sx={{
+                    backgroundColor: "rgba(255, 204, 0, 0.1)",
+                    color: "#000000",
+                    fontWeight: 600,
+                    border: "1px solid rgba(255, 204, 0, 0.3)",
+                    "& .MuiChip-icon": {
+                      color: "#FFCC00",
+                    },
+                  }}
+                />
               </Box>
               <Box
                 sx={{
@@ -676,14 +694,30 @@ const UserDashboard: React.FC = () => {
                   alignItems: "center",
                 }}
               >
-                <Typography variant="body1" color="text.secondary">
-                  Carte bancaire:
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  {application?.card_type
-                    ? getCardTypeName(application.card_type)
-                    : "Non sélectionnée"}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <CreditCard sx={{ fontSize: 20, color: "#000000" }} />
+                  <Typography variant="body1" color="text.secondary">
+                    Carte bancaire:
+                  </Typography>
+                </Box>
+                <Chip
+                  icon={<CreditCard sx={{ fontSize: 16 }} />}
+                  label={
+                    application?.card_type
+                      ? getCardTypeName(application.card_type)
+                      : "Non sélectionnée"
+                  }
+                  size="small"
+                  sx={{
+                    backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    color: "#000000",
+                    fontWeight: 600,
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
+                    "& .MuiChip-icon": {
+                      color: "#000000",
+                    },
+                  }}
+                />
               </Box>
               <Box
                 sx={{
