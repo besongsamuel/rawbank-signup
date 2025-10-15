@@ -106,20 +106,6 @@ const Header: React.FC = () => {
                   >
                     Ouvrir un compte
                   </Button>
-                  <Button
-                    onClick={() => navigate("/login")}
-                    sx={{
-                      color: "#FFFFFF",
-                      fontWeight: 500,
-                      fontSize: "1rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 204, 0, 0.1)",
-                        color: "#FFCC00",
-                      },
-                    }}
-                  >
-                    Connexion
-                  </Button>
                 </>
               ) : (
                 <>
