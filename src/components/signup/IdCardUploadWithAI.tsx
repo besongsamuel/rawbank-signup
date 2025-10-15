@@ -233,7 +233,8 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
       });
     }
     setShowConfirmation(false);
-    onNext();
+    // Stay on current page for any revisions - do not automatically move to next step
+    // User can manually proceed when ready
   };
 
   const handleEditData = () => {

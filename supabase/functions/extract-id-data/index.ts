@@ -210,62 +210,102 @@ Important:
 
     console.log("Data saved to extracted_user_data table successfully");
 
-    // Also upsert extracted data to personal_data table for immediate use
-    // Strategy: Provide defaults for NOT NULL fields to prevent database constraint violations
-    // User will update these values in the PersonalInfoForm
-    const personalDataUpsert: any = {
+    // Check if personal data already exists for this user
+    console.log("Checking for existing personal data...");
+    const { data: existingPersonalData, error: fetchError } = await supabase
+      .from("personal_data")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError && fetchError.code !== "PGRST116") {
+      // PGRST116 is "not found" error, which is expected for new users
+      console.error("Error fetching existing personal data:", fetchError);
+      throw fetchError;
+    }
+
+    const personalDataExists = !!existingPersonalData;
+    console.log(
+      `Personal data ${
+        personalDataExists ? "exists" : "does not exist"
+      } for user ${userId}`
+    );
+
+    // Prepare personal data object
+    const personalDataUpdate: any = {
       id: userId,
       updated_at: new Date().toISOString(),
     };
 
     // ID Information (with defaults for NOT NULL fields)
-    personalDataUpsert.id_type = mappedIdType || "autre"; // Default to 'autre' if not mapped
-    personalDataUpsert.id_number = extractedData.idNumber || ""; // Empty string default
-    personalDataUpsert.id_issue_date = extractedData.issueDate || "2020-01-01"; // Default date
-    personalDataUpsert.id_expiry_date =
+    personalDataUpdate.id_type = mappedIdType || "autre"; // Default to 'autre' if not mapped
+    personalDataUpdate.id_number = extractedData.idNumber || ""; // Empty string default
+    personalDataUpdate.id_issue_date = extractedData.issueDate || "2020-01-01"; // Default date
+    personalDataUpdate.id_expiry_date =
       extractedData.expiryDate || "2030-01-01"; // Default date
 
     // Personal Information (with defaults for NOT NULL fields)
-    personalDataUpsert.first_name = extractedData.firstName || ""; // Empty string default
-    personalDataUpsert.last_name = extractedData.lastName || ""; // Empty string default
-    personalDataUpsert.birth_date = extractedData.birthDate || "1990-01-01"; // Default date
-    personalDataUpsert.birth_place = extractedData.birthPlace || ""; // Empty string default
-    personalDataUpsert.nationality =
+    personalDataUpdate.first_name = extractedData.firstName || ""; // Empty string default
+    personalDataUpdate.last_name = extractedData.lastName || ""; // Empty string default
+    personalDataUpdate.birth_date = extractedData.birthDate || "1990-01-01"; // Default date
+    personalDataUpdate.birth_place = extractedData.birthPlace || ""; // Empty string default
+    personalDataUpdate.nationality =
       extractedData.nationality || "Congolaise (RDC)"; // Default to DRC
-    personalDataUpsert.country_of_residence =
+    personalDataUpdate.country_of_residence =
       extractedData.country || "République Démocratique du Congo"; // Default to DRC
 
     // Optional fields (only set if extracted)
     if (extractedData.middleName)
-      personalDataUpsert.middle_name = extractedData.middleName;
+      personalDataUpdate.middle_name = extractedData.middleName;
     if (extractedData.provinceOfOrigin)
-      personalDataUpsert.province_of_origin = extractedData.provinceOfOrigin;
+      personalDataUpdate.province_of_origin = extractedData.provinceOfOrigin;
 
     // Address Information (with defaults for NOT NULL fields)
-    personalDataUpsert.permanent_address = extractedData.address || ""; // Empty string default
-
-    // Contact Information (with defaults for NOT NULL fields)
-    personalDataUpsert.phone_1 = ""; // Empty string default - will need to be updated by user
-    personalDataUpsert.email_1 = ""; // Empty string default - will need to be updated by user
+    personalDataUpdate.permanent_address = extractedData.address || ""; // Empty string default
 
     // Optional contact fields
-    if (extractedData.phone2) personalDataUpsert.phone_2 = extractedData.phone2;
-    if (extractedData.email2) personalDataUpsert.email_2 = extractedData.email2;
+    if (extractedData.phone2) personalDataUpdate.phone_2 = extractedData.phone2;
+    if (extractedData.email2) personalDataUpdate.email_2 = extractedData.email2;
 
-    // Save to personal_data table
-    const { error: personalDataError } = await supabase
-      .from("personal_data")
-      .upsert(personalDataUpsert, {
-        onConflict: "id",
-        ignoreDuplicates: false,
-      });
+    console.log(
+      `Personal data ${personalDataExists ? "update" : "insert"}:`,
+      personalDataUpdate
+    );
 
-    if (personalDataError) {
-      console.error("Error saving to personal_data table:", personalDataError);
-      // Don't throw error - extracted_user_data is more important for the flow
-      console.log("Continuing despite personal_data error...");
+    let personalDataResult;
+    if (personalDataExists) {
+      // Update existing personal data
+      console.log("Updating existing personal data...");
+      const { data, error: updateError } = await supabase
+        .from("personal_data")
+        .update(personalDataUpdate)
+        .eq("id", userId)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error("Error updating personal_data table:", updateError);
+        throw updateError;
+      }
+
+      personalDataResult = data;
+      console.log("Personal data updated successfully");
     } else {
-      console.log("Data also saved to personal_data table successfully");
+      // Insert new personal data
+      console.log("Inserting new personal data...");
+      const { data, error: insertError } = await supabase
+        .from("personal_data")
+        .insert(personalDataUpdate)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("Error inserting into personal_data table:", insertError);
+        throw insertError;
+      }
+
+      personalDataResult = data;
+      console.log("Personal data inserted successfully");
     }
 
     // Return the extracted data
@@ -273,7 +313,11 @@ Important:
       JSON.stringify({
         success: true,
         data: extractedData,
-        message: "ID data extracted successfully",
+        personalDataAction: personalDataExists ? "updated" : "inserted",
+        personalDataResult: personalDataResult,
+        message: `ID data extracted successfully. Personal data ${
+          personalDataExists ? "updated" : "inserted"
+        }.`,
       }),
       {
         headers: {

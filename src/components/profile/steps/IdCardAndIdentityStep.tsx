@@ -359,8 +359,8 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
     // Reload personal data to get all extracted information
     await reloadPersonalData();
 
-    // Move to next step
-    onNext();
+    // Stay on current page for any revisions - do not automatically move to next step
+    // User can manually proceed when ready
   };
 
   const handleEditData = async () => {

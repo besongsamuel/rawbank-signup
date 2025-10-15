@@ -1,3 +1,4 @@
+import { CheckCircle, Edit } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -8,7 +9,6 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
-import { CheckCircle, Edit } from "@mui/icons-material";
 import React from "react";
 import { ExtractedIdData } from "../../hooks/useIdExtraction";
 
@@ -101,7 +101,10 @@ const ExtractionConfirmationModal: React.FC<
           <DataRow label="Type de document" value={data.idType} />
           <DataRow label="Numéro" value={data.idNumber} />
           <DataRow label="Date d'émission" value={formatDate(data.issueDate)} />
-          <DataRow label="Date d'expiration" value={formatDate(data.expiryDate)} />
+          <DataRow
+            label="Date d'expiration"
+            value={formatDate(data.expiryDate)}
+          />
         </Box>
 
         <Divider sx={{ my: 3 }} />
@@ -123,12 +126,21 @@ const ExtractionConfirmationModal: React.FC<
           <DataRow label="Prénom" value={data.firstName} />
           <DataRow label="Postnom" value={data.middleName} />
           <DataRow label="Nom" value={data.lastName} />
-          <DataRow label="Date de naissance" value={formatDate(data.birthDate)} />
+          <DataRow
+            label="Date de naissance"
+            value={formatDate(data.birthDate)}
+          />
           <DataRow label="Lieu de naissance" value={data.birthPlace} />
           <DataRow label="Nationalité" value={data.nationality} />
           <DataRow
             label="Genre"
-            value={data.gender === "M" ? "Masculin" : data.gender === "F" ? "Féminin" : data.gender}
+            value={
+              data.gender === "M"
+                ? "Masculin"
+                : data.gender === "F"
+                ? "Féminin"
+                : data.gender
+            }
           />
         </Box>
 
@@ -170,6 +182,8 @@ const ExtractionConfirmationModal: React.FC<
             ℹ️ <strong>Important:</strong> Veuillez vérifier attentivement
             toutes les informations extraites. Vous pouvez les modifier
             manuellement si nécessaire en cliquant sur "Modifier les données".
+            Après confirmation, vous resterez sur cette page pour effectuer
+            d'éventuelles révisions avant de continuer.
           </Typography>
         </Box>
       </DialogContent>
@@ -202,7 +216,7 @@ const ExtractionConfirmationModal: React.FC<
             flex: 1,
           }}
         >
-          Confirmer et continuer
+          Confirmer les données
         </Button>
       </DialogActions>
     </Dialog>
@@ -210,4 +224,3 @@ const ExtractionConfirmationModal: React.FC<
 };
 
 export default ExtractionConfirmationModal;
-

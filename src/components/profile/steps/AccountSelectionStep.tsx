@@ -190,42 +190,70 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
       if (!validateForm() || !user?.id) return;
 
       try {
-        // Generate unique application number using timestamp and random component
-        const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
-        const random = Math.floor(Math.random() * 1000)
-          .toString()
-          .padStart(3, "0"); // 3-digit random
-        const appNumber = `APP${timestamp}${random}`;
+        let applicationResult;
 
-        // Create application record
-        const { data: application, error } = await supabase
-          .from("applications")
-          .insert({
-            user_id: user.id,
-            application_number: appNumber,
-            account_type: data.accountType,
-            agency_id: data.agencyId,
-            status: "draft",
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .select()
-          .single();
+        if (application) {
+          // Update existing application
+          const { data: updateResult, error: updateError } = await supabase
+            .from("applications")
+            .update({
+              account_type: data.accountType,
+              agency_id: data.agencyId,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", application.id)
+            .select()
+            .single();
 
-        if (error) {
-          console.error("Error creating application:", error);
-          setErrors({ submit: "Erreur lors de la création de la demande" });
-          return;
+          if (updateError) {
+            console.error("Error updating application:", updateError);
+            setErrors({
+              submit: "Erreur lors de la mise à jour de la demande",
+            });
+            return;
+          }
+
+          applicationResult = updateResult;
+        } else {
+          // Generate unique application number for new application
+          const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+          const random = Math.floor(Math.random() * 1000)
+            .toString()
+            .padStart(3, "0"); // 3-digit random
+          const appNumber = `APP${timestamp}${random}`;
+
+          // Create new application
+          const { data: insertResult, error: insertError } = await supabase
+            .from("applications")
+            .insert({
+              user_id: user.id,
+              application_number: appNumber,
+              account_type: data.accountType,
+              agency_id: data.agencyId,
+              status: "draft",
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
+
+          if (insertError) {
+            console.error("Error creating application:", insertError);
+            setErrors({ submit: "Erreur lors de la création de la demande" });
+            return;
+          }
+
+          applicationResult = insertResult;
         }
 
-        console.log("Application created:", application);
+        console.log("Application processed:", applicationResult);
         onNext();
       } catch (error) {
         console.error("Error:", error);
         setErrors({ submit: "Une erreur inattendue s'est produite" });
       }
     },
-    [validateForm, user?.id, data, onNext]
+    [validateForm, user?.id, data, onNext, application]
   );
 
   const accountTypes = [
