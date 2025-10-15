@@ -169,8 +169,7 @@ export const useUserProfile = (
       profile?.birth_date &&
       profile?.nationality &&
       profile?.id_number &&
-      profile?.phone_1 &&
-      profile?.email_1
+      (profile?.phone_1 || profile?.email_1)
   );
 
   // Check if user has a submitted application

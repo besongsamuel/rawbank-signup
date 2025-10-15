@@ -114,9 +114,20 @@ export const useSignupForm = (
     setStep1Data((prev) => ({ ...prev, ...data }));
   }, []);
 
-  const updateStep2Data = useCallback((data: Partial<SignupStep2Data>) => {
-    setStep2Data((prev) => ({ ...prev, ...data }));
-  }, []);
+  const updateStep2Data = useCallback(
+    (
+      data:
+        | Partial<SignupStep2Data>
+        | ((prev: SignupStep2Data) => Partial<SignupStep2Data>)
+    ) => {
+      if (typeof data === "function") {
+        setStep2Data((prev) => ({ ...prev, ...data(prev) }));
+      } else {
+        setStep2Data((prev) => ({ ...prev, ...data }));
+      }
+    },
+    []
+  );
 
   // Validation functions
   const validateStep1 = useCallback((): boolean => {

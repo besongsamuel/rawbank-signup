@@ -19,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../hooks/useAuth";
 import { useUserProfile } from "../../../hooks/useUserProfile";
 import { supabase } from "../../../lib/supabase";
@@ -72,6 +72,51 @@ interface AccountSelectionStepProps {
   loading?: boolean;
 }
 
+// Mock agencies data - in production, this would come from the database
+const MOCK_AGENCIES = [
+  {
+    id: "kinshasa_center",
+    name: "Agence Kinshasa Centre",
+    address: "Avenue du 30 Juin, Kinshasa",
+    recommended: true, // Most popular agency
+  },
+  {
+    id: "kinshasa_gombe",
+    name: "Agence Kinshasa Gombe",
+    address: "Boulevard du 30 Juin, Gombe",
+  },
+  {
+    id: "kinshasa_limete",
+    name: "Agence Kinshasa Limete",
+    address: "Avenue Kasa-Vubu, Limete",
+  },
+  {
+    id: "lubumbashi_center",
+    name: "Agence Lubumbashi Centre",
+    address: "Avenue Kasongo, Lubumbashi",
+  },
+  {
+    id: "lubumbashi_katanga",
+    name: "Agence Lubumbashi Katanga",
+    address: "Boulevard Kamalondo, Lubumbashi",
+  },
+  {
+    id: "goma_center",
+    name: "Agence Goma Centre",
+    address: "Avenue de la Paix, Goma",
+  },
+  {
+    id: "bukavu_center",
+    name: "Agence Bukavu Centre",
+    address: "Avenue de l'Indépendance, Bukavu",
+  },
+  {
+    id: "matadi_center",
+    name: "Agence Matadi Centre",
+    address: "Avenue du Port, Matadi",
+  },
+];
+
 const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
   data,
   onDataChange,
@@ -82,61 +127,11 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
   const { user } = useAuth();
   const { application } = useUserProfile(user);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [agencies, setAgencies] = useState<any[]>([]);
-  const [dataLoaded, setDataLoaded] = useState(false);
-
-  // Mock agencies data - in production, this would come from the database
-  const mockAgencies = [
-    {
-      id: "kinshasa_center",
-      name: "Agence Kinshasa Centre",
-      address: "Avenue du 30 Juin, Kinshasa",
-      recommended: true, // Most popular agency
-    },
-    {
-      id: "kinshasa_gombe",
-      name: "Agence Kinshasa Gombe",
-      address: "Boulevard du 30 Juin, Gombe",
-    },
-    {
-      id: "kinshasa_limete",
-      name: "Agence Kinshasa Limete",
-      address: "Avenue Kasa-Vubu, Limete",
-    },
-    {
-      id: "lubumbashi_center",
-      name: "Agence Lubumbashi Centre",
-      address: "Avenue Kasongo, Lubumbashi",
-    },
-    {
-      id: "lubumbashi_katanga",
-      name: "Agence Lubumbashi Katanga",
-      address: "Boulevard Kamalondo, Lubumbashi",
-    },
-    {
-      id: "goma_center",
-      name: "Agence Goma Centre",
-      address: "Avenue de la Paix, Goma",
-    },
-    {
-      id: "bukavu_center",
-      name: "Agence Bukavu Centre",
-      address: "Avenue de l'Indépendance, Bukavu",
-    },
-    {
-      id: "matadi_center",
-      name: "Agence Matadi Centre",
-      address: "Avenue du Port, Matadi",
-    },
-  ];
-
-  React.useEffect(() => {
-    setAgencies(mockAgencies);
-  }, []);
+  const hasLoadedData = useRef(false);
 
   // Pre-populate form fields based on existing application data or smart defaults
   useEffect(() => {
-    if (!dataLoaded) {
+    if (!hasLoadedData.current) {
       const updateData: Partial<AccountSelectionData> = {};
 
       if (application) {
@@ -158,7 +153,7 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
 
         // Pre-select the recommended agency (most popular/central)
         if (!data.agencyId) {
-          const recommendedAgency = mockAgencies.find((a) => a.recommended);
+          const recommendedAgency = MOCK_AGENCIES.find((a) => a.recommended);
           if (recommendedAgency) {
             updateData.agencyId = recommendedAgency.id;
           }
@@ -170,9 +165,10 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
         onDataChange(updateData);
       }
 
-      setDataLoaded(true);
+      hasLoadedData.current = true;
     }
-  }, [application, data, onDataChange, dataLoaded, mockAgencies]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [application, data.accountType, data.agencyId]);
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
@@ -354,7 +350,7 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
                     <MenuItem value="">
                       <em>Sélectionnez une agence</em>
                     </MenuItem>
-                    {agencies.map((agency) => (
+                    {MOCK_AGENCIES.map((agency) => (
                       <MenuItem key={agency.id} value={agency.id}>
                         <Box
                           sx={{

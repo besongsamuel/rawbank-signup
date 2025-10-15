@@ -347,6 +347,16 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     [user?.id]
   );
 
+  // Handle Account Selection data change
+  const handleAccountSelectionDataChange = useCallback(
+    (data: Partial<any>) => {
+      updateStep2Data((prev) => ({
+        accountSelection: { ...prev.accountSelection, ...data },
+      }));
+    },
+    [updateStep2Data]
+  );
+
   // Handle Account Selection next
   const handleAccountSelectionNext = useCallback(async () => {
     setLoading(true);
@@ -775,11 +785,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       return renderStepWithStepper(
         <AccountSelectionStep
           data={step2Data.accountSelection}
-          onDataChange={(data) =>
-            updateStep2Data({
-              accountSelection: { ...step2Data.accountSelection, ...data },
-            })
-          }
+          onDataChange={handleAccountSelectionDataChange}
           onNext={handleAccountSelectionNext}
           onPrev={() => navigate("/login")}
           loading={loading}
