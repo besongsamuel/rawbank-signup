@@ -24,7 +24,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireCompleteProfile = false,
 }) => {
   const { user, loading: authLoading } = useAuth();
-  const { hasPersonalData, loading: profileLoading } = useUserProfile(user);
+  const {
+    hasPersonalData,
+    hasSubmittedApplication,
+    loading: profileLoading,
+  } = useUserProfile(user);
 
   // Show loading spinner while checking authentication
   if (authLoading || profileLoading) {
@@ -45,8 +49,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" replace />;
   }
 
-  // If complete profile is required but user doesn't have it, redirect to account selection
-  if (requireCompleteProfile && !hasPersonalData) {
+  // If complete profile is required but user doesn't have it AND hasn't submitted application, redirect to account selection
+  if (requireCompleteProfile && !hasPersonalData && !hasSubmittedApplication) {
     return <Navigate to="/profile/account-selection" replace />;
   }
 

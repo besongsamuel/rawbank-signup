@@ -181,7 +181,7 @@ export const useUserProfile = (
 
   // Debug logging
   useEffect(() => {
-    if (user) {
+    if (user && !loading) {
       console.log("useUserProfile: User ID:", user.id);
       console.log("useUserProfile: Profile:", profile);
       console.log("useUserProfile: Application:", application);
@@ -191,7 +191,14 @@ export const useUserProfile = (
         hasSubmittedApplication
       );
     }
-  }, [user, profile, application, hasPersonalData, hasSubmittedApplication]);
+  }, [
+    user,
+    profile,
+    application,
+    hasPersonalData,
+    hasSubmittedApplication,
+    loading,
+  ]);
 
   return {
     profile,

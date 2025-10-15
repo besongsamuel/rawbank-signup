@@ -1011,7 +1011,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
         open={showCelebration}
         onClose={() => {
           setShowCelebration(false);
-          navigate("/app");
+          navigate("/");
         }}
         title="🎉 Demande Soumise Avec Succès !"
         message={`Votre demande d'ouverture de compte a été soumise. Nos équipes examinent actuellement votre dossier et vous contacteront sous 2-3 jours ouvrables.
