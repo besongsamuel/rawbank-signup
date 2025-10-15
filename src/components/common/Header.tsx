@@ -93,7 +93,7 @@ const Header: React.FC = () => {
               {!user ? (
                 <>
                   <Button
-                    onClick={() => navigate("/signup")}
+                    onClick={() => navigate("/login")}
                     sx={{
                       color: "#FFFFFF",
                       fontWeight: 500,
@@ -195,7 +195,7 @@ const Header: React.FC = () => {
                     ? [
                         <MenuItem
                           key="signup"
-                          onClick={() => handleNavigation("/signup")}
+                          onClick={() => handleNavigation("/login")}
                         >
                           Ouvrir un compte
                         </MenuItem>,
