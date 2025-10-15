@@ -1,6 +1,14 @@
-import { Email, Event, Logout, Person, Phone } from "@mui/icons-material";
 import {
-  Alert,
+  CalendarToday,
+  Email,
+  Event,
+  LocationOn,
+  Logout,
+  Person,
+  Phone,
+  Schedule,
+} from "@mui/icons-material";
+import {
   Avatar,
   Box,
   Button,
@@ -19,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import LanguageSwitcher from "../common/LanguageSwitcher";
+import AppointmentBookingModal from "../modals/AppointmentBookingModal";
 import ApplicationTimeline from "./ApplicationTimeline";
 
 // Vector Illustrations
@@ -220,43 +229,6 @@ const PepIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
   </Box>
 );
 
-const NextStepsIllustration: React.FC<{ size?: number }> = ({ size = 60 }) => (
-  <Box sx={{ width: size, height: size, color: "#000000" }}>
-    <svg viewBox="0 0 100 100" fill="currentColor">
-      <circle cx="25" cy="30" r="8" fill="#FFCC00" />
-      <circle cx="50" cy="30" r="8" fill="#FFCC00" opacity="0.7" />
-      <circle cx="75" cy="30" r="8" fill="#FFCC00" opacity="0.5" />
-      <path
-        d="M33 30 L42 30 M58 30 L67 30"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect
-        x="20"
-        y="50"
-        width="60"
-        height="30"
-        rx="4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect
-        x="25"
-        y="55"
-        width="50"
-        height="20"
-        rx="2"
-        fill="#FFCC00"
-        opacity="0.8"
-      />
-      <circle cx="35" cy="65" r="3" fill="currentColor" />
-      <circle cx="50" cy="65" r="3" fill="currentColor" />
-      <circle cx="65" cy="65" r="3" fill="currentColor" />
-    </svg>
-  </Box>
-);
-
 const ContentBox = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
   background: "#FFFFFF",
@@ -280,6 +252,12 @@ const LogoSection = styled(Box)(({ theme }) => ({
 const UserDashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [showBookingModal, setShowBookingModal] = React.useState(false);
+  const [appointment, setAppointment] = React.useState<{
+    date: Date;
+    time: string;
+    agency: string;
+  } | null>(null);
   const { user, signOut, loading: authLoading } = useAuth();
   const {
     profile,
@@ -290,6 +268,15 @@ const UserDashboard: React.FC = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate("/login");
+  };
+
+  const handleAppointmentConfirm = (appointmentData: {
+    date: Date;
+    time: string;
+    agency: string;
+  }) => {
+    setAppointment(appointmentData);
+    setShowBookingModal(false);
   };
 
   const formatDate = (dateString: string) => {
@@ -333,6 +320,20 @@ const UserDashboard: React.FC = () => {
       matadi_center: "Agence Matadi Centre",
     };
     return agencies[agencyId] || agencyId;
+  };
+
+  const getAgencyAddress = (agencyId: string) => {
+    const addresses: Record<string, string> = {
+      kinshasa_center: "Avenue du 30 Juin, Kinshasa",
+      kinshasa_gombe: "Boulevard du 30 Juin, Gombe",
+      kinshasa_limete: "Avenue Kasa-Vubu, Limete",
+      lubumbashi_center: "Avenue Kasongo, Lubumbashi",
+      lubumbashi_katanga: "Boulevard Kamalondo, Lubumbashi",
+      goma_center: "Avenue de la Paix, Goma",
+      bukavu_center: "Avenue de l'Indépendance, Bukavu",
+      matadi_center: "Avenue du Port, Matadi",
+    };
+    return addresses[agencyId] || "Adresse non disponible";
   };
 
   const getCivilityLabel = (civility: string) => {
@@ -449,6 +450,167 @@ const UserDashboard: React.FC = () => {
             </CardContent>
           </StyledCard>
         )}
+
+        {/* Next Steps */}
+        <StyledCard>
+          <CardContent sx={{ p: 4 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+              <Event sx={{ fontSize: 32, color: "#FFCC00" }} />
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Prochaines Étapes
+              </Typography>
+            </Box>
+            <Divider sx={{ mb: 3 }} />
+
+            <Box sx={{ mb: 4 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 2,
+                  fontWeight: 600,
+                  color: "#000000",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    backgroundColor: "#FFCC00",
+                    color: "#000000",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  1
+                </Box>
+                Rendez-vous en agence
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  mb: 2,
+                  pl: 5,
+                  lineHeight: 1.6,
+                  color: "#333333",
+                }}
+              >
+                Pour finaliser votre demande et récupérer votre carte bancaire,
+                prenez rendez-vous avec notre équipe dans votre agence
+                sélectionnée.
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  pl: 5,
+                  color: "#666666",
+                  fontStyle: "italic",
+                }}
+              >
+                Documents requis : Pièce d'identité • Durée : 15 minutes
+              </Typography>
+            </Box>
+            {/* Action Buttons */}
+            <Stack spacing={2} sx={{ mt: 4 }}>
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                startIcon={<Event />}
+                sx={{
+                  backgroundColor: "#000000",
+                  color: "#FFCC00",
+                  py: 2,
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  "&:hover": {
+                    backgroundColor: "#1a1a1a",
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
+                  },
+                  transition: "all 0.3s ease",
+                }}
+                onClick={() => setShowBookingModal(true)}
+              >
+                📅 Réserver Mon Rendez-vous Maintenant
+              </Button>
+            </Stack>
+
+            {/* Appointment Details */}
+            {appointment && (
+              <Box
+                sx={{
+                  mt: 4,
+                  p: 3,
+                  backgroundColor: "rgba(0, 255, 0, 0.1)",
+                  borderRadius: 2,
+                  border: "1px solid rgba(0, 255, 0, 0.3)",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    color: "#2E7D32",
+                    mb: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  ✅ Rendez-vous Confirmé
+                </Typography>
+                <Stack spacing={2}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <CalendarToday sx={{ color: "#2E7D32", fontSize: 20 }} />
+                    <Typography variant="body1">
+                      <strong>Date :</strong>{" "}
+                      {appointment.date.toLocaleDateString("fr-FR", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Schedule sx={{ color: "#2E7D32", fontSize: 20 }} />
+                    <Typography variant="body1">
+                      <strong>Heure :</strong> {appointment.time}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <LocationOn sx={{ color: "#2E7D32", fontSize: 20 }} />
+                    <Typography variant="body1">
+                      <strong>Lieu :</strong> {appointment.agency}
+                    </Typography>
+                  </Box>
+                </Stack>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 2,
+                    p: 2,
+                    backgroundColor: "rgba(255, 255, 255, 0.7)",
+                    borderRadius: 1,
+                    color: "#2E7D32",
+                    fontWeight: 500,
+                  }}
+                >
+                  💡 <strong>Rappel :</strong> N'oubliez pas d'apporter votre
+                  pièce d'identité le jour du rendez-vous.
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </StyledCard>
 
         {/* Account Information */}
         <StyledCard>
@@ -1062,244 +1224,6 @@ const UserDashboard: React.FC = () => {
           </StyledCard>
         )}
 
-        {/* Next Steps - Subtle Highlight */}
-        <StyledCard
-          sx={{
-            border: "2px solid #FFCC00",
-            boxShadow: "0 8px 30px rgba(255, 204, 0, 0.15)",
-            background: "linear-gradient(135deg, #FFFEF7 0%, #FFFFFF 100%)",
-            position: "relative",
-            overflow: "hidden",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "3px",
-              background:
-                "linear-gradient(90deg, #FFCC00 0%, #FFD633 50%, #FFCC00 100%)",
-            },
-          }}
-        >
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
-              <NextStepsIllustration size={55} />
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 600,
-                  color: "#000000",
-                }}
-              >
-                Prochaines Étapes
-              </Typography>
-            </Box>
-            <Divider
-              sx={{
-                mb: 3,
-                borderColor: "#FFCC00",
-                opacity: 0.6,
-              }}
-            />
-            <Alert
-              severity="info"
-              sx={{
-                mb: 3,
-                backgroundColor: "rgba(255, 204, 0, 0.05)",
-                border: "1px solid #FFCC00",
-                borderRadius: 2,
-                opacity: 0.8,
-                "& .MuiAlert-icon": {
-                  color: "#FFCC00",
-                  fontSize: "1.2rem",
-                },
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{ fontWeight: 600, mb: 3, color: "#000000" }}
-              >
-                Prochaines étapes pour finaliser votre compte
-              </Typography>
-
-              <Box sx={{ mb: 4 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    mb: 2,
-                    fontWeight: 600,
-                    color: "#000000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: "50%",
-                      backgroundColor: "#FFCC00",
-                      color: "#000000",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      opacity: 0.9,
-                    }}
-                  >
-                    1
-                  </Box>
-                  Signature électronique
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    mb: 3,
-                    pl: 4,
-                    lineHeight: 1.6,
-                    color: "#333333",
-                  }}
-                >
-                  Vous recevrez les détails de votre formulaire de demande par
-                  email à l'adresse que vous avez fournie. Ce document devra
-                  être signé via signature électronique avant de pouvoir
-                  procéder à l'étape suivante.
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 4 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    mb: 2,
-                    fontWeight: 600,
-                    color: "#000000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: "50%",
-                      backgroundColor: "#FFCC00",
-                      color: "#000000",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      opacity: 0.9,
-                    }}
-                  >
-                    2
-                  </Box>
-                  Planifiez un rendez-vous avec nous
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    mb: 2,
-                    pl: 4,
-                    lineHeight: 1.6,
-                    color: "#333333",
-                  }}
-                >
-                  Pour finaliser votre processus d'ouverture de compte et
-                  récupérer votre carte bancaire, vous devez prendre rendez-vous
-                  avec notre équipe Rawbank.
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    mb: 2,
-                    pl: 4,
-                    lineHeight: 1.6,
-                    color: "#333333",
-                  }}
-                >
-                  <strong>Documents requis :</strong> La pièce d'identité que
-                  vous avez téléchargée lors du processus de candidature.
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontWeight: 600,
-                    color: "#FFCC00",
-                    pl: 4,
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  ⏱️ Durée estimée : environ 15 minutes
-                </Typography>
-              </Box>
-            </Alert>
-            {/* Action Buttons */}
-            <Stack spacing={2} sx={{ mt: 4 }}>
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                startIcon={<Event />}
-                sx={{
-                  backgroundColor: "#000000",
-                  color: "#FFCC00",
-                  py: 2,
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  "&:hover": {
-                    backgroundColor: "#1a1a1a",
-                    transform: "translateY(-2px)",
-                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
-                  },
-                  transition: "all 0.3s ease",
-                }}
-                onClick={() => {
-                  // In a real app, this would open a calendar booking system
-                  alert(
-                    "Fonctionnalité de réservation à venir. Contactez Rawbank directement."
-                  );
-                }}
-              >
-                📅 Réserver Mon Rendez-vous Maintenant
-              </Button>
-
-              <Button
-                variant="outlined"
-                size="large"
-                fullWidth
-                startIcon={<Phone />}
-                sx={{
-                  borderColor: "#FFCC00",
-                  color: "#000000",
-                  py: 1.5,
-                  fontSize: "1rem",
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  "&:hover": {
-                    borderColor: "#000000",
-                    backgroundColor: "rgba(255, 204, 0, 0.05)",
-                  },
-                  transition: "all 0.3s ease",
-                }}
-                onClick={() => {
-                  window.location.href = `tel:+243${getAgencyName(
-                    application?.agency_id || ""
-                  ).replace(/\D/g, "")}`;
-                }}
-              >
-                📞 Contacter Mon Agence
-              </Button>
-            </Stack>
-          </CardContent>
-        </StyledCard>
-
         {/* Actions */}
         <StyledCard>
           <CardContent sx={{ p: 4 }}>
@@ -1317,6 +1241,15 @@ const UserDashboard: React.FC = () => {
           </CardContent>
         </StyledCard>
       </Box>
+
+      {/* Appointment Booking Modal */}
+      <AppointmentBookingModal
+        open={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        onConfirm={handleAppointmentConfirm}
+        agencyName={getAgencyName(application?.agency_id || "")}
+        agencyAddress={getAgencyAddress(application?.agency_id || "")}
+      />
     </ContentBox>
   );
 };

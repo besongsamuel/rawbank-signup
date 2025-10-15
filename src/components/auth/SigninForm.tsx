@@ -110,7 +110,7 @@ const SigninForm: React.FC = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`,
+          emailRedirectTo: `${window.location.origin}`,
         },
       });
 
