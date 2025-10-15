@@ -211,10 +211,11 @@ const SigninForm: React.FC = () => {
                 gutterBottom
                 sx={{ fontWeight: 600, color: "#000000" }}
               >
-                Connexion
+                Connexion / Inscription
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Connectez-vous pour accéder à votre compte
+                Connectez-vous à votre compte existant ou créez un nouveau
+                compte
               </Typography>
             </LogoSection>
 
@@ -285,7 +286,7 @@ const SigninForm: React.FC = () => {
                   {loading ? (
                     <CircularProgress size={24} sx={{ color: "#FFCC00" }} />
                   ) : (
-                    "Envoyer le lien magique"
+                    "Se connecter / S'inscrire"
                   )}
                 </Button>
               </Box>
@@ -331,7 +332,7 @@ const SigninForm: React.FC = () => {
                   {loading ? (
                     <CircularProgress size={24} sx={{ color: "#FFCC00" }} />
                   ) : (
-                    "Envoyer le code OTP"
+                    "Se connecter / S'inscrire"
                   )}
                 </Button>
               </Box>
@@ -402,8 +403,12 @@ const SigninForm: React.FC = () => {
             {/* Additional Info */}
             <Box sx={{ mt: 3, textAlign: "center" }}>
               <Typography variant="body2" color="text.secondary">
-                Première visite ? Vous serez automatiquement inscrit lors de la
-                connexion.
+                <strong>Nouveau client ?</strong> Entrez votre email ou
+                téléphone pour créer votre compte automatiquement.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <strong>Client existant ?</strong> Utilisez les mêmes
+                informations pour vous connecter.
               </Typography>
             </Box>
           </CardContent>
