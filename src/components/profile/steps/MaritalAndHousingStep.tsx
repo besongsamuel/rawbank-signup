@@ -194,12 +194,18 @@ const MaritalAndHousingStep: React.FC<MaritalAndHousingStepProps> = ({
                     fullWidth
                     type="number"
                     label="Nombre d'enfants à charge"
-                    value={maritalInfo.numberOfChildren || ""}
-                    onChange={(e) =>
-                      onMaritalChange({
-                        numberOfChildren: parseInt(e.target.value) || 0,
-                      })
-                    }
+                    value={maritalInfo.numberOfChildren ?? ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "") {
+                        onMaritalChange({ numberOfChildren: 0 });
+                      } else {
+                        const numValue = parseInt(value, 10);
+                        if (!isNaN(numValue) && numValue >= 0) {
+                          onMaritalChange({ numberOfChildren: numValue });
+                        }
+                      }
+                    }}
                     inputProps={{ min: 0 }}
                     helperText="Indiquez le nombre d'enfants dont vous avez la charge (0 si aucun)"
                   />
