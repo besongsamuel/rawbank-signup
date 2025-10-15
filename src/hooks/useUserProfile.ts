@@ -66,6 +66,7 @@ interface Application {
   application_number: string;
   account_type: string;
   agency_id: string;
+  card_type?: string;
   status: "draft" | "submitted" | "under_review" | "approved" | "rejected";
   created_at: string;
   updated_at: string;

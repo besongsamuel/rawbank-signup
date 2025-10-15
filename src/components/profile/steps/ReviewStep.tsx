@@ -109,6 +109,21 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
     return types[type] || type;
   };
 
+  const getCardTypeName = (cardType: string) => {
+    const cards: Record<string, string> = {
+      carte_fidelite_usd: "La carte Fidelité",
+      carte_mosolo_cdf: "La carte Mosolo CDF",
+      visa_debit_cdf: "La carte de débit Visa CDF",
+      visa_infinite: "La carte de débit Visa Infinite",
+      visa_academia: "La carte Visa Academia",
+      visa_debit_euro: "La carte de débit Visa EURO",
+      mastercard_travelers: "La Mastercard Traveler's",
+      carte_virtuelle: "La carte virtuelle prépayée",
+      visa_debit_upi: "La carte de débit UPI",
+    };
+    return cards[cardType] || cardType;
+  };
+
   const getAgencyName = (agencyId: string) => {
     const agencies: Record<string, string> = {
       kinshasa_center: "Agence Kinshasa Centre",
