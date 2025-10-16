@@ -1,4 +1,4 @@
-import { CheckCircle, Edit } from "@mui/icons-material";
+import { CheckCircle } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -15,13 +15,12 @@ import { ExtractedIdData } from "../../hooks/useIdExtraction";
 interface ExtractionConfirmationModalProps {
   open: boolean;
   data: ExtractedIdData | null;
-  onConfirm: () => void;
-  onEdit: () => void;
+  onClose: () => void;
 }
 
 const ExtractionConfirmationModal: React.FC<
   ExtractionConfirmationModalProps
-> = ({ open, data, onConfirm, onEdit }) => {
+> = ({ open, data, onClose }) => {
   if (!data) return null;
 
   const formatDate = (dateStr?: string) => {
@@ -180,43 +179,30 @@ const ExtractionConfirmationModal: React.FC<
         >
           <Typography variant="caption" sx={{ lineHeight: 1.6 }}>
             ℹ️ <strong>Important:</strong> Veuillez vérifier attentivement
-            toutes les informations extraites. Vous pouvez les modifier
-            manuellement si nécessaire en cliquant sur "Modifier les données".
-            Après confirmation, vous resterez sur cette page pour effectuer
-            d'éventuelles révisions avant de continuer.
+            toutes les informations extraites. Ces données ont été
+            automatiquement remplies dans le formulaire. Vous pouvez les
+            modifier directement dans les champs du formulaire si nécessaire.
           </Typography>
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, gap: 2 }}>
-        <Button
-          variant="outlined"
-          startIcon={<Edit />}
-          onClick={onEdit}
-          sx={{
-            borderColor: "#E5E5E5",
-            color: "#000000",
-            "&:hover": {
-              borderColor: "#000000",
-              backgroundColor: "rgba(0, 0, 0, 0.04)",
-            },
-          }}
-        >
-          Modifier les données
-        </Button>
+      <DialogActions sx={{ p: 3, justifyContent: "center" }}>
         <Button
           variant="contained"
-          onClick={onConfirm}
+          onClick={onClose}
           sx={{
             backgroundColor: "#000000",
             color: "#FFCC00",
+            px: 4,
+            py: 1.5,
+            fontSize: "1rem",
+            fontWeight: 600,
             "&:hover": {
               backgroundColor: "#1a1a1a",
             },
-            flex: 1,
           }}
         >
-          Confirmer les données
+          OK
         </Button>
       </DialogActions>
     </Dialog>

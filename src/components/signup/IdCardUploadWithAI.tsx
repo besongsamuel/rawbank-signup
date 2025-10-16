@@ -237,18 +237,6 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
     // User can manually proceed when ready
   };
 
-  const handleEditData = () => {
-    if (extractedData) {
-      // Pre-fill form with extracted data
-      onDataChange({
-        number: extractedData.idNumber,
-        issueDate: extractedData.issueDate || "",
-        expiryDate: extractedData.expiryDate || "",
-      });
-    }
-    setShowConfirmation(false);
-  };
-
   const handleRemoveFile = () => {
     setUploadedFile(null);
     setPreviewUrl(null);
@@ -624,8 +612,7 @@ const IdCardUploadWithAI: React.FC<IdCardUploadProps> = ({
       <ExtractionConfirmationModal
         open={showConfirmation}
         data={extractedData}
-        onConfirm={handleConfirmData}
-        onEdit={handleEditData}
+        onClose={handleConfirmData}
       />
     </ContentBox>
   );

@@ -4,8 +4,10 @@ import {
   Button,
   Card,
   CardContent,
+  Checkbox,
   CircularProgress,
   FormControl,
+  FormControlLabel,
   InputAdornment,
   InputLabel,
   MenuItem,
@@ -59,6 +61,9 @@ const MaritalAndHousingStep: React.FC<MaritalAndHousingStepProps> = ({
   loading = false,
 }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showMailingAddress, setShowMailingAddress] = useState<boolean>(
+    Boolean(housingInfo.mailingAddress)
+  );
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
@@ -289,25 +294,47 @@ const MaritalAndHousingStep: React.FC<MaritalAndHousingStepProps> = ({
                     }}
                   />
 
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    label="Adresse postale"
-                    placeholder="ex: BP 123, Kinshasa"
-                    value={housingInfo.mailingAddress || ""}
-                    onChange={(e) =>
-                      onHousingChange({ mailingAddress: e.target.value })
+                  {/* Checkbox for mailing address */}
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showMailingAddress}
+                        onChange={(e) => {
+                          setShowMailingAddress(e.target.checked);
+                          // Clear mailing address if unchecked
+                          if (!e.target.checked) {
+                            onHousingChange({ mailingAddress: "" });
+                          }
+                        }}
+                        color="primary"
+                      />
                     }
-                    helperText="Votre adresse pour recevoir du courrier (si différente de l'adresse permanente)"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Home color="primary" />
-                        </InputAdornment>
-                      ),
-                    }}
+                    label="J'ai une adresse postale différente de mon adresse permanente"
+                    sx={{ mt: 2, mb: 1 }}
                   />
+
+                  {/* Mailing Address Field - Only show when checkbox is checked */}
+                  {showMailingAddress && (
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      label="Adresse postale"
+                      placeholder="ex: BP 123, Kinshasa"
+                      value={housingInfo.mailingAddress || ""}
+                      onChange={(e) =>
+                        onHousingChange({ mailingAddress: e.target.value })
+                      }
+                      helperText="Votre adresse pour recevoir du courrier (si différente de l'adresse permanente)"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Home color="primary" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
                 </Stack>
               </Box>
 

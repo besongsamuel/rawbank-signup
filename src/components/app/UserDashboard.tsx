@@ -530,7 +530,7 @@ const UserDashboard: React.FC = () => {
                 }}
                 onClick={() => setShowBookingModal(true)}
               >
-                📅 Réserver Mon Rendez-vous Maintenant
+                Réserver Mon Rendez-vous Maintenant
               </Button>
             </Stack>
 

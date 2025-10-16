@@ -123,7 +123,7 @@ const ApplicationTimeline: React.FC<ApplicationTimelineProps> = ({
       {
         label: "Vérification des documents",
         description:
-          "Nos équipes vérifient vos informations. Pour récupérer votre carte, vous devez prendre rendez-vous avec notre agence.",
+          "Nos équipes vérifient vos informations. Pour récupérer votre carte bancaire, vous devez vous rendre à notre agence pour vérifier vos documents d'identité et retirer votre carte.",
         completed: ["under_review", "approved"].includes(status),
         active: status === "submitted",
         estimatedDays: "15 minutes",

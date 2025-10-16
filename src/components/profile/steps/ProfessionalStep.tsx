@@ -119,16 +119,6 @@ const ProfessionalStep: React.FC<ProfessionalStepProps> = ({
     <ContentBox>
       <StyledCard>
         <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-          {/* Header */}
-          <Box sx={{ textAlign: "center", mb: 4 }}>
-            <Typography variant="h4" gutterBottom>
-              Informations Professionnelles
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Vos informations professionnelles et financières
-            </Typography>
-          </Box>
-
           <Box component="form" onSubmit={handleSubmit}>
             <Stack spacing={4}>
               {/* Section Illustration */}

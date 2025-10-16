@@ -1,5 +1,5 @@
 import { Box, Card, Typography } from "@mui/material";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApplicationContext } from "../../contexts/ApplicationContext";
 import { useSignupForm } from "../../hooks/useSignupForm";
@@ -21,6 +21,35 @@ import ReviewStep from "./steps/ReviewStep";
 interface CompleteProfileProps {
   step?: SignupStep;
 }
+
+// Utility function for smooth scroll to step container
+const scrollToStepTop = (
+  stepContainerRef: React.RefObject<HTMLDivElement | null>
+) => {
+  if (stepContainerRef.current) {
+    stepContainerRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  } else {
+    // Fallback to page top if ref is not available
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }
+};
+
+// Helper function for navigation with scroll to step top
+const navigateWithScroll = (
+  navigate: any,
+  path: string,
+  stepContainerRef: React.RefObject<HTMLDivElement | null>
+) => {
+  navigate(path);
+  scrollToStepTop(stepContainerRef);
+};
 
 const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   const navigate = useNavigate();
@@ -68,6 +97,9 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
   const { step2Data, loading, setLoading, updateStep2Data, clearErrors } =
     useSignupForm(currentStep, user);
+
+  // Ref for step container to scroll to
+  const stepContainerRef = useRef<HTMLDivElement>(null);
 
   // Clear errors when step changes
   useEffect(() => {
@@ -208,6 +240,11 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       navigate("/app", { replace: true });
     }
   }, [user, hasSubmittedApplication, contextLoading, navigate]);
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    scrollToStepTop(stepContainerRef);
+  }, [currentStep]);
 
   // Save specific step data to database
   const saveStepData = useCallback(
@@ -372,6 +409,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       // Application is already created in AccountSelectionStep component
       // Just navigate to ID card step
       navigate("/profile/id-card");
+      scrollToStepTop(stepContainerRef);
     } catch (error) {
       console.error("Error in account selection:", error);
     } finally {
@@ -401,6 +439,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
       // Move to marital-housing step
       navigate("/profile/marital-housing");
+      scrollToStepTop(stepContainerRef);
     } catch (error) {
       console.error("Error saving ID card and identity data:", error);
     } finally {
@@ -428,6 +467,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
       // Move to contact-emergency step
       navigate("/profile/contact-emergency");
+      scrollToStepTop(stepContainerRef);
     } catch (error) {
       console.error("Error saving marital and housing data:", error);
     } finally {
@@ -455,6 +495,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
       // Move to professional step
       navigate("/profile/professional");
+      scrollToStepTop(stepContainerRef);
     } catch (error) {
       console.error("Error saving contact and emergency data:", error);
     } finally {
@@ -476,6 +517,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
       // Move to FATCA step
       navigate("/profile/fatca");
+      scrollToStepTop(stepContainerRef);
     } catch (error) {
       console.error("Error saving professional data:", error);
     } finally {
@@ -630,6 +672,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
       // Move to PEP step
       navigate("/profile/pep");
+      scrollToStepTop(stepContainerRef);
     } catch (error) {
       console.error("Error saving FATCA data:", error);
       console.error(
@@ -658,6 +701,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
 
       // Move to card selection step
       navigate("/profile/card-selection");
+      scrollToStepTop(stepContainerRef);
     } catch (error) {
       console.error("Error saving PEP data:", error);
       console.error(
@@ -677,6 +721,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     // Card selection is handled in the CardSelectionStep component itself
     // Just navigate to review step
     navigate("/profile/review");
+    scrollToStepTop(stepContainerRef);
   }, [navigate]);
 
   // Helper function to get step index (merged steps)
@@ -746,7 +791,10 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   // Render current step with stepper
   const renderStepWithStepper = (stepComponent: React.ReactNode) => {
     return (
-      <Box sx={{ width: "100%", minHeight: "calc(100vh - 160px)" }}>
+      <Box
+        ref={stepContainerRef}
+        sx={{ width: "100%", minHeight: "calc(100vh - 160px)" }}
+      >
         <Box sx={{ maxWidth: 1200, margin: "0 auto", p: 2 }}>
           {/* Main Heading */}
           <Box sx={{ textAlign: "center", mb: 3 }}>
@@ -816,7 +864,13 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleIdCardAndIdentityNext}
-          onPrev={() => navigate("/profile/account-selection")}
+          onPrev={() =>
+            navigateWithScroll(
+              navigate,
+              "/profile/account-selection",
+              stepContainerRef
+            )
+          }
           loading={loading}
         />
       );
@@ -837,7 +891,13 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleMaritalAndHousingNext}
-          onPrev={() => navigate("/profile/id-identity")}
+          onPrev={() =>
+            navigateWithScroll(
+              navigate,
+              "/profile/id-identity",
+              stepContainerRef
+            )
+          }
           loading={loading}
         />
       );
@@ -858,7 +918,13 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleContactAndEmergencyNext}
-          onPrev={() => navigate("/profile/marital-housing")}
+          onPrev={() =>
+            navigateWithScroll(
+              navigate,
+              "/profile/marital-housing",
+              stepContainerRef
+            )
+          }
           loading={loading}
         />
       );
@@ -873,7 +939,13 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleProfessionalNext}
-          onPrev={() => navigate("/profile/contact-emergency")}
+          onPrev={() =>
+            navigateWithScroll(
+              navigate,
+              "/profile/contact-emergency",
+              stepContainerRef
+            )
+          }
           loading={loading}
         />
       );
@@ -909,7 +981,13 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleFatcaNext}
-          onPrev={() => navigate("/profile/professional")}
+          onPrev={() =>
+            navigateWithScroll(
+              navigate,
+              "/profile/professional",
+              stepContainerRef
+            )
+          }
           loading={loading}
         />
       );
@@ -933,7 +1011,9 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handlePepNext}
-          onPrev={() => navigate("/profile/fatca")}
+          onPrev={() =>
+            navigateWithScroll(navigate, "/profile/fatca", stepContainerRef)
+          }
           loading={loading}
         />
       );
@@ -951,7 +1031,9 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
             })
           }
           onNext={handleCardSelectionNext}
-          onPrev={() => navigate("/profile/pep")}
+          onPrev={() =>
+            navigateWithScroll(navigate, "/profile/pep", stepContainerRef)
+          }
           loading={loading}
         />
       );

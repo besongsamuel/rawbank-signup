@@ -363,20 +363,6 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
     // User can manually proceed when ready
   };
 
-  const handleEditData = async () => {
-    if (extractedData) {
-      onIdCardChange({
-        number: extractedData.idNumber,
-        issueDate: extractedData.issueDate || "",
-        expiryDate: extractedData.expiryDate || "",
-      });
-    }
-    setShowConfirmation(false);
-
-    // Reload personal data to get all extracted information
-    await reloadPersonalData();
-  };
-
   const handleRemoveFile = () => {
     setUploadedFile(null);
     setPreviewUrl(null);
@@ -785,49 +771,44 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
                     }}
                   />
 
-                  {/* Nationality, Province and Birth Place */}
-                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                    <FormControl
-                      sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
-                      error={!!errors.nationality}
-                    >
-                      <InputLabel>Nationalité *</InputLabel>
-                      <Select
-                        value={selectedCountry}
-                        onChange={(e) => {
-                          setSelectedCountry(e.target.value);
-                          const country = Country.getCountryByCode(
-                            e.target.value
-                          );
-                          if (country) {
-                            onPersonalInfoChange({ nationality: country.name });
-                          }
-                        }}
-                        label="Nationalité *"
-                        startAdornment={
-                          <InputAdornment position="start">
-                            <Public color="primary" />
-                          </InputAdornment>
+                  {/* Nationality - Full Width */}
+                  <FormControl fullWidth error={!!errors.nationality}>
+                    <InputLabel>Nationalité *</InputLabel>
+                    <Select
+                      value={selectedCountry}
+                      onChange={(e) => {
+                        setSelectedCountry(e.target.value);
+                        const country = Country.getCountryByCode(
+                          e.target.value
+                        );
+                        if (country) {
+                          onPersonalInfoChange({ nationality: country.name });
                         }
-                      >
-                        {Country.getAllCountries().map((country) => (
-                          <MenuItem
-                            key={country.isoCode}
-                            value={country.isoCode}
-                          >
-                            {country.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <Typography
-                        variant="caption"
-                        color={errors.nationality ? "error" : "text.secondary"}
-                        sx={{ mt: 0.5, ml: 1.75 }}
-                      >
-                        {errors.nationality || "Votre pays de citoyenneté"}
-                      </Typography>
-                    </FormControl>
+                      }}
+                      label="Nationalité *"
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <Public color="primary" />
+                        </InputAdornment>
+                      }
+                    >
+                      {Country.getAllCountries().map((country) => (
+                        <MenuItem key={country.isoCode} value={country.isoCode}>
+                          {country.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <Typography
+                      variant="caption"
+                      color={errors.nationality ? "error" : "text.secondary"}
+                      sx={{ mt: 0.5, ml: 1.75 }}
+                    >
+                      {errors.nationality || "Votre pays de citoyenneté"}
+                    </Typography>
+                  </FormControl>
 
+                  {/* Province and Birth Place */}
+                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                     <FormControl
                       sx={{ flex: 1, minWidth: { xs: "100%", sm: 200 } }}
                     >
@@ -962,8 +943,7 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
       <ExtractionConfirmationModal
         open={showConfirmation}
         data={extractedData}
-        onConfirm={handleConfirmData}
-        onEdit={handleEditData}
+        onClose={handleConfirmData}
       />
     </ContentBox>
   );
