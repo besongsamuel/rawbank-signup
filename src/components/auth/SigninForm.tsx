@@ -21,11 +21,11 @@ const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 20,
   boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
   maxWidth: 500,
-  margin: "0 auto",
+  margin: "auto",
 }));
 
 const ContentBox = styled(Box)(({ theme }) => ({
-  minHeight: "100vh",
+  minHeight: "100%",
   background: "#FFFFFF",
   display: "flex",
   alignItems: "center",
