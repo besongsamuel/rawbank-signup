@@ -21,7 +21,7 @@ function App(): React.JSX.Element {
         <Layout>
           <Routes>
             <Route path="/login" element={<SigninForm />} />
-            <Route path="/auth/callback" element={<MagicLinkCallback />} />
+            <Route path="/callback" element={<MagicLinkCallback />} />
 
             {/* Profile completion routes - all require authentication (merged steps) */}
             <Route
