@@ -208,7 +208,7 @@ const SigninForm: React.FC = () => {
   }
 
   return (
-    <ContentBox>
+    <ContentBox sx={{ margin: "auto" }}>
       <Box sx={{ width: "100%", maxWidth: 600 }}>
         <StyledCard>
           <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
