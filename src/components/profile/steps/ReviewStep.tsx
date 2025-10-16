@@ -80,9 +80,6 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
         return;
       }
 
-      // Refresh application data in context to reflect the updated status
-      await refreshApplication();
-
       // Close confirm modal and show celebration
       setShowConfirmModal(false);
       setShowCelebration(true);
@@ -91,7 +88,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
     } finally {
       setSubmitting(false);
     }
-  }, [user?.id, application?.id, refreshApplication]);
+  }, [user?.id, application?.id]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fr-FR");
@@ -1007,8 +1004,10 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
       {/* Celebration Modal */}
       <CelebrationModal
         open={showCelebration}
-        onClose={() => {
+        onClose={async () => {
           setShowCelebration(false);
+          // Refresh application data before navigating to ensure context is up-to-date
+          await refreshApplication();
           navigate("/");
         }}
         title="🎉 Demande Soumise Avec Succès !"
