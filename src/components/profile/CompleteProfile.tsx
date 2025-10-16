@@ -1,9 +1,8 @@
 import { Box, Card, Typography } from "@mui/material";
 import React, { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useApplicationContext } from "../../contexts/ApplicationContext";
 import { useSignupForm } from "../../hooks/useSignupForm";
-import { useUserProfile } from "../../hooks/useUserProfile";
 import { supabase } from "../../lib/supabase";
 import { SignupStep } from "../../types/signup";
 import TrustSignals from "../common/TrustSignals";
@@ -26,9 +25,18 @@ interface CompleteProfileProps {
 const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading: authLoading } = useAuth();
-  const { hasSubmittedApplication, loading: profileLoading } =
-    useUserProfile(user);
+  const {
+    user,
+    application,
+    loading: contextLoading,
+  } = useApplicationContext();
+
+  // Check if user has a submitted application
+  const hasSubmittedApplication = Boolean(
+    application?.status === "submitted" ||
+      application?.status === "under_review" ||
+      application?.status === "approved"
+  );
 
   // Determine current step from URL path (merged steps)
   const getCurrentStepFromPath = (pathname: string): SignupStep => {
@@ -188,7 +196,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   // Handle redirect if profile is complete
   useEffect(() => {
     // Wait for profile to load
-    if (profileLoading) {
+    if (contextLoading) {
       return;
     }
 
@@ -199,7 +207,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       );
       navigate("/app", { replace: true });
     }
-  }, [user, hasSubmittedApplication, profileLoading, navigate]);
+  }, [user, hasSubmittedApplication, contextLoading, navigate]);
 
   // Save specific step data to database
   const saveStepData = useCallback(
@@ -475,7 +483,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
     }
   }, [navigate, setLoading, saveStepData, step2Data]);
 
-  // Handle final submission
+  // Handle final submission - UNUSED FUNCTION
+  /*
   const handleFinalSubmit = useCallback(async () => {
     if (!user?.id) return;
 
@@ -605,6 +614,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
       );
     }
   }, [step2Data, navigate, user?.id]);
+  */
 
   // Handle FATCA next
   const handleFatcaNext = useCallback(async () => {
@@ -724,7 +734,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   );
 
   // Show loading while checking authentication
-  if (authLoading || profileLoading) {
+  if (contextLoading) {
     return <SignupSkeleton />;
   }
 

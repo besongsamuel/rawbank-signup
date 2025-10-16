@@ -2,8 +2,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useUserProfile } from "../../hooks/useUserProfile";
+import { useApplicationContext } from "../../contexts/ApplicationContext";
 
 const LoadingBox = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
@@ -23,15 +22,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireCompleteProfile = false,
 }) => {
-  const { user, loading: authLoading } = useAuth();
-  const {
-    hasPersonalData,
-    hasSubmittedApplication,
-    loading: profileLoading,
-  } = useUserProfile(user);
+  const { user, profile, application, loading } = useApplicationContext();
 
   // Show loading spinner while checking authentication
-  if (authLoading || profileLoading) {
+  if (loading) {
     return (
       <LoadingBox>
         <Box sx={{ textAlign: "center" }}>
@@ -48,6 +42,23 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+
+  // Check if user has personal data (has essential fields filled)
+  const hasPersonalData = Boolean(
+    profile?.first_name &&
+      profile?.last_name &&
+      profile?.birth_date &&
+      profile?.nationality &&
+      profile?.id_number &&
+      (profile?.phone_1 || profile?.email_1)
+  );
+
+  // Check if user has a submitted application
+  const hasSubmittedApplication = Boolean(
+    application?.status === "submitted" ||
+      application?.status === "under_review" ||
+      application?.status === "approved"
+  );
 
   // If complete profile is required but user doesn't have it AND hasn't submitted application, redirect to account selection
   if (requireCompleteProfile && !hasPersonalData && !hasSubmittedApplication) {

@@ -12,10 +12,8 @@ import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useUserProfile } from "../../hooks/useUserProfile";
+import { useApplicationContext } from "../../contexts/ApplicationContext";
 import { supabase } from "../../lib/supabase";
-import LanguageSwitcher from "../common/LanguageSwitcher";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 20,
@@ -47,8 +45,7 @@ interface SignupFormData {
 const Signup: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { hasPersonalData } = useUserProfile(user);
+  const { user, profile } = useApplicationContext();
 
   const [formData, setFormData] = useState<SignupFormData>({
     email: "",
@@ -64,13 +61,23 @@ const Signup: React.FC = () => {
   // Redirect logged-in users
   useEffect(() => {
     if (user) {
+      // Check if user has personal data (has essential fields filled)
+      const hasPersonalData = Boolean(
+        profile?.first_name &&
+          profile?.last_name &&
+          profile?.birth_date &&
+          profile?.nationality &&
+          profile?.id_number &&
+          (profile?.phone_1 || profile?.email_1)
+      );
+
       if (hasPersonalData) {
         navigate("/app");
       } else {
         navigate("/profile/id-card");
       }
     }
-  }, [user, hasPersonalData, navigate]);
+  }, [user, profile, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -149,11 +156,6 @@ const Signup: React.FC = () => {
     <GradientBox>
       <StyledCard>
         <CardContent sx={{ p: 4 }}>
-          {/* Language Switcher */}
-          <Box sx={{ position: "absolute", top: 16, right: 16 }}>
-            <LanguageSwitcher />
-          </Box>
-
           {/* Header */}
           <LogoSection>
             <Typography

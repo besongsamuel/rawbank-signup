@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { ContactInfo, EmergencyContact } from "../../../types/signup";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -55,7 +55,7 @@ const ContactAndEmergencyStep: React.FC<ContactAndEmergencyStepProps> = ({
   onPrev,
   loading = false,
 }) => {
-  const { user } = useAuth();
+  const { user } = useApplicationContext();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Pre-fill email and phone from user auth

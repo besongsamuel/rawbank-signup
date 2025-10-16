@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useApplicationContext } from "../../contexts/ApplicationContext";
 import { supabase } from "../../lib/supabase";
 import TrustSignals from "../common/TrustSignals";
 
@@ -42,7 +42,8 @@ type LoginMethod = "email" | "phone";
 
 const SigninForm: React.FC = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const location = useLocation();
+  const { user, loading: authLoading } = useApplicationContext();
   const [loginMethod, setLoginMethod] = useState<LoginMethod>("email");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -52,6 +53,20 @@ const SigninForm: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [otpSent, setOtpSent] = useState(false);
 
+  // Check for authentication errors from URL parameters (from magic link callback)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const errorParam = params.get("error");
+
+    if (errorParam) {
+      const errorMessage = decodeURIComponent(errorParam);
+      console.error("Authentication error:", errorMessage);
+      setError(errorMessage);
+
+      // Clean up URL by removing error parameters
+      navigate("/login", { replace: true });
+    }
+  }, [location.search, navigate]);
   // Redirect if already logged in
   useEffect(() => {
     const checkUserAndRedirect = async () => {
@@ -110,7 +125,7 @@ const SigninForm: React.FC = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 

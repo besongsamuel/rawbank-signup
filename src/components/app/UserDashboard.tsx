@@ -26,9 +26,7 @@ import { styled } from "@mui/material/styles";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useUserProfile } from "../../hooks/useUserProfile";
-import LanguageSwitcher from "../common/LanguageSwitcher";
+import { useApplicationContext } from "../../contexts/ApplicationContext";
 import AppointmentBookingModal from "../modals/AppointmentBookingModal";
 import ApplicationTimeline from "./ApplicationTimeline";
 
@@ -260,12 +258,8 @@ const UserDashboard: React.FC = () => {
     time: string;
     agency: string;
   } | null>(null);
-  const { user, signOut, loading: authLoading } = useAuth();
-  const {
-    profile,
-    application,
-    loading: profileLoading,
-  } = useUserProfile(user);
+  const { user, profile, application, loading, signOut } =
+    useApplicationContext();
 
   const handleSignOut = async () => {
     await signOut();
@@ -369,7 +363,7 @@ const UserDashboard: React.FC = () => {
     return labels[status] || status;
   };
 
-  if (authLoading || profileLoading) {
+  if (loading) {
     return (
       <ContentBox>
         <Box
@@ -394,11 +388,6 @@ const UserDashboard: React.FC = () => {
   return (
     <ContentBox>
       <Box sx={{ maxWidth: 1200, margin: "0 auto" }}>
-        {/* Language Switcher */}
-        <Box sx={{ position: "absolute", top: 16, right: 16 }}>
-          <LanguageSwitcher />
-        </Box>
-
         {/* Header */}
         <LogoSection>
           <Typography

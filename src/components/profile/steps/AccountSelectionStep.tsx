@@ -20,9 +20,21 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
-import { useUserProfile } from "../../../hooks/useUserProfile";
-import { supabase } from "../../../lib/supabase";
+import { useApplicationContext } from "../../../contexts/ApplicationContext";
+
+// Import Application type from context
+interface Application {
+  id: string;
+  user_id: string;
+  application_number: string;
+  account_type: string;
+  agency_id: string;
+  card_type?: string;
+  status: "draft" | "submitted" | "under_review" | "approved" | "rejected";
+  created_at: string;
+  updated_at: string;
+  submitted_at?: string;
+}
 
 const ContentBox = styled(Box)(({ theme }) => ({
   minHeight: "calc(100vh - 160px)",
@@ -124,8 +136,7 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
   onPrev,
   loading = false,
 }) => {
-  const { user } = useAuth();
-  const { application } = useUserProfile(user);
+  const { user, application, updateApplication } = useApplicationContext();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const hasLoadedData = useRef(false);
 
@@ -190,70 +201,37 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
       if (!validateForm() || !user?.id) return;
 
       try {
-        let applicationResult;
+        // Generate unique application number for new application if needed
+        let applicationData: Partial<Application> = {
+          account_type: data.accountType,
+          agency_id: data.agencyId,
+        };
 
-        if (application) {
-          // Update existing application
-          const { data: updateResult, error: updateError } = await supabase
-            .from("applications")
-            .update({
-              account_type: data.accountType,
-              agency_id: data.agencyId,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", application.id)
-            .select()
-            .single();
-
-          if (updateError) {
-            console.error("Error updating application:", updateError);
-            setErrors({
-              submit: "Erreur lors de la mise à jour de la demande",
-            });
-            return;
-          }
-
-          applicationResult = updateResult;
-        } else {
-          // Generate unique application number for new application
+        if (!application) {
           const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
           const random = Math.floor(Math.random() * 1000)
             .toString()
             .padStart(3, "0"); // 3-digit random
           const appNumber = `APP${timestamp}${random}`;
 
-          // Create new application
-          const { data: insertResult, error: insertError } = await supabase
-            .from("applications")
-            .insert({
-              user_id: user.id,
-              application_number: appNumber,
-              account_type: data.accountType,
-              agency_id: data.agencyId,
-              status: "draft",
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            })
-            .select()
-            .single();
-
-          if (insertError) {
-            console.error("Error creating application:", insertError);
-            setErrors({ submit: "Erreur lors de la création de la demande" });
-            return;
-          }
-
-          applicationResult = insertResult;
+          applicationData = {
+            ...applicationData,
+            application_number: appNumber,
+            status: "draft",
+          };
         }
 
-        console.log("Application processed:", applicationResult);
+        // Use context update function
+        await updateApplication(applicationData);
+
+        console.log("Application processed successfully");
         onNext();
       } catch (error) {
         console.error("Error:", error);
         setErrors({ submit: "Une erreur inattendue s'est produite" });
       }
     },
-    [validateForm, user?.id, data, onNext, application]
+    [validateForm, user?.id, data, onNext, application, updateApplication]
   );
 
   const accountTypes = [

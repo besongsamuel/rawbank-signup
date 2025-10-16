@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { supabase } from "../../../lib/supabase";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -76,7 +76,7 @@ const CardSelectionStep: React.FC<CardSelectionStepProps> = ({
   onPrev,
   loading = false,
 }) => {
-  const { user } = useAuth();
+  const { user, application, updateApplication } = useApplicationContext();
   const [selectedCard, setSelectedCard] = useState<string>(
     cardType || "carte_fidelite_usd"
   );

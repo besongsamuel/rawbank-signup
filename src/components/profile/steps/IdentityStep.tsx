@@ -20,7 +20,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { City, Country, State } from "country-state-city";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { supabase } from "../../../lib/supabase";
 import { PersonalInfo } from "../../../types/signup";
 
@@ -60,7 +60,7 @@ const IdentityStep: React.FC<IdentityStepProps> = ({
   onPrev,
   loading = false,
 }) => {
-  const { user } = useAuth();
+  const { user } = useApplicationContext();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoadingData, setIsLoadingData] = useState(false);
   const hasLoadedData = useRef(false);

@@ -35,7 +35,7 @@ import { styled } from "@mui/material/styles";
 import { City, Country, State } from "country-state-city";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../../hooks/useAuth";
+import { useApplicationContext } from "../../contexts/ApplicationContext";
 import {
   ContactInfo,
   EmergencyContact,
@@ -99,7 +99,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   loading = false,
 }) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user } = useApplicationContext();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Country/State/City data
@@ -230,17 +230,17 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <Stack spacing={4}>
               {/* Personal Information Section */}
               <Box>
-                  {/* Section Illustration */}
-                  <Box sx={{ textAlign: "center", mb: 3 }}>
-                    <Person sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
-                    <Typography variant="h5" gutterBottom>
-                      1. Identité
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Ces informations nous aident à vous identifier de manière
-                      unique
-                    </Typography>
-                  </Box>
+                {/* Section Illustration */}
+                <Box sx={{ textAlign: "center", mb: 3 }}>
+                  <Person sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
+                  <Typography variant="h5" gutterBottom>
+                    1. Identité
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Ces informations nous aident à vous identifier de manière
+                    unique
+                  </Typography>
+                </Box>
                 <Stack spacing={2}>
                   {/* Civility */}
                   <FormControl component="fieldset" error={!!errors.civility}>
@@ -511,15 +511,15 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
               {/* Marital Information Section */}
               <Box>
-                  <Box sx={{ textAlign: "center", mb: 3 }}>
-                    <Home sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
-                    <Typography variant="h5" gutterBottom>
-                      2. Situation Familiale
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Informations sur votre situation matrimoniale
-                    </Typography>
-                  </Box>
+                <Box sx={{ textAlign: "center", mb: 3 }}>
+                  <Home sx={{ fontSize: 64, color: "#FFCC00", mb: 1 }} />
+                  <Typography variant="h5" gutterBottom>
+                    2. Situation Familiale
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Informations sur votre situation matrimoniale
+                  </Typography>
+                </Box>
                 <Stack spacing={2}>
                   <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                     <FormControl

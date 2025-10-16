@@ -13,14 +13,14 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useApplicationContext } from "../../contexts/ApplicationContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const Header: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useApplicationContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -87,64 +87,48 @@ const Header: React.FC = () => {
                 flexGrow: 1,
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "flex-start",
                 gap: 3,
               }}
             >
-              {!user ? (
-                <>
-                  <Button
-                    onClick={() => navigate("/login")}
-                    sx={{
-                      color: "#FFFFFF",
-                      fontWeight: 500,
-                      fontSize: "1rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 204, 0, 0.1)",
-                        color: "#FFCC00",
-                      },
-                    }}
-                  >
-                    Ouvrir un compte
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    onClick={() => navigate("/app")}
-                    sx={{
-                      color: "#FFFFFF",
-                      fontWeight: 500,
-                      fontSize: "1rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 204, 0, 0.1)",
-                        color: "#FFCC00",
-                      },
-                    }}
-                  >
-                    Mon Compte
-                  </Button>
-                  <Button
-                    onClick={handleSignOut}
-                    sx={{
-                      color: "#FFFFFF",
-                      fontWeight: 500,
-                      fontSize: "1rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 204, 0, 0.1)",
-                        color: "#FFCC00",
-                      },
-                    }}
-                  >
-                    Déconnexion
-                  </Button>
-                </>
+              {!user && (
+                <Button
+                  onClick={() => navigate("/login")}
+                  sx={{
+                    color: "#FFFFFF",
+                    fontWeight: 500,
+                    fontSize: "1rem",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 204, 0, 0.1)",
+                      color: "#FFCC00",
+                    },
+                  }}
+                >
+                  Ouvrir un compte
+                </Button>
               )}
             </Box>
           )}
 
-          {/* Right side - Language Switcher */}
+          {/* Right side - Language Switcher and Sign Out */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <LanguageSwitcher />
+            {user && (
+              <Button
+                onClick={handleSignOut}
+                sx={{
+                  color: "#FFFFFF",
+                  fontWeight: 500,
+                  fontSize: "1rem",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 204, 0, 0.1)",
+                    color: "#FFCC00",
+                  },
+                }}
+              >
+                Déconnexion
+              </Button>
+            )}
 
             {/* Mobile Menu */}
             {isMobile && (
@@ -185,20 +169,8 @@ const Header: React.FC = () => {
                         >
                           Ouvrir un compte
                         </MenuItem>,
-                        <MenuItem
-                          key="login"
-                          onClick={() => handleNavigation("/login")}
-                        >
-                          Connexion
-                        </MenuItem>,
                       ]
                     : [
-                        <MenuItem
-                          key="account"
-                          onClick={() => handleNavigation("/app")}
-                        >
-                          Mon Compte
-                        </MenuItem>,
                         <MenuItem key="signout" onClick={handleSignOut}>
                           Déconnexion
                         </MenuItem>,

@@ -15,7 +15,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { SignupStep1Data } from "../../types/signup";
-import LanguageSwitcher from "../common/LanguageSwitcher";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 20,
@@ -84,11 +83,6 @@ const SignupStep1: React.FC<SignupStep1Props> = ({
                 <StepLabel>Profil</StepLabel>
               </Step>
             </Stepper>
-          </Box>
-
-          {/* Language Switcher */}
-          <Box sx={{ position: "absolute", top: 16, right: 16 }}>
-            <LanguageSwitcher />
           </Box>
 
           {/* Header */}

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useEffect, useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { ContactInfo } from "../../../types/signup";
 
 const ContentBox = styled(Box)(({ theme }) => ({
@@ -51,7 +51,7 @@ const ContactStep: React.FC<ContactStepProps> = ({
   onPrev,
   loading = false,
 }) => {
-  const { user } = useAuth();
+  const { user } = useApplicationContext();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Initialize email1 from user

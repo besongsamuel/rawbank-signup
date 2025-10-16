@@ -29,7 +29,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { City, Country, State } from "country-state-city";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
+import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { useIdExtraction } from "../../../hooks/useIdExtraction";
 import { supabase } from "../../../lib/supabase";
 import { IdCardInfo, PersonalInfo } from "../../../types/signup";
@@ -100,7 +100,7 @@ const IdCardAndIdentityStep: React.FC<IdCardAndIdentityStepProps> = ({
   onPrev,
   loading = false,
 }) => {
-  const { user } = useAuth();
+  const { user } = useApplicationContext();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

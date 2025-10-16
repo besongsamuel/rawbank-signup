@@ -17,8 +17,7 @@ import {
 import { styled } from "@mui/material/styles";
 import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../hooks/useAuth";
-import { useUserProfile } from "../../../hooks/useUserProfile";
+import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { supabase } from "../../../lib/supabase";
 import CelebrationModal from "../../common/CelebrationModal";
 
@@ -56,8 +55,7 @@ interface ReviewStepProps {
 
 const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { profile, application, refreshProfile } = useUserProfile(user);
+  const { user, profile, application } = useApplicationContext();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -82,9 +80,6 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
         return;
       }
 
-      // Refresh profile to get updated application status
-      await refreshProfile();
-
       // Close confirm modal and show celebration
       setShowConfirmModal(false);
       setShowCelebration(true);
@@ -93,7 +88,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
     } finally {
       setSubmitting(false);
     }
-  }, [user?.id, application?.id, refreshProfile, navigate]);
+  }, [user?.id, application?.id]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fr-FR");

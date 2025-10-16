@@ -44,8 +44,24 @@ export const useAuth = (): AuthState & AuthActions => {
       setUser(session?.user ?? null);
       setLoading(false);
 
+      // Capture authentication errors from various events
       if (event === "SIGNED_OUT") {
         setError(null);
+      } else if (event === "PASSWORD_RECOVERY") {
+        // Handle password recovery errors
+        if (!session?.user) {
+          setError("Password recovery failed. Please try again.");
+        }
+      } else if (event === "USER_UPDATED") {
+        // Handle user update errors
+        if (!session?.user) {
+          setError("User update failed. Please try again.");
+        }
+      } else if (event === "TOKEN_REFRESHED") {
+        // Handle token refresh errors
+        if (!session?.user) {
+          setError("Session expired. Please sign in again.");
+        }
       }
     });
 
