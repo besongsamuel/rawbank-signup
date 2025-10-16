@@ -25,7 +25,6 @@ import { supabase } from "../../../lib/supabase";
 import { PersonalInfo } from "../../../types/signup";
 
 const ContentBox = styled(Box)(({ theme }) => ({
-  minHeight: "calc(100vh - 160px)",
   background: "#FFFFFF",
   display: "flex",
   alignItems: "center",

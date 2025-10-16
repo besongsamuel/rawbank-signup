@@ -22,7 +22,6 @@ import { supabase } from "../../../lib/supabase";
 import CelebrationModal from "../../common/CelebrationModal";
 
 const ContentBox = styled(Box)(({ theme }) => ({
-  minHeight: "calc(100vh - 160px)",
   background: "#FFFFFF",
   display: "flex",
   alignItems: "center",
@@ -55,7 +54,8 @@ interface ReviewStepProps {
 
 const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
   const navigate = useNavigate();
-  const { user, profile, application } = useApplicationContext();
+  const { user, profile, application, refreshApplication } =
+    useApplicationContext();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -80,6 +80,9 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
         return;
       }
 
+      // Refresh application data in context to reflect the updated status
+      await refreshApplication();
+
       // Close confirm modal and show celebration
       setShowConfirmModal(false);
       setShowCelebration(true);
@@ -88,7 +91,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
     } finally {
       setSubmitting(false);
     }
-  }, [user?.id, application?.id]);
+  }, [user?.id, application?.id, refreshApplication]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fr-FR");

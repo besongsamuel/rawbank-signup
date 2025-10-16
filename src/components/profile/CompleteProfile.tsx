@@ -791,10 +791,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
   // Render current step with stepper
   const renderStepWithStepper = (stepComponent: React.ReactNode) => {
     return (
-      <Box
-        ref={stepContainerRef}
-        sx={{ width: "100%", minHeight: "calc(100vh - 160px)" }}
-      >
+      <Box ref={stepContainerRef} sx={{ width: "100%" }}>
         <Box sx={{ maxWidth: 1200, margin: "0 auto", p: 2 }}>
           {/* Main Heading */}
           <Box sx={{ textAlign: "center", mb: 3 }}>

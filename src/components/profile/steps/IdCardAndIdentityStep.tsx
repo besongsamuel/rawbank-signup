@@ -38,7 +38,6 @@ import ExtractionConfirmationModal from "../../modals/ExtractionConfirmationModa
 import ExtractionLoadingModal from "../../modals/ExtractionLoadingModal";
 
 const ContentBox = styled(Box)(({ theme }) => ({
-  minHeight: "calc(100vh - 160px)",
   background: "#FFFFFF",
   display: "flex",
   alignItems: "center",

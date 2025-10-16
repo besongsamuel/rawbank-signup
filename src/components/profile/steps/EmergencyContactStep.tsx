@@ -15,7 +15,6 @@ import React, { useCallback, useState } from "react";
 import { EmergencyContact } from "../../../types/signup";
 
 const ContentBox = styled(Box)(({ theme }) => ({
-  minHeight: "calc(100vh - 160px)",
   background: "#FFFFFF",
   display: "flex",
   alignItems: "center",

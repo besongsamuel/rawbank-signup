@@ -15,7 +15,6 @@ import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { supabase } from "../../../lib/supabase";
 
 const ContentBox = styled(Box)(({ theme }) => ({
-  minHeight: "calc(100vh - 160px)",
   background: "#FFFFFF",
   display: "flex",
   alignItems: "center",
@@ -230,28 +229,17 @@ const CardSelectionStep: React.FC<CardSelectionStepProps> = ({
       if (!user?.id) return;
 
       try {
-        // Update the application with selected card type
-        const { error } = await supabase
-          .from("applications")
-          .update({
-            card_type: selectedCard,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1);
-
-        if (error) {
-          console.error("Error saving card type:", error);
-          return;
-        }
+        // Update the application with selected card type using context function
+        await updateApplication({
+          card_type: selectedCard,
+        });
 
         onNext();
       } catch (error) {
         console.error("Error in card selection:", error);
       }
     },
-    [selectedCard, user?.id, onNext]
+    [selectedCard, user?.id, onNext, updateApplication]
   );
 
   return (
