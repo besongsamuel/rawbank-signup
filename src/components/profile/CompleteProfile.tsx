@@ -842,7 +842,6 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ step }) => {
           data={step2Data.accountSelection}
           onDataChange={handleAccountSelectionDataChange}
           onNext={handleAccountSelectionNext}
-          onPrev={() => navigate("/login")}
           loading={loading}
         />
       );

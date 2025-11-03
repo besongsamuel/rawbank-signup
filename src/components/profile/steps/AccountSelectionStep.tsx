@@ -79,7 +79,6 @@ interface AccountSelectionStepProps {
   data: AccountSelectionData;
   onDataChange: (data: Partial<AccountSelectionData>) => void;
   onNext: () => void;
-  onPrev: () => void;
   loading?: boolean;
 }
 
@@ -132,7 +131,6 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
   data,
   onDataChange,
   onNext,
-  onPrev,
   loading = false,
 }) => {
   const { user, application, updateApplication } = useApplicationContext();
@@ -420,25 +418,16 @@ const AccountSelectionStep: React.FC<AccountSelectionStepProps> = ({
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                   mt: 4,
-                  gap: 2,
                 }}
               >
-                <Button
-                  variant="outlined"
-                  onClick={onPrev}
-                  disabled={loading}
-                  sx={{ flex: 1 }}
-                >
-                  Précédent
-                </Button>
                 <Button
                   type="submit"
                   variant="contained"
                   disabled={loading}
                   sx={{
-                    flex: 1,
+                    minWidth: 250,
                     backgroundColor: "#000000",
                     color: "#FFCC00",
                     "&:hover": {

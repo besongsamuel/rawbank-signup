@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApplicationContext } from "../../../contexts/ApplicationContext";
 import { supabase } from "../../../lib/supabase";
@@ -54,11 +54,16 @@ interface ReviewStepProps {
 
 const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
   const navigate = useNavigate();
-  const { user, profile, application, refreshApplication } =
+  const { user, profile, application, refreshApplication, refreshProfile } =
     useApplicationContext();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  // Refresh profile data when component mounts to ensure we have latest data
+  useEffect(() => {
+    refreshProfile();
+  }, [refreshProfile]);
 
   const handleSubmit = useCallback(async () => {
     if (!user?.id || !application?.id) return;
@@ -140,6 +145,17 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
       mademoiselle: "Mademoiselle",
     };
     return civilities[civility] || civility;
+  };
+
+  const getIdTypeLabel = (idType: string) => {
+    const idTypes: Record<string, string> = {
+      carte_electeur: "Carte d'électeur",
+      carte_identite: "Carte d'identité",
+      permis_conduire: "Permis de conduire",
+      passeport: "Passeport",
+      autre: "Autre",
+    };
+    return idTypes[idType] || idType;
   };
 
   return (
@@ -378,7 +394,9 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
                       Type de document:
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      {profile?.id_type || "Non spécifié"}
+                      {profile?.id_type
+                        ? getIdTypeLabel(profile.id_type)
+                        : "Non spécifié"}
                     </Typography>
                   </Box>
                   <Box
@@ -556,8 +574,8 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ onPrev, loading = false }) => {
                       Revenus mensuels:
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      {profile?.monthly_gross_income
-                        ? `${profile.monthly_gross_income.toLocaleString()} CDF`
+                      {profile?.monthly_gross_income != null
+                        ? `${Number(profile.monthly_gross_income).toLocaleString("fr-FR")} CDF`
                         : "Non spécifiés"}
                     </Typography>
                   </Box>

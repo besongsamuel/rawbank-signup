@@ -174,14 +174,14 @@ const MaritalAndHousingStep: React.FC<MaritalAndHousingStepProps> = ({
                         }
                         label="Régime matrimonial"
                       >
-                        <MenuItem value="communaute">
-                          Communauté de biens
+                        <MenuItem value="separation_biens">
+                          Séparation des biens
                         </MenuItem>
-                        <MenuItem value="separation">
-                          Séparation de biens
+                        <MenuItem value="communaute_universelle">
+                          Communauté universelle
                         </MenuItem>
-                        <MenuItem value="participation">
-                          Participation aux acquêts
+                        <MenuItem value="communaute_reduite">
+                          Communauté réduite aux acquêts
                         </MenuItem>
                       </Select>
                       <Typography
