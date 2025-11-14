@@ -182,13 +182,18 @@ const SigninForm: React.FC = () => {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      // Use verifyOtp to verify the OTP and create the user if they don't exist
+      // This works similarly to handleSendOTP in that it will create users for new signups
+      // Note: ensure enable_signup = true in supabase/config.toml [auth.sms] section
+      const { error: verifyError } = await supabase.auth.verifyOtp({
         phone: formattedPhone,
         token: otp,
         type: "sms",
       });
 
-      if (error) throw error;
+      if (verifyError) {
+        throw verifyError;
+      }
 
       // Success! The auth state will update and useEffect will handle redirect
       setSuccess("Connexion réussie!");
