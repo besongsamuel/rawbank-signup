@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Container, Typography, TextField, Button, Grid } from '@mui/material';
 import StepProgress from '../components/StepProgress';
 import { PageTransition, YellowClawFlash } from '../components/Motion';
+import AuthBackButton from '../components/auth/AuthBackButton';
 
 export default function ConfirmData() {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ export default function ConfirmData() {
       {showFlash && <YellowClawFlash />}
       
       <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+        <AuthBackButton onClick={() => navigate('/onboarding/id-upload')} />
         <StepProgress currentStep={2} />
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>

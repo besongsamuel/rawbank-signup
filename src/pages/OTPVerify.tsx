@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, TextField, Button, Link } from '@mui/material';
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
+import AuthBackButton from '../components/auth/AuthBackButton';
 
 export default function OTPVerify() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function OTPVerify() {
   return (
     <PageTransition>
       <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+        <AuthBackButton onClick={() => navigate('/onboarding/remaining')} />
         <StepProgress currentStep={4} />
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>

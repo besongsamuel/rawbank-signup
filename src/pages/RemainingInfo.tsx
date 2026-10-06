@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, TextField, Button, Grid, MenuItem } from '@mui/material';
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
+import AuthBackButton from '../components/auth/AuthBackButton';
 
 export default function RemainingInfo() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ export default function RemainingInfo() {
   return (
     <PageTransition>
       <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+        <AuthBackButton onClick={() => navigate(-1)} />
         <StepProgress currentStep={3} />
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>

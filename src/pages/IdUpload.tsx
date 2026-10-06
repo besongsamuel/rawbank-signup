@@ -5,7 +5,6 @@ import {
   Container,
   Typography, 
   Button, 
-  Chip,
   Alert,
   Fade,
 } from '@mui/material';
@@ -14,6 +13,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { uploadData } from 'aws-amplify/storage';
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
+import AuthBackButton from '../components/auth/AuthBackButton';
 
 type IdType = 'passport' | 'nationalId' | 'voterCard' | 'driverLicense';
 
@@ -82,6 +82,7 @@ export default function IdUpload() {
   return (
     <PageTransition>
       <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+        <AuthBackButton onClick={() => navigate('/', { state: { fromOnboarding: true } })} />
         <StepProgress currentStep={1} />
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>
@@ -110,24 +111,45 @@ export default function IdUpload() {
           >
             Type de document
           </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-            {idTypes.map((type) => (
-              <Chip
-                key={type.value}
-                label={type.label}
-                onClick={() => setIdType(type.value as IdType)}
-                variant={idType === type.value ? 'filled' : 'outlined'}
-                sx={{
-                  bgcolor: idType === type.value ? '#FFCC00' : 'transparent',
-                  borderColor: idType === type.value ? '#FFCC00' : '#E5E5E5',
-                  color: '#0A0A0A',
-                  fontWeight: idType === type.value ? 600 : 500,
-                  '&:hover': {
-                    bgcolor: idType === type.value ? '#FFD633' : '#FAFAFA',
-                  },
-                }}
-              />
-            ))}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 1.5,
+              alignItems: 'stretch',
+            }}
+          >
+            {idTypes.map((type) => {
+              const selected = idType === type.value;
+              return (
+                <Button
+                  key={type.value}
+                  type="button"
+                  variant="outlined"
+                  onClick={() => setIdType(type.value as IdType)}
+                  aria-pressed={selected}
+                  sx={{
+                    width: '100%',
+                    minHeight: 56,
+                    height: '100%',
+                    px: 1.5,
+                    whiteSpace: 'normal',
+                    lineHeight: 1.3,
+                    textAlign: 'center',
+                    color: '#0A0A0A',
+                    fontWeight: selected ? 600 : 500,
+                    bgcolor: selected ? '#FFCC00' : '#FFFFFF',
+                    borderColor: selected ? '#FFCC00' : '#E5E5E5',
+                    '&:hover': {
+                      bgcolor: selected ? '#FFD633' : '#FAFAFA',
+                      borderColor: selected ? '#FFD633' : '#0A0A0A',
+                    },
+                  }}
+                >
+                  {type.label}
+                </Button>
+              );
+            })}
           </Box>
         </Box>
 
@@ -220,26 +242,34 @@ export default function IdUpload() {
             boxShadow: { xs: '0 -2px 12px rgba(10, 10, 10, 0.06)', sm: 'none' },
           }}
         >
-          <Button
-            fullWidth
-            variant="contained"
-            size="large"
-            onClick={handleUploadAndExtract}
-            disabled={!file || !idType || uploading}
-          >
-            {uploading ? 'Téléchargement...' : 'Continuer'}
-          </Button>
-
-          {!file && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
             <Button
               fullWidth
-              variant="text"
-              onClick={() => navigate('/onboarding/remaining')}
-              sx={{ mt: 1.5, color: '#5C5C5C' }}
+              variant="contained"
+              size="large"
+              onClick={handleUploadAndExtract}
+              disabled={!file || !idType || uploading}
+              sx={{
+                '&.Mui-disabled': {
+                  bgcolor: '#E5E5E5',
+                  color: '#5C5C5C',
+                },
+              }}
             >
-              Saisir manuellement
+              {uploading ? 'Téléchargement...' : 'Continuer'}
             </Button>
-          )}
+
+            {!file && (
+              <Button
+                fullWidth
+                variant="text"
+                onClick={() => navigate('/onboarding/remaining')}
+                sx={{ color: '#5C5C5C' }}
+              >
+                Saisir manuellement
+              </Button>
+            )}
+          </Box>
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Button, keyframes } from '@mui/material';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useTranslation } from 'react-i18next';
@@ -17,13 +17,17 @@ const breatheSlow = keyframes`
 export default function Welcome() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { authStatus } = useAuthenticator((context) => [context.authStatus]);
+  const stayOnWelcome = Boolean(
+    (location.state as { fromOnboarding?: boolean } | null)?.fromOnboarding
+  );
 
   useEffect(() => {
-    if (authStatus === 'authenticated') {
+    if (authStatus === 'authenticated' && !stayOnWelcome) {
       navigate('/onboarding/id-upload');
     }
-  }, [authStatus, navigate]);
+  }, [authStatus, navigate, stayOnWelcome]);
 
   return (
     <Box

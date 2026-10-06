@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Typography, LinearProgress } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { BreathingIcon } from '../components/Motion';
+import AuthBackButton from '../components/auth/AuthBackButton';
 
 export default function Extracting() {
   const navigate = useNavigate();
@@ -10,13 +11,12 @@ export default function Extracting() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Simulate AI extraction progress
+    let advanceTimer = 0;
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          // Navigate to confirm screen after extraction
-          setTimeout(() => {
+          advanceTimer = window.setTimeout(() => {
             navigate('/onboarding/confirm', {
               state: location.state,
             });
@@ -27,7 +27,10 @@ export default function Extracting() {
       });
     }, 300);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.clearTimeout(advanceTimer);
+    };
   }, [navigate, location.state]);
 
   return (
@@ -40,8 +43,12 @@ export default function Extracting() {
         justifyContent: 'center',
         bgcolor: '#FFFFFF',
         px: 3,
+        position: 'relative',
       }}
     >
+      <Box sx={{ position: 'absolute', top: 24, left: 24 }}>
+        <AuthBackButton onClick={() => navigate('/onboarding/id-upload')} />
+      </Box>
       <BreathingIcon>
         <AutoAwesomeIcon 
           sx={{ 
