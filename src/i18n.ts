@@ -17,6 +17,10 @@ const resources = {
         loading: 'Chargement...',
         error: 'Erreur',
         success: 'Succès',
+        optional: 'Optionnel',
+        duration: 'Durée',
+        minutes: 'minutes',
+        notes: 'Notes',
       },
       
       // Auth
@@ -26,54 +30,81 @@ const resources = {
         signOut: 'Se déconnecter',
         email: 'Adresse e-mail',
         password: 'Mot de passe',
-        confirmPassword: 'Confirmer le mot de passe',
+        confirmPassword: 'Confirmez le mot de passe',
         forgotPassword: 'Mot de passe oublié?',
         noAccount: "Pas encore de compte?",
         haveAccount: 'Vous avez déjà un compte?',
         verifyEmail: 'Vérifiez votre e-mail',
         verificationCode: 'Code de vérification',
         resendCode: 'Renvoyer le code',
-        welcome: 'Bienvenue chez Rawbank',
-        subtitle: 'Ouvrez votre compte en quelques minutes',
+        createAccount: 'Créez votre compte',
+        signInTitle: 'Connexion',
+        accessAccount: 'Accédez à votre compte',
+        simpleAndFast: 'C\'est simple et rapide',
+        connectNow: 'Connectez-vous',
+        registerNow: 'Inscrivez-vous',
+        minPassword: 'Minimum 8 caractères',
+      },
+      
+      // Welcome
+      welcome: {
+        tagline: 'Ouvrez votre compte en quelques minutes',
+        continue: 'Continuer',
+        haveAccount: 'J\'ai déjà un compte',
       },
       
       // Steps
       steps: {
-        idUpload: 'Document d\'identité',
-        personalInfo: 'Informations personnelles',
-        compliance: 'Conformité',
-        review: 'Vérification',
-        complete: 'Terminé',
+        step: 'Étape',
+        of: 'sur',
       },
       
       // ID Upload
       idUpload: {
-        title: 'Téléchargez votre pièce d\'identité',
-        subtitle: 'Nous utiliserons l\'IA pour extraire automatiquement vos informations',
+        title: 'Pièce d\'identité',
+        subtitle: 'Prenez une photo nette de votre pièce',
         selectType: 'Type de document',
         passport: 'Passeport',
-        nationalId: 'Carte d\'identité nationale',
+        nationalId: 'Carte d\'identité',
         voterCard: 'Carte d\'électeur',
         driverLicense: 'Permis de conduire',
         uploadImage: 'Télécharger une photo',
+        takePhoto: 'Prendre une photo',
         dragDrop: 'Glissez-déposez votre document ici',
         or: 'ou',
         clickToUpload: 'Cliquez pour télécharger',
-        supported: 'JPG, PNG ou PDF (max 10 Mo)',
+        supported: 'JPG, PNG ou WebP · Max 10 Mo',
         uploading: 'Téléchargement...',
         extracting: 'Extraction des données...',
-        aiMagic: 'Notre IA analyse votre document',
-        reviewing: 'Vérification des informations extraites',
+        manualEntry: 'Saisir manuellement',
+        fileTooLarge: 'Fichier trop volumineux (max 10 Mo)',
+        unsupportedFormat: 'Format non supporté (JPG, PNG ou WebP)',
+      },
+      
+      // Extracting
+      extracting: {
+        title: 'Extraction en cours...',
+        subtitle: 'Notre IA analyse votre document',
+      },
+      
+      // Confirm Data
+      confirmData: {
+        title: 'Vérifiez ces informations',
+        subtitle: 'Modifiez si nécessaire',
+      },
+      
+      // Remaining Info
+      remainingInfo: {
+        title: 'Complétez ces informations',
+        subtitle: 'Quelques détails supplémentaires',
+        phone: 'Téléphone',
+        phoneHelper: 'Nous enverrons un code de vérification',
+        address: 'Adresse',
+        city: 'Ville',
       },
       
       // Personal Info
       personalInfo: {
-        title: 'Vérifiez vos informations',
-        subtitle: 'Confirmez ou modifiez les informations extraites',
-        civility: 'Civilité',
-        mr: 'Monsieur',
-        mrs: 'Madame',
-        ms: 'Mademoiselle',
         firstName: 'Prénom',
         middleName: 'Postnom',
         lastName: 'Nom',
@@ -88,43 +119,80 @@ const resources = {
         province: 'Province',
         country: 'Pays',
         phone: 'Téléphone',
+        idNumber: 'Numéro de document',
+        postnomHelper: 'Nom de famille maternel',
       },
       
-      // FATCA
-      fatca: {
-        title: 'Déclaration FATCA',
-        subtitle: 'Foreign Account Tax Compliance Act',
-        question: 'Êtes-vous une personne imposable aux États-Unis?',
-        yes: 'Oui',
-        no: 'Non',
-        usCitizen: 'Citoyen américain',
-        usBorn: 'Né aux États-Unis',
-        usResident: 'Résident américain',
-        usAddress: 'Adresse américaine',
-        usPhone: 'Numéro de téléphone américain',
-        tin: 'Numéro d\'identification fiscale (TIN)',
+      // OTP Verify
+      otp: {
+        title: 'Vérifiez votre numéro',
+        subtitle: 'Entrez le code envoyé par SMS',
+        code: 'Code de vérification',
+        noCode: 'Vous n\'avez pas reçu le code?',
+        resend: 'Renvoyer',
+        verify: 'Vérifier',
       },
       
-      // PEP
-      pep: {
-        title: 'Déclaration PEP',
-        subtitle: 'Personne Politiquement Exposée',
-        question: 'Êtes-vous une personne politiquement exposée?',
-        description: 'Cela inclut les hauts fonctionnaires, dirigeants politiques, ou leurs proches',
-        yes: 'Oui',
-        no: 'Non',
-        position: 'Fonction',
-        organization: 'Organisation',
-      },
-      
-      // Dashboard
+      // Dashboard / Success
       dashboard: {
-        title: 'Tableau de bord',
-        welcome: 'Bienvenue',
-        accountOpened: 'Votre compte est en cours d\'ouverture',
+        title: 'Demande envoyée!',
+        subtitle: 'Votre demande d\'ouverture de compte est en cours de traitement',
         nextSteps: 'Prochaines étapes',
-        pending: 'En attente de vérification',
-        approved: 'Approuvé',
+        step1: 'Notre équipe vérifie vos documents (24-48h)',
+        step2: 'Vous recevrez un e-mail de confirmation',
+        step3: 'Passez retirer votre carte dans une agence Rawbank',
+        signOut: 'Se déconnecter',
+      },
+      
+      // Clerk - Calendar
+      clerk: {
+        todayAgenda: 'Rendez-vous du jour',
+        noAppointments: 'Aucun rendez-vous pour aujourd\'hui',
+        time: 'Heure',
+        client: 'Client',
+        status: 'Statut',
+        code: 'Code',
+        
+        // Status
+        scheduled: 'Prévu',
+        checkedIn: 'Arrivé',
+        inProgress: 'En cours',
+        completed: 'Terminé',
+        noShow: 'Absent',
+        rescheduled: 'Reprogrammé',
+        cancelled: 'Annulé',
+        
+        // Meeting Detail
+        meetingDetail: 'Détails du rendez-vous',
+        newClient: 'Nouveau client',
+        extractedByAI: 'Données extraites par IA',
+        fullName: 'Nom complet',
+        confidence: 'Confiance',
+        toComplete: 'À compléter pendant l\'entretien',
+        startMeeting: 'Démarrer l\'entretien',
+        meetingInProgress: 'Entretien en cours depuis',
+        endMeeting: 'Terminer l\'entretien',
+        
+        // Complete Meeting
+        completeMeeting: 'Terminer l\'entretien',
+        outcome: 'Résultat de l\'entretien',
+        accountOpened: 'Compte ouvert avec succès',
+        clientAbsent: 'Client absent',
+        rescheduledMeeting: 'Reprogrammé',
+        notesOptional: 'Notes (optionnel)',
+        notesPlaceholder: 'Observations, documents manquants, etc.',
+        saveAndComplete: 'Enregistrer et terminer',
+        saving: 'Enregistrement...',
+        durationExceeded: 'Durée supérieure à la cible (30 min)',
+      },
+      
+      // Cities
+      cities: {
+        kinshasa: 'Kinshasa',
+        lubumbashi: 'Lubumbashi',
+        goma: 'Goma',
+        bukavu: 'Bukavu',
+        kisangani: 'Kisangani',
       },
     },
   },
@@ -142,6 +210,10 @@ const resources = {
         loading: 'Loading...',
         error: 'Error',
         success: 'Success',
+        optional: 'Optional',
+        duration: 'Duration',
+        minutes: 'minutes',
+        notes: 'Notes',
       },
       
       // Auth
@@ -158,47 +230,74 @@ const resources = {
         verifyEmail: 'Verify your email',
         verificationCode: 'Verification code',
         resendCode: 'Resend code',
-        welcome: 'Welcome to Rawbank',
-        subtitle: 'Open your account in minutes',
+        createAccount: 'Create your account',
+        signInTitle: 'Sign In',
+        accessAccount: 'Access your account',
+        simpleAndFast: 'It\'s simple and fast',
+        connectNow: 'Sign in',
+        registerNow: 'Sign up',
+        minPassword: 'Minimum 8 characters',
+      },
+      
+      // Welcome
+      welcome: {
+        tagline: 'Open your account in minutes',
+        continue: 'Continue',
+        haveAccount: 'I already have an account',
       },
       
       // Steps
       steps: {
-        idUpload: 'ID Document',
-        personalInfo: 'Personal Information',
-        compliance: 'Compliance',
-        review: 'Review',
-        complete: 'Complete',
+        step: 'Step',
+        of: 'of',
       },
       
       // ID Upload
       idUpload: {
-        title: 'Upload your ID document',
-        subtitle: 'We\'ll use AI to automatically extract your information',
+        title: 'Identity Document',
+        subtitle: 'Take a clear photo of your document',
         selectType: 'Document type',
         passport: 'Passport',
         nationalId: 'National ID Card',
         voterCard: 'Voter Card',
         driverLicense: 'Driver License',
         uploadImage: 'Upload photo',
+        takePhoto: 'Take a photo',
         dragDrop: 'Drag and drop your document here',
         or: 'or',
         clickToUpload: 'Click to upload',
-        supported: 'JPG, PNG or PDF (max 10 MB)',
+        supported: 'JPG, PNG or WebP · Max 10 MB',
         uploading: 'Uploading...',
         extracting: 'Extracting data...',
-        aiMagic: 'Our AI is analyzing your document',
-        reviewing: 'Review extracted information',
+        manualEntry: 'Enter manually',
+        fileTooLarge: 'File too large (max 10 MB)',
+        unsupportedFormat: 'Unsupported format (JPG, PNG or WebP)',
+      },
+      
+      // Extracting
+      extracting: {
+        title: 'Extracting...',
+        subtitle: 'Our AI is analyzing your document',
+      },
+      
+      // Confirm Data
+      confirmData: {
+        title: 'Verify this information',
+        subtitle: 'Edit if necessary',
+      },
+      
+      // Remaining Info
+      remainingInfo: {
+        title: 'Complete this information',
+        subtitle: 'A few additional details',
+        phone: 'Phone',
+        phoneHelper: 'We will send a verification code',
+        address: 'Address',
+        city: 'City',
       },
       
       // Personal Info
       personalInfo: {
-        title: 'Verify your information',
-        subtitle: 'Confirm or edit the extracted information',
-        civility: 'Title',
-        mr: 'Mr.',
-        mrs: 'Mrs.',
-        ms: 'Ms.',
         firstName: 'First name',
         middleName: 'Middle name',
         lastName: 'Last name',
@@ -213,43 +312,80 @@ const resources = {
         province: 'Province',
         country: 'Country',
         phone: 'Phone',
+        idNumber: 'Document number',
+        postnomHelper: 'Mother\'s maiden name',
       },
       
-      // FATCA
-      fatca: {
-        title: 'FATCA Declaration',
-        subtitle: 'Foreign Account Tax Compliance Act',
-        question: 'Are you a U.S. taxpayer?',
-        yes: 'Yes',
-        no: 'No',
-        usCitizen: 'U.S. Citizen',
-        usBorn: 'Born in the U.S.',
-        usResident: 'U.S. Resident',
-        usAddress: 'U.S. Address',
-        usPhone: 'U.S. Phone number',
-        tin: 'Tax Identification Number (TIN)',
+      // OTP Verify
+      otp: {
+        title: 'Verify your number',
+        subtitle: 'Enter the code sent by SMS',
+        code: 'Verification code',
+        noCode: 'Didn\'t receive the code?',
+        resend: 'Resend',
+        verify: 'Verify',
       },
       
-      // PEP
-      pep: {
-        title: 'PEP Declaration',
-        subtitle: 'Politically Exposed Person',
-        question: 'Are you a politically exposed person?',
-        description: 'This includes senior officials, political leaders, or their close associates',
-        yes: 'Yes',
-        no: 'No',
-        position: 'Position',
-        organization: 'Organization',
-      },
-      
-      // Dashboard
+      // Dashboard / Success
       dashboard: {
-        title: 'Dashboard',
-        welcome: 'Welcome',
-        accountOpened: 'Your account is being opened',
+        title: 'Request sent!',
+        subtitle: 'Your account opening request is being processed',
         nextSteps: 'Next steps',
-        pending: 'Pending verification',
-        approved: 'Approved',
+        step1: 'Our team verifies your documents (24-48h)',
+        step2: 'You will receive a confirmation email',
+        step3: 'Pick up your card at a Rawbank branch',
+        signOut: 'Sign out',
+      },
+      
+      // Clerk - Calendar
+      clerk: {
+        todayAgenda: 'Today\'s Appointments',
+        noAppointments: 'No appointments for today',
+        time: 'Time',
+        client: 'Client',
+        status: 'Status',
+        code: 'Code',
+        
+        // Status
+        scheduled: 'Scheduled',
+        checkedIn: 'Checked In',
+        inProgress: 'In Progress',
+        completed: 'Completed',
+        noShow: 'No Show',
+        rescheduled: 'Rescheduled',
+        cancelled: 'Cancelled',
+        
+        // Meeting Detail
+        meetingDetail: 'Appointment Details',
+        newClient: 'New client',
+        extractedByAI: 'AI-extracted data',
+        fullName: 'Full name',
+        confidence: 'Confidence',
+        toComplete: 'To complete during interview',
+        startMeeting: 'Start interview',
+        meetingInProgress: 'Interview in progress for',
+        endMeeting: 'End interview',
+        
+        // Complete Meeting
+        completeMeeting: 'Complete interview',
+        outcome: 'Interview outcome',
+        accountOpened: 'Account opened successfully',
+        clientAbsent: 'Client absent',
+        rescheduledMeeting: 'Rescheduled',
+        notesOptional: 'Notes (optional)',
+        notesPlaceholder: 'Observations, missing documents, etc.',
+        saveAndComplete: 'Save and complete',
+        saving: 'Saving...',
+        durationExceeded: 'Duration exceeded target (30 min)',
+      },
+      
+      // Cities
+      cities: {
+        kinshasa: 'Kinshasa',
+        lubumbashi: 'Lubumbashi',
+        goma: 'Goma',
+        bukavu: 'Bukavu',
+        kisangani: 'Kisangani',
       },
     },
   },
@@ -262,6 +398,10 @@ i18n
     resources,
     fallbackLng: 'fr',
     supportedLngs: ['fr', 'en'],
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
     interpolation: {
       escapeValue: false,
     },
