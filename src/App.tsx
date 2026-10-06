@@ -14,6 +14,9 @@ import ConfirmData from './pages/ConfirmData';
 import RemainingInfo from './pages/RemainingInfo';
 import OTPVerify from './pages/OTPVerify';
 import Dashboard from './pages/Dashboard';
+import ClerkCalendar from './pages/clerk/ClerkCalendar';
+import ClerkMeetingDetail from './pages/clerk/ClerkMeetingDetail';
+import CompleteMeeting from './pages/clerk/CompleteMeeting';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -24,10 +27,12 @@ function App() {
         <Authenticator.Provider>
           <Layout>
             <Routes>
+              {/* Public routes */}
               <Route path="/" element={<Welcome />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
               
+              {/* Client onboarding routes */}
               <Route
                 path="/onboarding/id-upload"
                 element={
@@ -73,6 +78,32 @@ function App() {
                 element={
                   <ProtectedRoute requireComplete>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Clerk routes */}
+              <Route
+                path="/clerk/calendar"
+                element={
+                  <ProtectedRoute>
+                    <ClerkCalendar />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/clerk/meeting/:appointmentId"
+                element={
+                  <ProtectedRoute>
+                    <ClerkMeetingDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/clerk/meeting/:appointmentId/complete"
+                element={
+                  <ProtectedRoute>
+                    <CompleteMeeting />
                   </ProtectedRoute>
                 }
               />

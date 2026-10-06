@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Button, keyframes } from '@mui/material';
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import { useTranslation } from 'react-i18next';
+import { ClawAccent } from '../components/BrandedIcons';
 
 const breatheSlow = keyframes`
   0%, 100% {
@@ -13,9 +15,9 @@ const breatheSlow = keyframes`
 `;
 
 export default function Welcome() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { authStatus } = useAuthenticator((context) => [context.authStatus]);
-  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     if (authStatus === 'authenticated') {
@@ -48,17 +50,15 @@ export default function Welcome() {
           {/* Yellow claw accent with subtle breath */}
           <Box
             sx={{
-              width: 80,
-              height: 80,
-              margin: '0 auto 32px',
-              background: 'linear-gradient(135deg, #FFCC00 0%, #FFD633 100%)',
-              borderRadius: '50% 50% 0 50%',
-              transform: 'rotate(-45deg)',
+              display: 'inline-flex',
+              mb: 4,
               '@media (prefers-reduced-motion: no-preference)': {
                 animation: `${breatheSlow} 5000ms ease-in-out infinite`,
               },
             }}
-          />
+          >
+            <ClawAccent sx={{ fontSize: 80 }} />
+          </Box>
           
           <Typography
             variant="h1"
@@ -83,7 +83,7 @@ export default function Welcome() {
               mx: 'auto',
             }}
           >
-            Ouvrez votre compte en quelques minutes
+            {t('welcome.tagline')}
           </Typography>
         </Box>
 
@@ -94,7 +94,7 @@ export default function Welcome() {
             size="large"
             onClick={() => navigate('/signup')}
           >
-            Continuer
+            {t('welcome.continue')}
           </Button>
 
           <Button
@@ -106,7 +106,7 @@ export default function Welcome() {
               fontSize: '0.9375rem',
             }}
           >
-            J'ai déjà un compte
+            {t('welcome.haveAccount')}
           </Button>
         </Box>
       </Container>
