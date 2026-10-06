@@ -37,3 +37,12 @@ coverage/
 # Misc
 *.log
 .cache/
+
+# Amplify sandbox artifacts
+.amplify/
+amplify_outputs.json
+
+# Keep amplify source files committed
+!amplify/**/*.ts
+!amplify/**/*.json
+!amplify/**/package.json
