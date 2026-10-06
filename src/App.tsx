@@ -1,6 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { Box, Fade, useMediaQuery } from '@mui/material';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { rawbankTheme } from './theme';
@@ -19,6 +21,45 @@ import ClerkMeetingDetail from './pages/clerk/ClerkMeetingDetail';
 import CompleteMeeting from './pages/clerk/CompleteMeeting';
 import ProtectedRoute from './components/ProtectedRoute';
 
+function AuthTransition() {
+  const location = useLocation();
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
+  const pathRef = useRef(location.pathname);
+  pathRef.current = location.pathname;
+  const [displayPath, setDisplayPath] = useState(location.pathname);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (location.pathname === displayPath) return;
+    if (reduceMotion) {
+      setDisplayPath(location.pathname);
+      setVisible(true);
+      return;
+    }
+    setVisible(false);
+  }, [location.pathname, displayPath, reduceMotion]);
+
+  const handleExited = () => {
+    setDisplayPath(pathRef.current);
+    setVisible(true);
+  };
+
+  return (
+    <Fade in={visible} appear timeout={reduceMotion ? 0 : 280} onExited={handleExited}>
+      <Box
+        sx={{
+          '@media (prefers-reduced-motion: no-preference)': {
+            transition: 'transform 280ms ease',
+            transform: visible ? 'translateY(0)' : 'translateY(10px)',
+          },
+        }}
+      >
+        {displayPath === '/signup' ? <SignUp /> : <SignIn />}
+      </Box>
+    </Fade>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider theme={rawbankTheme}>
@@ -29,8 +70,10 @@ function App() {
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Welcome />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
+              <Route element={<AuthTransition />}>
+                <Route path="/signin" element={null} />
+                <Route path="/signup" element={null} />
+              </Route>
               
               {/* Client onboarding routes */}
               <Route

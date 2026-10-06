@@ -1,5 +1,7 @@
-import { Box, keyframes } from '@mui/material';
-import { ReactNode } from 'react';
+import { Box, Fade, keyframes, useMediaQuery } from '@mui/material';
+import { ReactNode, useEffect, useRef, useState } from 'react';
+
+const MOTION_MS = 280;
 
 const fadeInUp = keyframes`
   from {
@@ -22,6 +24,79 @@ export function PageTransition({ children }: PageTransitionProps) {
       sx={{
         '@media (prefers-reduced-motion: no-preference)': {
           animation: `${fadeInUp} 200ms ease-out`,
+        },
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+interface StepSwapProps {
+  stepKey: string;
+  children: ReactNode;
+}
+
+export function StepSwap({ stepKey, children }: StepSwapProps) {
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
+  const previous = useRef(children);
+  const stepRef = useRef(stepKey);
+  stepRef.current = stepKey;
+  const [shownKey, setShownKey] = useState(stepKey);
+  const [visible, setVisible] = useState(true);
+
+  if (stepKey === shownKey) {
+    previous.current = children;
+  }
+
+  useEffect(() => {
+    if (stepKey === shownKey) return;
+    if (reduceMotion) {
+      setShownKey(stepKey);
+      setVisible(true);
+      return;
+    }
+    setVisible(false);
+  }, [stepKey, shownKey, reduceMotion]);
+
+  const handleExited = () => {
+    setShownKey(stepRef.current);
+    setVisible(true);
+  };
+
+  return (
+    <Fade
+      in={visible}
+      appear={false}
+      timeout={reduceMotion ? 0 : MOTION_MS}
+      onExited={handleExited}
+    >
+      <Box
+        sx={{
+          '@media (prefers-reduced-motion: no-preference)': {
+            transition: `transform ${MOTION_MS}ms ease`,
+            transform: visible ? 'translateY(0)' : 'translateY(10px)',
+          },
+        }}
+      >
+        {stepKey === shownKey ? children : previous.current}
+      </Box>
+    </Fade>
+  );
+}
+
+interface StaggerItemProps {
+  index: number;
+  children: ReactNode;
+}
+
+export function StaggerItem({ index, children }: StaggerItemProps) {
+  return (
+    <Box
+      sx={{
+        '@media (prefers-reduced-motion: no-preference)': {
+          animation: `${fadeInUp} 320ms ease-out both`,
+          animationDelay: `${index * 50}ms`,
         },
       }}
     >
