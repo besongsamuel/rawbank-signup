@@ -23,4 +23,5 @@ export const auth = defineAuth({
       mutable: true,
     },
   },
+  groups: ['client', 'clerk'],
 });
