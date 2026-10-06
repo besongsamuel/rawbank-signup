@@ -22,10 +22,34 @@ interface LogEventParams {
   applicationId?: string;
   metadata?: Record<string, any>;
   durationMs?: number;
+  expectedDurationMs?: number;
+  actualDurationMs?: number;
 }
+
+export interface AppointmentMetrics {
+  appointmentId: string;
+  eventCount: number;
+  durationMs?: number;
+  expectedDurationMs: number;
+  actualDurationMs?: number;
+  withinSla?: boolean;
+  outcome?: string;
+}
+
+const EXPECTED_MEETING_MS = 30 * 60 * 1000;
 
 export async function logRdvEvent(params: LogEventParams) {
   try {
+    const metadata = {
+      ...params.metadata,
+      ...(params.expectedDurationMs != null
+        ? { expectedDurationMs: params.expectedDurationMs }
+        : {}),
+      ...(params.actualDurationMs != null
+        ? { actualDurationMs: params.actualDurationMs }
+        : {}),
+    };
+
     const event = await client.models.RdvEvent.create({
       eventType: params.eventType,
       appointmentId: params.appointmentId,
@@ -34,7 +58,7 @@ export async function logRdvEvent(params: LogEventParams) {
       meetingSessionId: params.meetingSessionId,
       applicationId: params.applicationId,
       timestamp: new Date().toISOString(),
-      metadata: params.metadata ? JSON.stringify(params.metadata) : undefined,
+      metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : undefined,
       durationMs: params.durationMs,
     });
 
@@ -120,4 +144,55 @@ export async function completeMeetingSession(
     console.error('Failed to complete meeting session:', error);
     throw error;
   }
+}
+
+function readMetadata(metadata: unknown): Record<string, unknown> {
+  if (!metadata) return {};
+  if (typeof metadata === 'string') {
+    try {
+      return JSON.parse(metadata) as Record<string, unknown>;
+    } catch {
+      return {};
+    }
+  }
+  if (typeof metadata === 'object') return metadata as Record<string, unknown>;
+  return {};
+}
+
+export async function getAppointmentMetrics(appointmentId: string): Promise<AppointmentMetrics> {
+  const { data: events, errors } = await client.models.RdvEvent.list({
+    filter: { appointmentId: { eq: appointmentId } },
+  });
+
+  if (errors?.length) {
+    console.error('Failed to load appointment events:', errors);
+  }
+
+  const completion = [...(events ?? [])].reverse().find((event) =>
+    event.eventType === 'rdv.completed' ||
+    event.eventType === 'rdv.no_show' ||
+    event.eventType === 'rdv.rescheduled' ||
+    event.eventType === 'rdv.cancelled'
+  );
+
+  const metadata = readMetadata(completion?.metadata);
+  const durationMs = completion?.durationMs ?? undefined;
+  const expectedDurationMs =
+    typeof metadata.expectedDurationMs === 'number'
+      ? metadata.expectedDurationMs
+      : EXPECTED_MEETING_MS;
+  const actualDurationMs =
+    typeof metadata.actualDurationMs === 'number'
+      ? metadata.actualDurationMs
+      : durationMs;
+
+  return {
+    appointmentId,
+    eventCount: events?.length ?? 0,
+    durationMs,
+    expectedDurationMs,
+    actualDurationMs,
+    withinSla: actualDurationMs != null ? actualDurationMs <= expectedDurationMs : undefined,
+    outcome: typeof metadata.outcome === 'string' ? metadata.outcome : completion?.eventType ?? undefined,
+  };
 }

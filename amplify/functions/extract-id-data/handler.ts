@@ -6,6 +6,14 @@ interface ExtractIdDataEvent {
   userId: string;
 }
 
+interface OpenAiChatResponse {
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
+  }>;
+}
+
 interface ExtractedData {
   idNumber?: string;
   issueDate?: string;
@@ -105,8 +113,8 @@ Return a JSON object with these fields (all optional except what you can clearly
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const content = data.choices[0]?.message?.content;
+    const data = (await response.json()) as OpenAiChatResponse;
+    const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
       throw new Error('No content in OpenAI response');

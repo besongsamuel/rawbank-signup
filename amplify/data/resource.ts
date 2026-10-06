@@ -115,16 +115,7 @@ const schema = a.schema({
   // Event logging for analytics
   RdvEvent: a
     .model({
-      eventType: a.enum([
-        'rdv.viewed',
-        'rdv.day_agenda_opened',
-        'rdv.prep_opened',
-        'rdv.started',
-        'rdv.completed',
-        'rdv.no_show',
-        'rdv.rescheduled',
-        'rdv.cancelled'
-      ]).required(),
+      eventType: a.string().required(),
       
       appointmentId: a.string().required(),
       meetingSessionId: a.string(),
