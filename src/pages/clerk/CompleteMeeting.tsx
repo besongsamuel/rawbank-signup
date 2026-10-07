@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { 
-  Container, 
   Box, 
   Typography, 
   Button,
@@ -12,6 +11,7 @@ import {
   Alert,
 } from '@mui/material';
 import { PageTransition } from '../../components/Motion';
+import PageShell from '../../components/PageShell';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { logRdvEvent, getAppointmentMetrics } from '../../utils/rdvEvents';
 
@@ -61,7 +61,7 @@ export default function CompleteMeeting() {
 
   return (
     <PageTransition>
-      <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+      <PageShell width="clerk">
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <CheckCircleIcon sx={{ fontSize: 64, color: '#34C759', mb: 2 }} />
           <Typography 
@@ -99,7 +99,12 @@ export default function CompleteMeeting() {
 
           <RadioGroup
             value={outcome}
-            onChange={(e) => setOutcome(e.target.value as any)}
+            onChange={(e) => setOutcome(e.target.value as 'completed' | 'no_show' | 'rescheduled')}
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' },
+              gap: 1.5,
+            }}
           >
             <FormControlLabel 
               value="completed" 
@@ -178,7 +183,7 @@ export default function CompleteMeeting() {
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />
-      </Container>
+      </PageShell>
     </PageTransition>
   );
 }

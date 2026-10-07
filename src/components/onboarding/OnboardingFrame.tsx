@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { Box, Button, Container, Skeleton, Typography } from '@mui/material';
+import { Box, Button, Skeleton, Typography } from '@mui/material';
+import PageShell from '../PageShell';
 import StepProgress from '../StepProgress';
 import { PageTransition } from '../Motion';
 import AuthBackButton from '../auth/AuthBackButton';
@@ -32,7 +33,7 @@ export default function OnboardingFrame({
 }: OnboardingFrameProps) {
   return (
     <PageTransition>
-      <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+      <PageShell>
         <AuthBackButton onClick={onBack} />
         <StepProgress currentStep={step} totalSteps={ONBOARDING_STEP_COUNT} />
 
@@ -88,7 +89,7 @@ export default function OnboardingFrame({
           </Button>
         </Box>
         <Box sx={{ height: { xs: 88, sm: 0 } }} />
-      </Container>
+      </PageShell>
     </PageTransition>
   );
 }

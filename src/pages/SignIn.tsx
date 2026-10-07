@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Collapse,
-  Container,
   IconButton,
   InputAdornment,
   Link,
@@ -17,6 +16,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import AuthSplit from '../components/AuthSplit';
 import { StaggerItem, StepSwap } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
 import CodeDigits from '../components/auth/CodeDigits';
@@ -69,7 +69,7 @@ export default function SignIn() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+    <AuthSplit subtitle="Accédez à votre compte Rawbank">
       <AuthBackButton onClick={handleBack} />
 
       <Collapse in={Boolean(error)}>
@@ -90,7 +90,7 @@ export default function SignIn() {
               component="img"
               src={step === 'code' ? codeArt : accountArt}
               alt=""
-              sx={{ width: 140, height: 140, objectFit: 'contain', display: 'block', mx: 'auto', mb: 1 }}
+              sx={{ width: 140, height: 140, objectFit: 'contain', display: { xs: 'block', md: 'none' }, mx: 'auto', mb: 1 }}
             />
           </StaggerItem>
           <StaggerItem index={1}>
@@ -210,6 +210,6 @@ export default function SignIn() {
           </Link>
         </Typography>
       </Box>
-    </Container>
+    </AuthSplit>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, InputAdornment, MenuItem, TextField } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
+import { FormFull, FormGrid } from '../components/PageShell';
 import OnboardingFrame from '../components/onboarding/OnboardingFrame';
 import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
 import { useOnboardingNav } from '../onboarding/navigation';
@@ -82,7 +83,7 @@ export default function RemainingInfo() {
       loading={loading}
       error={error}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mb: 3 }}>
+      <FormGrid>
         <TextField
           fullWidth
           type="tel"
@@ -118,7 +119,9 @@ export default function RemainingInfo() {
             ),
           }}
         />
-        <TextField fullWidth label="Adresse" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="123 Avenue Kasavubu" multiline rows={2} />
+        <FormFull>
+          <TextField fullWidth label="Adresse" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="123 Avenue Kasavubu" multiline rows={2} />
+        </FormFull>
         <TextField select fullWidth label="Ville" value={city} onChange={(event) => setCity(event.target.value)}>
           {CITIES.map((item) => (
             <MenuItem key={item} value={item}>{item}</MenuItem>
@@ -141,7 +144,7 @@ export default function RemainingInfo() {
             ),
           }}
         />
-      </Box>
+      </FormGrid>
     </OnboardingFrame>
   );
 }

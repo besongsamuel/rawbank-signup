@@ -55,6 +55,9 @@ function AuthTransition() {
     <Fade in={visible} appear timeout={reduceMotion ? 0 : 280} onExited={handleExited}>
       <Box
         sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
           '@media (prefers-reduced-motion: no-preference)': {
             transition: 'transform 280ms ease',
             transform: visible ? 'translateY(0)' : 'translateY(10px)',

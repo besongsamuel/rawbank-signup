@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Container, Skeleton, Typography } from '@mui/material';
+import { Box, Button, Skeleton, Typography } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { PageTransition } from '../components/Motion';
+import PageShell from '../components/PageShell';
 import AppointmentBookingModal from '../components/modals/AppointmentBookingModal';
 import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
 import { useAppointments } from '../hooks/useAppointments';
@@ -54,7 +55,7 @@ export default function Account() {
 
   return (
     <PageTransition>
-      <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '480px !important' }}>
+      <PageShell width="wide">
         <Typography variant="h1" sx={{ mb: 1, fontSize: { xs: '1.875rem', sm: '2.25rem' } }}>
           Mon dossier
         </Typography>
@@ -65,13 +66,27 @@ export default function Account() {
         </Typography>
 
         {loading ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', lg: '1.2fr 0.8fr' },
+              gap: 3,
+            }}
+          >
             <Skeleton variant="rounded" height={280} />
             <Skeleton variant="rounded" height={160} />
           </Box>
         ) : (
-          <>
-            <Box sx={{ bgcolor: '#FFFFFF', borderRadius: 3, p: 2.5, mb: 3 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', lg: '1.2fr 0.8fr' },
+              gap: 3,
+              alignItems: 'start',
+              mb: 3,
+            }}
+          >
+            <Box sx={{ bgcolor: '#FFFFFF', borderRadius: 3, p: 2.5 }}>
               {DOSSIER_STEPS.map((step, index) => {
                 const done = step.done(profile);
                 const current = nextStep?.id === step.id;
@@ -141,7 +156,7 @@ export default function Account() {
               )}
             </Box>
 
-            <Box sx={{ bgcolor: '#FFFFFF', borderRadius: 3, p: 2.5, mb: 3 }}>
+            <Box sx={{ bgcolor: '#FFFFFF', borderRadius: 3, p: 2.5 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <CalendarTodayIcon sx={{ color: '#0A0A0A' }} />
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
@@ -186,13 +201,17 @@ export default function Account() {
                 Prendre rendez-vous
               </Button>
             </Box>
-          </>
+          </Box>
         )}
 
-        <Button fullWidth variant="outlined" onClick={() => signOut()} sx={{ mt: 1 }}>
+        <Button
+          variant="outlined"
+          onClick={() => signOut()}
+          sx={{ mt: 1, width: { xs: '100%', lg: 'auto' }, minWidth: { lg: 220 } }}
+        >
           Se déconnecter
         </Button>
-      </Container>
+      </PageShell>
 
       {agency && (
         <AppointmentBookingModal

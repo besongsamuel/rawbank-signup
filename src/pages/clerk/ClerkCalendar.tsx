@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Container, 
   Box, 
   Typography, 
   Card,
@@ -11,6 +10,7 @@ import {
   Button,
 } from '@mui/material';
 import { PageTransition } from '../../components/Motion';
+import PageShell from '../../components/PageShell';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PersonIcon from '@mui/icons-material/Person';
@@ -81,7 +81,7 @@ export default function ClerkCalendar() {
 
   return (
     <PageTransition>
-      <Container maxWidth="md" sx={{ py: { xs: 3, sm: 6 }, px: 3 }}>
+      <PageShell width="clerk">
         <Box sx={{ mb: 4 }}>
           <Typography 
             variant="h1" 
@@ -105,7 +105,13 @@ export default function ClerkCalendar() {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' },
+            gap: 2,
+          }}
+        >
           {appointments.map((appointment) => (
             <Card 
               key={appointment.id}
@@ -163,7 +169,7 @@ export default function ClerkCalendar() {
             </Typography>
           </Box>
         )}
-      </Container>
+      </PageShell>
     </PageTransition>
   );
 }

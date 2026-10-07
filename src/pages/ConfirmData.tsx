@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Box, Container, Typography, TextField, Button, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button } from '@mui/material';
+import PageShell, { FormFull, FormGrid } from '../components/PageShell';
 import StepProgress from '../components/StepProgress';
 import { PageTransition, YellowClawFlash } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
@@ -71,7 +72,7 @@ export default function ConfirmData() {
     <PageTransition>
       {showFlash && <YellowClawFlash />}
       
-      <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+      <PageShell>
         <AuthBackButton onClick={() => navigate(returnTo ?? '/onboarding/id-upload')} />
         <StepProgress currentStep={2} totalSteps={ONBOARDING_STEP_COUNT} />
 
@@ -90,55 +91,43 @@ export default function ConfirmData() {
           </Typography>
         </Box>
 
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Prénom"
-              value={formData.firstName}
-              onChange={handleChange('firstName')}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Postnom"
-              value={formData.middleName}
-              onChange={handleChange('middleName')}
-              helperText="Nom de famille maternel"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Nom"
-              value={formData.lastName}
-              onChange={handleChange('lastName')}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Date de naissance"
-              type="date"
-              value={formData.birthDate}
-              onChange={handleChange('birthDate')}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
+        <FormGrid>
+          <TextField
+            fullWidth
+            label="Prénom"
+            value={formData.firstName}
+            onChange={handleChange('firstName')}
+          />
+          <TextField
+            fullWidth
+            label="Postnom"
+            value={formData.middleName}
+            onChange={handleChange('middleName')}
+            helperText="Nom de famille maternel"
+          />
+          <TextField
+            fullWidth
+            label="Nom"
+            value={formData.lastName}
+            onChange={handleChange('lastName')}
+          />
+          <TextField
+            fullWidth
+            label="Date de naissance"
+            type="date"
+            value={formData.birthDate}
+            onChange={handleChange('birthDate')}
+            InputLabelProps={{ shrink: true }}
+          />
+          <FormFull>
             <TextField
               fullWidth
               label="Numéro de document"
               value={formData.idNumber}
               onChange={handleChange('idNumber')}
             />
-          </Grid>
-        </Grid>
+          </FormFull>
+        </FormGrid>
 
         <Box
           sx={{
@@ -169,7 +158,7 @@ export default function ConfirmData() {
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />
-      </Container>
+      </PageShell>
     </PageTransition>
   );
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
-  Container, 
   Box, 
   Typography, 
   Button,
@@ -12,6 +11,7 @@ import {
   Grid,
 } from '@mui/material';
 import { PageTransition } from '../../components/Motion';
+import PageShell from '../../components/PageShell';
 import PersonIcon from '@mui/icons-material/Person';
 import BadgeIcon from '@mui/icons-material/Badge';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -70,7 +70,7 @@ export default function ClerkMeetingDetail() {
 
   return (
     <PageTransition>
-      <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+      <PageShell width="clerk">
         <Box sx={{ mb: 4 }}>
           <Typography 
             variant="h1" 
@@ -86,8 +86,16 @@ export default function ClerkMeetingDetail() {
           </Typography>
         </Box>
 
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', lg: '1.2fr 0.8fr' },
+            gap: 3,
+            alignItems: 'start',
+          }}
+        >
         {/* Client Info Card */}
-        <Card sx={{ mb: 3 }}>
+        <Card>
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
               <Box
@@ -160,6 +168,7 @@ export default function ClerkMeetingDetail() {
           </CardContent>
         </Card>
 
+        <Box>
         {/* Missing Fields Card */}
         {appointment.prepData.missing.length > 0 && (
           <Card sx={{ mb: 3, borderLeft: '4px solid #FFCC00' }}>
@@ -229,7 +238,9 @@ export default function ClerkMeetingDetail() {
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />
-      </Container>
+        </Box>
+        </Box>
+      </PageShell>
     </PageTransition>
   );
 }

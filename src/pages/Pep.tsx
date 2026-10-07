@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
+import { FormFull, FormGrid } from '../components/PageShell';
 import OnboardingFrame from '../components/onboarding/OnboardingFrame';
 import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
 import { PEP_CATEGORIES } from '../onboarding/catalog';
@@ -67,15 +68,17 @@ export default function Pep() {
         </Button>
       </Box>
       {isPep && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mb: 3 }}>
+        <FormGrid>
           <TextField select fullWidth label="Catégorie" value={pepCategory} onChange={(event) => setPepCategory(event.target.value)}>
             {PEP_CATEGORIES.map((item) => (
               <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
             ))}
           </TextField>
           <TextField fullWidth label="Fonction" value={position} onChange={(event) => setPosition(event.target.value)} />
-          <TextField fullWidth label="Organisation" value={organization} onChange={(event) => setOrganization(event.target.value)} />
-        </Box>
+          <FormFull>
+            <TextField fullWidth label="Organisation" value={organization} onChange={(event) => setOrganization(event.target.value)} />
+          </FormFull>
+        </FormGrid>
       )}
     </OnboardingFrame>
   );

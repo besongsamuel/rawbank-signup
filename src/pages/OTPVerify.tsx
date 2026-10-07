@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, TextField, Button, Link } from '@mui/material';
+import { Box, Typography, TextField, Button, Link } from '@mui/material';
+import PageShell from '../components/PageShell';
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
@@ -25,7 +26,7 @@ export default function OTPVerify() {
 
   return (
     <PageTransition>
-      <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+      <PageShell>
         <AuthBackButton
           onClick={() =>
             navigate('/onboarding/contacts', { state: returnTo ? { returnTo } : undefined })
@@ -48,7 +49,7 @@ export default function OTPVerify() {
           </Typography>
         </Box>
 
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 4, maxWidth: { md: 480 }, mx: { md: 'auto' } }}>
           <TextField
             fullWidth
             label="Code de vérification"
@@ -94,6 +95,8 @@ export default function OTPVerify() {
             bgcolor: { xs: '#FFFFFF', sm: 'transparent' },
             borderTop: { xs: '1px solid #F5F5F5', sm: 'none' },
             boxShadow: { xs: '0 -2px 12px rgba(10, 10, 10, 0.06)', sm: 'none' },
+            maxWidth: { md: 480 },
+            mx: { md: 'auto' },
           }}
         >
           <Button
@@ -113,7 +116,7 @@ export default function OTPVerify() {
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />
-      </Container>
+      </PageShell>
     </PageTransition>
   );
 }

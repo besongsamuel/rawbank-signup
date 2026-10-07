@@ -35,7 +35,14 @@ export default function CardChoice() {
       loading={loading}
       error={error}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 3 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: 1.5,
+          mb: 3,
+        }}
+      >
         {CARD_OPTIONS.map((card) => {
           const selected = cardType === card.id;
           return (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, MenuItem, TextField } from '@mui/material';
+import { MenuItem, TextField } from '@mui/material';
+import { FormGrid } from '../components/PageShell';
 import OnboardingFrame from '../components/onboarding/OnboardingFrame';
 import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
 import { INCOME_SOURCES } from '../onboarding/catalog';
@@ -51,7 +52,7 @@ export default function Profession() {
       loading={loading}
       error={error}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mb: 3 }}>
+      <FormGrid>
         <TextField fullWidth label="Profession" value={profession} onChange={(event) => setProfession(event.target.value)} placeholder="Commerçant, enseignant..." helperText="Ce que vous faites au quotidien" />
         <TextField fullWidth label="Employeur" value={employer} onChange={(event) => setEmployer(event.target.value)} placeholder="Nom de l’entreprise ou Indépendant" helperText="L’organisation qui vous rémunère" />
         <TextField fullWidth type="number" label="Revenu mensuel (USD)" value={monthlyIncome} onChange={(event) => setMonthlyIncome(event.target.value)} helperText="Montant brut approximatif" inputProps={{ min: 0 }} />
@@ -60,7 +61,7 @@ export default function Profession() {
             <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
           ))}
         </TextField>
-      </Box>
+      </FormGrid>
     </OnboardingFrame>
   );
 }

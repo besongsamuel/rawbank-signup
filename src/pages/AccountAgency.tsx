@@ -40,7 +40,14 @@ export default function AccountAgency() {
       loading={loading}
       error={error}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 3 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: 1.5,
+          mb: 3,
+        }}
+      >
         {ACCOUNT_TYPES.map((type) => {
           const selected = accountType === type.value;
           return (
@@ -75,6 +82,7 @@ export default function AccountAgency() {
           value={agencyId}
           onChange={(event) => setAgencyId(event.target.value)}
           helperText="Vous pourrez y retirer votre carte"
+          sx={{ gridColumn: { md: '1 / -1' } }}
         >
           {AGENCIES.map((agency) => (
             <MenuItem key={agency.id} value={agency.id}>

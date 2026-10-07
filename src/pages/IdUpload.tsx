@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Box, 
-  Container,
   Typography, 
   Button, 
   Alert,
@@ -11,6 +10,7 @@ import {
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { uploadData } from 'aws-amplify/storage';
+import PageShell from '../components/PageShell';
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
@@ -93,7 +93,7 @@ export default function IdUpload() {
 
   return (
     <PageTransition>
-      <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
+      <PageShell>
         <AuthBackButton onClick={() => navigate(returnTo ?? '/onboarding/account')} />
         <StepProgress currentStep={2} totalSteps={ONBOARDING_STEP_COUNT} />
 
@@ -126,7 +126,7 @@ export default function IdUpload() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
+              gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr' },
               gap: 1.5,
               alignItems: 'stretch',
             }}
@@ -285,7 +285,7 @@ export default function IdUpload() {
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />
-      </Container>
+      </PageShell>
     </PageTransition>
   );
 }

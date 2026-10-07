@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, Checkbox, FormControlLabel, MenuItem, TextField } from '@mui/material';
+import { Checkbox, FormControlLabel, MenuItem, TextField } from '@mui/material';
+import { FormFull, FormGrid } from '../components/PageShell';
 import OnboardingFrame from '../components/onboarding/OnboardingFrame';
 import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
 import { HOUSING_STATUSES, MARITAL_REGIMES, MARITAL_STATUSES } from '../onboarding/catalog';
@@ -58,20 +59,12 @@ export default function FamilyHousing() {
       loading={loading}
       error={error}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mb: 3 }}>
+      <FormGrid>
         <TextField select fullWidth label="Situation matrimoniale" value={maritalStatus} onChange={(event) => setMaritalStatus(event.target.value)} helperText="Votre situation actuelle">
           {MARITAL_STATUSES.map((item) => (
             <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
           ))}
         </TextField>
-        {maritalStatus === 'marie' && (
-          <TextField select fullWidth label="Régime matrimonial" value={maritalRegime} onChange={(event) => setMaritalRegime(event.target.value)} helperText="Optionnel">
-            <MenuItem value="">Non précisé</MenuItem>
-            {MARITAL_REGIMES.map((item) => (
-              <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-            ))}
-          </TextField>
-        )}
         <TextField
           fullWidth
           type="number"
@@ -81,36 +74,52 @@ export default function FamilyHousing() {
           helperText="0 si vous n’en avez pas"
           inputProps={{ min: 0 }}
         />
+        {maritalStatus === 'marie' && (
+          <FormFull>
+            <TextField select fullWidth label="Régime matrimonial" value={maritalRegime} onChange={(event) => setMaritalRegime(event.target.value)} helperText="Optionnel">
+              <MenuItem value="">Non précisé</MenuItem>
+              {MARITAL_REGIMES.map((item) => (
+                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+              ))}
+            </TextField>
+          </FormFull>
+        )}
         <TextField select fullWidth label="Logement" value={housingStatus} onChange={(event) => setHousingStatus(event.target.value)} helperText="Votre situation actuelle">
           {HOUSING_STATUSES.map((item) => (
             <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
           ))}
         </TextField>
-        <TextField
-          fullWidth
-          multiline
-          rows={2}
-          label="Adresse permanente"
-          value={permanentAddress}
-          onChange={(event) => setPermanentAddress(event.target.value)}
-          placeholder="123 Avenue de la Gombe, Kinshasa"
-          helperText="Numéro, rue, commune et ville"
-        />
-        <FormControlLabel
-          control={<Checkbox checked={differentMail} onChange={(event) => setDifferentMail(event.target.checked)} />}
-          label="Mon adresse postale est différente"
-        />
-        {differentMail && (
+        <FormFull>
           <TextField
             fullWidth
             multiline
             rows={2}
-            label="Adresse postale"
-            value={mailingAddress}
-            onChange={(event) => setMailingAddress(event.target.value)}
+            label="Adresse permanente"
+            value={permanentAddress}
+            onChange={(event) => setPermanentAddress(event.target.value)}
+            placeholder="123 Avenue de la Gombe, Kinshasa"
+            helperText="Numéro, rue, commune et ville"
           />
+        </FormFull>
+        <FormFull>
+          <FormControlLabel
+            control={<Checkbox checked={differentMail} onChange={(event) => setDifferentMail(event.target.checked)} />}
+            label="Mon adresse postale est différente"
+          />
+        </FormFull>
+        {differentMail && (
+          <FormFull>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Adresse postale"
+              value={mailingAddress}
+              onChange={(event) => setMailingAddress(event.target.value)}
+            />
+          </FormFull>
         )}
-      </Box>
+      </FormGrid>
     </OnboardingFrame>
   );
 }

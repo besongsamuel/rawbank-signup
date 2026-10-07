@@ -81,20 +81,22 @@ export default function Fatca() {
         Êtes-vous une personne américaine au sens fiscal ?
       </Typography>
       {isUSPerson && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 3 }}>
-          <TextField fullWidth label="Numéro fiscal américain (TIN)" value={usTin} onChange={(event) => setUsTin(event.target.value)} helperText="Obligatoire pour une personne américaine" />
-          {FLAGS.map((flag) => (
-            <FormControlLabel
-              key={flag.key}
-              control={
-                <Checkbox
-                  checked={flags[flag.key]}
-                  onChange={(event) => setFlags((current) => ({ ...current, [flag.key]: event.target.checked }))}
-                />
-              }
-              label={flag.label}
-            />
-          ))}
+        <Box sx={{ mb: 3 }}>
+          <TextField fullWidth label="Numéro fiscal américain (TIN)" value={usTin} onChange={(event) => setUsTin(event.target.value)} helperText="Obligatoire pour une personne américaine" sx={{ mb: 2 }} />
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 1 }}>
+            {FLAGS.map((flag) => (
+              <FormControlLabel
+                key={flag.key}
+                control={
+                  <Checkbox
+                    checked={flags[flag.key]}
+                    onChange={(event) => setFlags((current) => ({ ...current, [flag.key]: event.target.checked }))}
+                  />
+                }
+                label={flag.label}
+              />
+            ))}
+          </Box>
         </Box>
       )}
     </OnboardingFrame>

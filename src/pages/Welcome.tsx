@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Button, keyframes } from '@mui/material';
+import { Box, Typography, Button, keyframes } from '@mui/material';
+import AuthSplit from '../components/AuthSplit';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useTranslation } from 'react-i18next';
 import { ClawAccent } from '../components/BrandedIcons';
@@ -30,27 +31,8 @@ export default function Welcome() {
   }, [authStatus, navigate, stayOnWelcome]);
 
   return (
-    <Box
-      sx={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        bgcolor: '#FFFFFF',
-      }}
-    >
-      <Container 
-        maxWidth="sm" 
-        sx={{ 
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          px: 3,
-          py: 6,
-          maxWidth: '420px !important',
-        }}
-      >
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
+    <AuthSplit subtitle={t('welcome.tagline')}>
+        <Box sx={{ display: { md: 'none' }, textAlign: 'center', mb: 8 }}>
           {/* Yellow claw accent with subtle breath */}
           <Box
             sx={{
@@ -113,7 +95,6 @@ export default function Welcome() {
             {t('welcome.haveAccount')}
           </Button>
         </Box>
-      </Container>
-    </Box>
+    </AuthSplit>
   );
 }
