@@ -4,6 +4,7 @@ import { Box, Typography, LinearProgress } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { BreathingIcon } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
+import { readReturnTo } from '../onboarding/navigation';
 
 export default function Extracting() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function Extracting() {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -47,7 +48,13 @@ export default function Extracting() {
       }}
     >
       <Box sx={{ position: 'absolute', top: 24, left: 24 }}>
-        <AuthBackButton onClick={() => navigate('/onboarding/id-upload')} />
+        <AuthBackButton
+          onClick={() =>
+            navigate('/onboarding/id-upload', {
+              state: readReturnTo(location.state) ? { returnTo: '/account' } : undefined,
+            })
+          }
+        />
       </Box>
       <BreathingIcon>
         <AutoAwesomeIcon 

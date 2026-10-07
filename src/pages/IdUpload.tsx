@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Box, 
   Container,
@@ -14,6 +14,9 @@ import { uploadData } from 'aws-amplify/storage';
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
+import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
+import { ONBOARDING_STEP_COUNT } from '../onboarding/catalog';
+import { readReturnTo } from '../onboarding/navigation';
 
 type IdType = 'passport' | 'nationalId' | 'voterCard' | 'driverLicense';
 
@@ -26,10 +29,19 @@ const idTypes = [
 
 export default function IdUpload() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = readReturnTo(location.state);
+  const { profile, save } = useAmplifyProfile();
   const [idType, setIdType] = useState<IdType | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (profile?.idType && idTypes.some((type) => type.value === profile.idType)) {
+      setIdType(profile.idType as IdType);
+    }
+  }, [profile]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -62,14 +74,14 @@ export default function IdUpload() {
         data: file,
       }).result;
 
-      localStorage.setItem('uploadedIdKey', result.path);
-      localStorage.setItem('idType', idType);
+      await save({ idType, idImageKey: result.path, currentStep: 'identity' });
 
-      navigate('/onboarding/extracting', { 
-        state: { 
+      navigate('/onboarding/extracting', {
+        state: {
           idType,
           imageKey: result.path,
-        } 
+          returnTo,
+        },
       });
 
     } catch (err) {
@@ -82,8 +94,8 @@ export default function IdUpload() {
   return (
     <PageTransition>
       <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
-        <AuthBackButton onClick={() => navigate('/', { state: { fromOnboarding: true } })} />
-        <StepProgress currentStep={1} />
+        <AuthBackButton onClick={() => navigate(returnTo ?? '/onboarding/account')} />
+        <StepProgress currentStep={2} totalSteps={ONBOARDING_STEP_COUNT} />
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography 
@@ -263,7 +275,7 @@ export default function IdUpload() {
               <Button
                 fullWidth
                 variant="text"
-                onClick={() => navigate('/onboarding/remaining')}
+                onClick={() => navigate('/onboarding/confirm', { state: { manual: true, idType, returnTo } })}
                 sx={{ color: '#5C5C5C' }}
               >
                 Saisir manuellement

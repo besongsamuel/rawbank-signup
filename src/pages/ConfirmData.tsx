@@ -4,10 +4,15 @@ import { Box, Container, Typography, TextField, Button, Grid } from '@mui/materi
 import StepProgress from '../components/StepProgress';
 import { PageTransition, YellowClawFlash } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
+import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
+import { ONBOARDING_STEP_COUNT } from '../onboarding/catalog';
+import { useOnboardingNav } from '../onboarding/navigation';
 
 export default function ConfirmData() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { profile, saving, error, save } = useAmplifyProfile();
+  const { returnTo, goNext } = useOnboardingNav('/onboarding/id-upload', '/onboarding/family');
   const [showFlash, setShowFlash] = useState(true);
 
   // Simulated extracted data - in real app, this comes from Lambda
@@ -20,10 +25,21 @@ export default function ConfirmData() {
   });
 
   useEffect(() => {
-    // Hide flash after animation
     const timer = setTimeout(() => setShowFlash(false), 450);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const manual = Boolean((location.state as { manual?: boolean } | null)?.manual);
+    if (!profile || (!profile.firstName && !profile.idNumber && !manual && !returnTo)) return;
+    setFormData({
+      firstName: profile.firstName ?? '',
+      middleName: profile.middleName ?? '',
+      lastName: profile.lastName ?? '',
+      birthDate: profile.birthDate ?? '',
+      idNumber: profile.idNumber ?? '',
+    });
+  }, [profile, location.state, returnTo]);
 
   const handleChange = (field: string) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -31,9 +47,24 @@ export default function ConfirmData() {
     setFormData((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
-  const handleContinue = () => {
-    localStorage.setItem('extractedData', JSON.stringify(formData));
-    navigate('/onboarding/remaining');
+  const handleContinue = async () => {
+    const state = location.state as { idType?: string; imageKey?: string } | null;
+    try {
+      await save({
+        firstName: formData.firstName.trim(),
+        middleName: formData.middleName.trim(),
+        lastName: formData.lastName.trim(),
+        birthDate: formData.birthDate || null,
+        idNumber: formData.idNumber.trim(),
+        idType: state?.idType || profile?.idType,
+        idImageKey: state?.imageKey || profile?.idImageKey,
+        extractionConfirmed: true,
+        currentStep: 'family',
+      });
+      goNext();
+    } catch {
+      // The error from the hook is shown under the form.
+    }
   };
 
   return (
@@ -41,8 +72,8 @@ export default function ConfirmData() {
       {showFlash && <YellowClawFlash />}
       
       <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
-        <AuthBackButton onClick={() => navigate('/onboarding/id-upload')} />
-        <StepProgress currentStep={2} />
+        <AuthBackButton onClick={() => navigate(returnTo ?? '/onboarding/id-upload')} />
+        <StepProgress currentStep={2} totalSteps={ONBOARDING_STEP_COUNT} />
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography 
@@ -126,9 +157,15 @@ export default function ConfirmData() {
             variant="contained"
             size="large"
             onClick={handleContinue}
+            disabled={saving || !formData.firstName || !formData.lastName || !formData.idNumber}
           >
-            Confirmer
+            {saving ? 'Enregistrement...' : 'Confirmer'}
           </Button>
+          {error && (
+            <Typography variant="body2" color="error" sx={{ mt: 1.5 }}>
+              {error}
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />

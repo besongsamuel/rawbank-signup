@@ -4,7 +4,6 @@ import { Box, Container, Typography, Button, keyframes } from '@mui/material';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useTranslation } from 'react-i18next';
 import { ClawAccent } from '../components/BrandedIcons';
-import { isApplicationSubmitted } from '../hooks/useApplicationDraft';
 
 const breatheSlow = keyframes`
   0%, 100% {
@@ -26,14 +25,14 @@ export default function Welcome() {
 
   useEffect(() => {
     if (authStatus === 'authenticated' && !stayOnWelcome) {
-      navigate(isApplicationSubmitted() ? '/account' : '/onboarding/id-upload');
+      navigate('/account');
     }
   }, [authStatus, navigate, stayOnWelcome]);
 
   return (
     <Box
       sx={{
-        minHeight: '100vh',
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
         bgcolor: '#FFFFFF',

@@ -13,10 +13,16 @@ import SignUp from './pages/SignUp';
 import IdUpload from './pages/IdUpload';
 import Extracting from './pages/Extracting';
 import ConfirmData from './pages/ConfirmData';
+import FamilyHousing from './pages/FamilyHousing';
 import RemainingInfo from './pages/RemainingInfo';
 import OTPVerify from './pages/OTPVerify';
+import Profession from './pages/Profession';
+import Fatca from './pages/Fatca';
+import Pep from './pages/Pep';
+import CardChoice from './pages/CardChoice';
 import Dashboard from './pages/Dashboard';
 import Account from './pages/Account';
+import AccountAgency from './pages/AccountAgency';
 import ClerkCalendar from './pages/clerk/ClerkCalendar';
 import ClerkMeetingDetail from './pages/clerk/ClerkMeetingDetail';
 import CompleteMeeting from './pages/clerk/CompleteMeeting';
@@ -78,6 +84,14 @@ function App() {
               
               {/* Client onboarding routes */}
               <Route
+                path="/onboarding/account"
+                element={
+                  <ProtectedRoute>
+                    <AccountAgency />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/onboarding/id-upload"
                 element={
                   <ProtectedRoute>
@@ -102,7 +116,15 @@ function App() {
                 }
               />
               <Route
-                path="/onboarding/remaining"
+                path="/onboarding/family"
+                element={
+                  <ProtectedRoute>
+                    <FamilyHousing />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/onboarding/contacts"
                 element={
                   <ProtectedRoute>
                     <RemainingInfo />
@@ -114,6 +136,38 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <OTPVerify />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/onboarding/profession"
+                element={
+                  <ProtectedRoute>
+                    <Profession />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/onboarding/fatca"
+                element={
+                  <ProtectedRoute>
+                    <Fatca />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/onboarding/pep"
+                element={
+                  <ProtectedRoute>
+                    <Pep />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/onboarding/card"
+                element={
+                  <ProtectedRoute>
+                    <CardChoice />
                   </ProtectedRoute>
                 }
               />

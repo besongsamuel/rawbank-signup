@@ -12,12 +12,9 @@ import {
   MenuItem,
   Select,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { fr } from "date-fns/locale";
 import React, { useEffect, useState } from "react";
 
 interface AppointmentBookingModalProps {
@@ -30,6 +27,12 @@ interface AppointmentBookingModalProps {
   }) => void;
   agencyName: string;
   agencyAddress: string;
+}
+
+function localDateInput(date: Date) {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
 }
 
 const AppointmentBookingModal: React.FC<AppointmentBookingModalProps> = ({
@@ -72,11 +75,7 @@ const AppointmentBookingModal: React.FC<AppointmentBookingModalProps> = ({
   ];
 
   // Filter out past dates
-  const isDateDisabled = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date < today;
-  };
+  const minDate = localDateInput(new Date());
 
   const handleConfirm = () => {
     if (selectedDate && selectedTime) {
@@ -191,37 +190,19 @@ const AppointmentBookingModal: React.FC<AppointmentBookingModalProps> = ({
               />
               Sélectionner la Date
             </Typography>
-            <LocalizationProvider
-              dateAdapter={AdapterDateFns}
-              adapterLocale={fr}
-            >
-              <DateCalendar
-                value={selectedDate}
-                onChange={(newDate) => setSelectedDate(newDate)}
-                shouldDisableDate={isDateDisabled}
-                sx={{
-                  "& .MuiPickersDay-root": {
-                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                    width: { xs: 32, sm: 36 },
-                    height: { xs: 32, sm: 36 },
-                    "&.Mui-selected": {
-                      backgroundColor: "#FFCC00",
-                      color: "#000000",
-                      "&:hover": {
-                        backgroundColor: "#FFD700",
-                      },
-                    },
-                  },
-                  "& .MuiPickersCalendarHeader-root": {
-                    paddingLeft: { xs: 1, sm: 2 },
-                    paddingRight: { xs: 1, sm: 2 },
-                  },
-                  "& .MuiDayCalendar-weekContainer": {
-                    margin: 0,
-                  },
-                }}
-              />
-            </LocalizationProvider>
+            <TextField
+              fullWidth
+              type="date"
+              label="Date"
+              value={selectedDate ? localDateInput(selectedDate) : ""}
+              onChange={(event) => {
+                const next = event.target.value;
+                setSelectedDate(next ? new Date(`${next}T00:00:00`) : null);
+              }}
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ min: minDate }}
+              helperText="Les jours passés ne sont pas disponibles"
+            />
           </Box>
 
           <Divider

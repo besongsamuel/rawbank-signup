@@ -5,7 +5,7 @@ interface StepProgressProps {
   totalSteps?: number;
 }
 
-export default function StepProgress({ currentStep, totalSteps = 7 }: StepProgressProps) {
+export default function StepProgress({ currentStep, totalSteps = 8 }: StepProgressProps) {
   const percentage = (currentStep / totalSteps) * 100;
 
   return (

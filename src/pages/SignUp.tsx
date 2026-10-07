@@ -49,7 +49,7 @@ export default function SignUp() {
 
   useEffect(() => {
     if (authStatus === 'authenticated') {
-      navigate('/onboarding/id-upload');
+      navigate('/account');
     }
   }, [authStatus, navigate]);
 

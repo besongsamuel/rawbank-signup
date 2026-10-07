@@ -1,185 +1,84 @@
-import MenuIcon from "@mui/icons-material/Menu";
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import React, { useState } from "react";
+import { AppBar, Box, Container } from "@mui/material";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useApplicationContext } from "../../contexts/ApplicationContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 const Header: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
-  const { user, signOut } = useApplicationContext();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    handleMenuClose();
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/login");
-    handleMenuClose();
-  };
 
   return (
     <AppBar
       position="sticky"
       elevation={0}
       sx={{
-        backgroundColor: "#000000",
-        borderBottom: "1px solid rgba(255, 204, 0, 0.2)",
+        backgroundColor: "#FFFFFF",
+        color: "#111111",
+        borderBottom: "1px solid #E8E8E8",
         borderRadius: 0,
       }}
     >
       <Container maxWidth="xl">
-        <Toolbar
-          disableGutters
+        <Box
           sx={{
-            minHeight: { xs: 64, md: 80 },
-            py: 1,
+            minHeight: { xs: 64, md: 119 },
+            display: "flex",
+            flexDirection: { xs: "row", md: "column" },
+            alignItems: { xs: "center", md: "stretch" },
+            justifyContent: { xs: "space-between", md: "flex-start" },
           }}
         >
-          {/* Logo */}
           <Box
-            onClick={() => navigate("/")}
+            sx={{
+              display: { xs: "none", md: "flex" },
+              justifyContent: "flex-end",
+              alignItems: "center",
+              minHeight: 44,
+              borderBottom: "1px solid #F0F0F0",
+            }}
+          >
+            <LanguageSwitcher />
+          </Box>
+
+          <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              cursor: "pointer",
-              mr: 4,
+              justifyContent: "space-between",
+              flex: { md: 1 },
+              width: { xs: "100%", md: "auto" },
+              py: { xs: 1, md: 0 },
             }}
           >
-            <img
-              src="/rawbank-logo.png"
-              alt="Rawbank"
-              style={{
-                height: isMobile ? "32px" : "40px",
-                width: "auto",
-              }}
-            />
-          </Box>
-
-          {/* Desktop Navigation */}
-          {!isMobile && (
             <Box
+              component="button"
+              type="button"
+              onClick={() => navigate("/")}
+              aria-label="Rawbank"
               sx={{
-                flexGrow: 1,
+                border: 0,
+                background: "none",
+                p: 0,
+                cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "flex-start",
-                gap: 3,
               }}
             >
-              {!user && (
-                <Button
-                  onClick={() => navigate("/login")}
-                  sx={{
-                    color: "#FFFFFF",
-                    fontWeight: 500,
-                    fontSize: "1rem",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 204, 0, 0.1)",
-                      color: "#FFCC00",
-                    },
-                  }}
-                >
-                  Ouvrir un compte
-                </Button>
-              )}
-            </Box>
-          )}
-
-          {/* Right side - Language Switcher and Sign Out */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <LanguageSwitcher />
-            {user && (
-              <Button
-                onClick={handleSignOut}
-                sx={{
-                  color: "#FFFFFF",
-                  fontWeight: 500,
-                  fontSize: "1rem",
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 204, 0, 0.1)",
-                    color: "#FFCC00",
-                  },
+              <img
+                src="/rawbank-logo.png"
+                alt="Rawbank"
+                style={{
+                  height: 40,
+                  width: "auto",
+                  display: "block",
                 }}
-              >
-                Déconnexion
-              </Button>
-            )}
+              />
+            </Box>
 
-            {/* Mobile Menu */}
-            {isMobile && (
-              <>
-                <IconButton
-                  size="large"
-                  edge="end"
-                  color="inherit"
-                  aria-label="menu"
-                  onClick={handleMenuOpen}
-                  sx={{
-                    color: "#FFFFFF",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 204, 0, 0.1)",
-                    },
-                  }}
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                >
-                  {!user
-                    ? [
-                        <MenuItem
-                          key="signup"
-                          onClick={() => handleNavigation("/login")}
-                        >
-                          Ouvrir un compte
-                        </MenuItem>,
-                      ]
-                    : [
-                        <MenuItem key="signout" onClick={handleSignOut}>
-                          Déconnexion
-                        </MenuItem>,
-                      ]}
-                </Menu>
-              </>
-            )}
+            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <LanguageSwitcher />
+            </Box>
           </Box>
-        </Toolbar>
+        </Box>
       </Container>
     </AppBar>
   );

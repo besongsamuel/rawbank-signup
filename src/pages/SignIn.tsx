@@ -41,7 +41,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (authStatus === 'authenticated') {
-      navigate('/onboarding/id-upload');
+      navigate('/account');
     }
   }, [authStatus, navigate]);
 

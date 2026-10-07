@@ -1,117 +1,218 @@
-import {
-  Box,
-  Container,
-  Divider,
-  IconButton,
-  Link,
-  Typography,
-} from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import YouTubeIcon from "@mui/icons-material/YouTube";
+import XIcon from "@mui/icons-material/X";
+import { Box, Container, IconButton, Link, Typography } from "@mui/material";
 import React from "react";
+
+const chromeFont = '"Montserrat", sans-serif';
+const accent = "#F5A623";
+
+const columns: { title: string; links: string[] }[] = [
+  {
+    title: "La banque",
+    links: [
+      "A propos",
+      "Gouvernance",
+      "Responsabilité Sociétale d’Entreprise",
+      "Rapports Annuels",
+      "Rapport Pilier III",
+      "Trouver une agence",
+      "Réseau ATM",
+      "Agents Bancaires illicocash",
+      "Moneygram",
+      "Banque Correspondante",
+    ],
+  },
+  {
+    title: "Particuliers",
+    links: [
+      "Comptes",
+      "Cartes",
+      "Banque à distance",
+      "Packages",
+      "Bancassurance",
+      "Services",
+      "Crédits",
+      "Le Programme We Act",
+    ],
+  },
+  {
+    title: "Corporate",
+    links: [
+      "Comptes",
+      "Cartes",
+      "Crédits",
+      "Financement",
+      "Services en ligne",
+      "Optimus Client",
+      "Trésorerie",
+      "Salle de marchés",
+      "PGS",
+      "Lady’s First",
+    ],
+  },
+  {
+    title: "Media Room",
+    links: [
+      "Accueil",
+      "Actualités",
+      "Communiqué de presse",
+      "Nominations",
+      "Kit de presse",
+    ],
+  },
+  {
+    title: "",
+    links: [
+      "B.P. Cybersecurite",
+      "CGU Rawbot",
+      "Charte de modération",
+      "FAQ",
+      "Tarification standard",
+      "RGO",
+      "Réclamations",
+      "Signalement",
+    ],
+  },
+];
+
+const values = [
+  "Ambition",
+  "Initiative",
+  "Collaboration",
+  "Innovation",
+  "Rendement",
+];
+
+const socials = [
+  { label: "Facebook", icon: <FacebookIcon /> },
+  { label: "LinkedIn", icon: <LinkedInIcon /> },
+  { label: "X", icon: <XIcon /> },
+  { label: "Instagram", icon: <InstagramIcon /> },
+  { label: "YouTube", icon: <YouTubeIcon /> },
+];
+
+const stopNavigation = (event: React.MouseEvent) => {
+  event.preventDefault();
+};
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-
-  const footerSections = [
-    {
-      title: "La banque",
-      links: [
-        { text: "A propos", href: "#" },
-        { text: "Gouvernance", href: "#" },
-        { text: "RSE", href: "#" },
-        { text: "Rapports Annuels", href: "#" },
-        { text: "Actualités", href: "#" },
-      ],
-    },
-    {
-      title: "Particuliers",
-      links: [
-        { text: "Comptes", href: "#" },
-        { text: "Cartes", href: "#" },
-        { text: "Banque à distance", href: "#" },
-        { text: "Packages", href: "#" },
-        { text: "Services", href: "#" },
-      ],
-    },
-    {
-      title: "Corporate",
-      links: [
-        { text: "Comptes", href: "#" },
-        { text: "Cartes", href: "#" },
-        { text: "Crédits", href: "#" },
-        { text: "Financement", href: "#" },
-        { text: "Services en ligne", href: "#" },
-      ],
-    },
-    {
-      title: "Assistance",
-      links: [
-        { text: "FAQ", href: "#" },
-        { text: "Réclamations", href: "#" },
-        { text: "Contactez-nous", href: "#" },
-        { text: "Trouver une agence", href: "#" },
-        { text: "Réseau ATM", href: "#" },
-      ],
-    },
-  ];
 
   return (
     <Box
       component="footer"
       sx={{
-        backgroundColor: "#000000",
-        color: "#FFFFFF",
-        pt: { xs: 4, md: 6 },
-        pb: 3,
+        backgroundColor: "#F0F0F0",
+        color: "#334155",
+        fontFamily: chromeFont,
+        pt: { xs: 5, md: 7 },
+        pb: 4,
         mt: "auto",
       }}
     >
       <Container maxWidth="xl">
-        {/* Footer Content */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            alignItems: { xs: "flex-start", md: "flex-start" },
+            gap: 3,
+            mb: { xs: 4, md: 6 },
+          }}
+        >
+          <Box>
+            <img
+              src="/rawbank-logo.png"
+              alt="Rawbank"
+              style={{ height: 48, width: "auto", display: "block" }}
+            />
+            <Typography
+              sx={{
+                mt: 2.5,
+                fontFamily: chromeFont,
+                fontSize: "1rem",
+                fontWeight: 500,
+                color: "#111111",
+              }}
+            >
+              Une banque portée par des valeurs fortes.
+            </Typography>
+          </Box>
+
+          <Typography
+            sx={{
+              fontFamily: chromeFont,
+              fontWeight: 700,
+              fontSize: { xs: "1.05rem", md: "1.25rem" },
+              color: "#111111",
+              maxWidth: 480,
+              lineHeight: 1.45,
+              textAlign: { xs: "left", md: "right" },
+            }}
+          >
+            {values.map((value, index) => (
+              <React.Fragment key={value}>
+                {index > 0 && (
+                  <Box component="span" sx={{ color: accent }}>
+                    ,{" "}
+                  </Box>
+                )}
+                {value}
+              </React.Fragment>
+            ))}
+          </Typography>
+        </Box>
+
         <Box
           sx={{
             display: "grid",
             gridTemplateColumns: {
-              xs: "repeat(2, 1fr)",
-              md: "repeat(4, 1fr)",
+              xs: "1fr",
+              sm: "1fr 1fr",
+              lg: "repeat(5, minmax(0, 1fr))",
             },
-            gap: 4,
-            mb: 4,
+            gap: { xs: 4, md: 3 },
+            mb: 5,
           }}
         >
-          {footerSections.map((section, index) => (
-            <Box key={index}>
+          {columns.map((column) => (
+            <Box key={column.title || "legal"}>
               <Typography
-                variant="h6"
+                component="h2"
+                aria-hidden={!column.title}
                 sx={{
-                  color: "#FFCC00",
-                  fontSize: "1rem",
-                  fontWeight: 600,
+                  fontFamily: chromeFont,
+                  fontWeight: 700,
+                  fontSize: "1.125rem",
+                  color: "#111111",
                   mb: 2,
+                  minHeight: "1.5rem",
+                  visibility: column.title ? "visible" : "hidden",
                 }}
               >
-                {section.title}
+                {column.title || "Liens"}
               </Typography>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                {section.links.map((link, linkIndex) => (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
+                {column.links.map((text) => (
                   <Link
-                    key={linkIndex}
-                    href={link.href}
+                    key={text}
+                    href="#"
                     underline="none"
+                    onClick={stopNavigation}
                     sx={{
-                      color: "#FFFFFF",
-                      fontSize: "0.875rem",
-                      transition: "color 0.2s ease",
-                      "&:hover": {
-                        color: "#FFCC00",
-                      },
+                      color: "#5C6770",
+                      fontFamily: chromeFont,
+                      fontSize: "0.9375rem",
+                      lineHeight: 1.4,
+                      width: "fit-content",
+                      "&:hover": { color: "#111111" },
                     }}
                   >
-                    {link.text}
+                    {text}
                   </Link>
                 ))}
               </Box>
@@ -119,187 +220,64 @@ const Footer: React.FC = () => {
           ))}
         </Box>
 
-        <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.1)", mb: 3 }} />
-
-        {/* Bottom Section */}
         <Box
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             justifyContent: "space-between",
-            alignItems: { xs: "center", md: "center" },
+            alignItems: { xs: "flex-start", md: "center" },
             gap: 2,
-          }}
-        >
-          {/* Copyright */}
-          <Typography
-            variant="body2"
-            sx={{
-              color: "rgba(255, 255, 255, 0.7)",
-              fontSize: "0.875rem",
-            }}
-          >
-            Copyright © {currentYear} Rawbank
-          </Typography>
-
-          {/* Social Media Icons */}
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <IconButton
-              href="https://www.facebook.com/rawbank"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                color: "#FFFFFF",
-                "&:hover": {
-                  color: "#FFCC00",
-                  backgroundColor: "rgba(255, 204, 0, 0.1)",
-                },
-              }}
-            >
-              <FacebookIcon />
-            </IconButton>
-            <IconButton
-              href="https://www.linkedin.com/company/rawbank"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                color: "#FFFFFF",
-                "&:hover": {
-                  color: "#FFCC00",
-                  backgroundColor: "rgba(255, 204, 0, 0.1)",
-                },
-              }}
-            >
-              <LinkedInIcon />
-            </IconButton>
-            <IconButton
-              href="https://twitter.com/rawbank"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                color: "#FFFFFF",
-                "&:hover": {
-                  color: "#FFCC00",
-                  backgroundColor: "rgba(255, 204, 0, 0.1)",
-                },
-              }}
-            >
-              <TwitterIcon />
-            </IconButton>
-            <IconButton
-              href="https://www.instagram.com/rawbank"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                color: "#FFFFFF",
-                "&:hover": {
-                  color: "#FFCC00",
-                  backgroundColor: "rgba(255, 204, 0, 0.1)",
-                },
-              }}
-            >
-              <InstagramIcon />
-            </IconButton>
-            <IconButton
-              href="https://www.youtube.com/rawbank"
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{
-                color: "#FFFFFF",
-                "&:hover": {
-                  color: "#FFCC00",
-                  backgroundColor: "rgba(255, 204, 0, 0.1)",
-                },
-              }}
-            >
-              <YouTubeIcon />
-            </IconButton>
-          </Box>
-
-          {/* Legal Links */}
-          <Box
-            sx={{
-              display: "flex",
-              gap: 2,
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
-            <Link
-              href="#"
-              underline="none"
-              sx={{
-                color: "rgba(255, 255, 255, 0.7)",
-                fontSize: "0.875rem",
-                "&:hover": {
-                  color: "#FFCC00",
-                },
-              }}
-            >
-              Politique de confidentialité
-            </Link>
-            <Link
-              href="#"
-              underline="none"
-              sx={{
-                color: "rgba(255, 255, 255, 0.7)",
-                fontSize: "0.875rem",
-                "&:hover": {
-                  color: "#FFCC00",
-                },
-              }}
-            >
-              Termes et conditions générales
-            </Link>
-          </Box>
-        </Box>
-
-        {/* Ethics Notice */}
-        <Box
-          sx={{
-            mt: 4,
             pt: 3,
-            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            textAlign: "center",
           }}
         >
           <Typography
-            variant="caption"
             sx={{
-              color: "rgba(255, 255, 255, 0.6)",
-              fontSize: "0.75rem",
-              lineHeight: 1.6,
-              display: "block",
+              fontFamily: chromeFont,
+              fontSize: "0.875rem",
+              color: "#5C6770",
             }}
           >
-            En cas de constatation d'une tentative de corruption ou d'une
-            activité suspecte contraire à l'éthique, merci de signaler
-            immédiatement l'incident à l'adresse{" "}
-            <Link
-              href="mailto:signalements@rawbank.cd"
-              sx={{
-                color: "#FFCC00",
-                textDecoration: "underline",
-              }}
-            >
-              signalements@rawbank.cd
-            </Link>
-            .
+            Copyright © {currentYear} Rawbank. Site web conçu par CRACKWITS.
           </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: "rgba(255, 255, 255, 0.6)",
-              fontSize: "0.75rem",
-              lineHeight: 1.6,
-              display: "block",
-              mt: 1,
-            }}
-          >
-            Tout signalement doit être fait de bonne foi et sera traité de
-            manière confidentielle. Aucune forme de représailles ne sera
-            tolérée à l'encontre de ceux qui rapportent des incidents d'éthique.
-          </Typography>
+
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+            {["Politique de confidentialité", "Termes et conditions générales"].map(
+              (text) => (
+                <Link
+                  key={text}
+                  href="#"
+                  underline="none"
+                  onClick={stopNavigation}
+                  sx={{
+                    fontFamily: chromeFont,
+                    fontSize: "0.875rem",
+                    color: "#5C6770",
+                    "&:hover": { color: "#111111" },
+                  }}
+                >
+                  {text}
+                </Link>
+              )
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 0.5 }}>
+            {socials.map((social) => (
+              <IconButton
+                key={social.label}
+                component="a"
+                href="#"
+                aria-label={social.label}
+                onClick={stopNavigation}
+                sx={{
+                  color: "#111111",
+                  "&:hover": { color: accent, backgroundColor: "transparent" },
+                }}
+              >
+                {social.icon}
+              </IconButton>
+            ))}
+          </Box>
         </Box>
       </Container>
     </Box>
@@ -307,4 +285,3 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
-

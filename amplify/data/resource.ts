@@ -28,12 +28,32 @@ const schema = a.schema({
       nationality: a.string(),
       gender: a.string(),
       
-      // Address
+      // Address and contact
       address: a.string(),
       city: a.string(),
       province: a.string(),
       country: a.string(),
       phone: a.string(),
+      phone2: a.string(),
+      phoneVerified: a.boolean().default(false),
+      emergencyContactName: a.string(),
+      emergencyContactPhone: a.string(),
+
+      // Account, family, work, and card
+      accountType: a.string(),
+      cardType: a.string(),
+      maritalStatus: a.string(),
+      maritalRegime: a.string(),
+      numberOfChildren: a.integer(),
+      housingStatus: a.string(),
+      permanentAddress: a.string(),
+      mailingAddress: a.string(),
+      profession: a.string(),
+      employer: a.string(),
+      monthlyIncome: a.float(),
+      incomeSource: a.string(),
+      fatcaData: a.json(),
+      pepData: a.json(),
       
       // AI extraction metadata
       extractedAt: a.datetime(),

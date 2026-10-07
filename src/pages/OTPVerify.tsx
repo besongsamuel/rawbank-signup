@@ -4,22 +4,34 @@ import { Box, Container, Typography, TextField, Button, Link } from '@mui/materi
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
-import { markApplicationSubmitted } from '../hooks/useApplicationDraft';
+import { useAmplifyProfile } from '../hooks/useAmplifyProfile';
+import { ONBOARDING_STEP_COUNT } from '../onboarding/catalog';
+import { useOnboardingNav } from '../onboarding/navigation';
 
 export default function OTPVerify() {
   const navigate = useNavigate();
+  const { save, saving, error } = useAmplifyProfile();
+  const { returnTo } = useOnboardingNav('/onboarding/contacts', '/onboarding/profession');
   const [code, setCode] = useState('');
 
-  const handleVerify = () => {
-    markApplicationSubmitted();
-    navigate('/dashboard');
+  const handleVerify = async () => {
+    try {
+      await save({ phoneVerified: true, currentStep: 'professional' });
+      navigate(returnTo ?? '/onboarding/profession');
+    } catch {
+      // Shown under the button.
+    }
   };
 
   return (
     <PageTransition>
       <Container maxWidth="sm" sx={{ py: { xs: 3, sm: 6 }, px: 3, maxWidth: '420px !important' }}>
-        <AuthBackButton onClick={() => navigate('/onboarding/remaining')} />
-        <StepProgress currentStep={4} />
+        <AuthBackButton
+          onClick={() =>
+            navigate('/onboarding/contacts', { state: returnTo ? { returnTo } : undefined })
+          }
+        />
+        <StepProgress currentStep={4} totalSteps={ONBOARDING_STEP_COUNT} />
 
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography 
@@ -89,10 +101,15 @@ export default function OTPVerify() {
             variant="contained"
             size="large"
             onClick={handleVerify}
-            disabled={code.length !== 6}
+            disabled={code.length !== 6 || saving}
           >
-            Vérifier
+            {saving ? 'Enregistrement...' : 'Vérifier'}
           </Button>
+          {error && (
+            <Typography variant="body2" color="error" sx={{ mt: 1.5 }}>
+              {error}
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ height: { xs: 88, sm: 0 } }} />
