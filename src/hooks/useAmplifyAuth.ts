@@ -53,7 +53,8 @@ export function isValidEmail(email: string) {
 }
 
 export function goToOnboarding() {
-  window.location.assign('/onboarding/id-upload');
+  const submitted = localStorage.getItem('applicationSubmitted') === 'true';
+  window.location.assign(submitted ? '/account' : '/onboarding/id-upload');
 }
 
 export function useAmplifyAuth() {

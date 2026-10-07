@@ -16,6 +16,7 @@ import ConfirmData from './pages/ConfirmData';
 import RemainingInfo from './pages/RemainingInfo';
 import OTPVerify from './pages/OTPVerify';
 import Dashboard from './pages/Dashboard';
+import Account from './pages/Account';
 import ClerkCalendar from './pages/clerk/ClerkCalendar';
 import ClerkMeetingDetail from './pages/clerk/ClerkMeetingDetail';
 import CompleteMeeting from './pages/clerk/CompleteMeeting';
@@ -121,6 +122,14 @@ function App() {
                 element={
                   <ProtectedRoute requireComplete>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <Account />
                   </ProtectedRoute>
                 }
               />

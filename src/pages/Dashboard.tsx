@@ -1,12 +1,11 @@
 import { Container, Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { useAuthenticator } from '@aws-amplify/ui-react';
 import { PageTransition } from '../components/Motion';
+import NextSteps from '../components/NextSteps';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { signOut } = useAuthenticator((context) => [context.signOut]);
 
   return (
     <PageTransition>
@@ -41,72 +40,17 @@ export default function Dashboard() {
           </Typography>
         </Box>
 
-        <Box
-          sx={{
-            bgcolor: '#FAFAFA',
-            borderRadius: 3,
-            p: 3,
-            mb: 3,
-          }}
-        >
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-            Prochaines étapes
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  bgcolor: '#FFCC00',
-                  mt: 1,
-                  flexShrink: 0,
-                }}
-              />
-              <Typography variant="body2">
-                Notre équipe vérifie vos documents (24-48h)
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  bgcolor: '#FFCC00',
-                  mt: 1,
-                  flexShrink: 0,
-                }}
-              />
-              <Typography variant="body2">
-                Vous recevrez un e-mail de confirmation
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  bgcolor: '#FFCC00',
-                  mt: 1,
-                  flexShrink: 0,
-                }}
-              />
-              <Typography variant="body2">
-                Passez retirer votre carte dans une agence Rawbank
-              </Typography>
-            </Box>
-          </Box>
+        <Box sx={{ mb: 3 }}>
+          <NextSteps />
         </Box>
 
         <Button
           fullWidth
-          variant="outlined"
-          onClick={() => signOut()}
+          variant="contained"
+          size="large"
+          onClick={() => navigate('/account')}
         >
-          Se déconnecter
+          Voir mon dossier
         </Button>
       </Container>
     </PageTransition>

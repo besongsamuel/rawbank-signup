@@ -4,13 +4,14 @@ import { Box, Container, Typography, TextField, Button, Link } from '@mui/materi
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
+import { markApplicationSubmitted } from '../hooks/useApplicationDraft';
 
 export default function OTPVerify() {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
 
   const handleVerify = () => {
-    // In real app, verify the OTP code
+    markApplicationSubmitted();
     navigate('/dashboard');
   };
 

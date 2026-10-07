@@ -1,9 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, TextField, Button, Grid, MenuItem } from '@mui/material';
+import { Box, Container, Typography, TextField, Button, Grid, MenuItem, InputAdornment } from '@mui/material';
+import PhoneIcon from '@mui/icons-material/Phone';
 import StepProgress from '../components/StepProgress';
 import { PageTransition } from '../components/Motion';
 import AuthBackButton from '../components/auth/AuthBackButton';
+
+const COUNTRY_CODE = '+243';
+const LOCAL_LENGTH = 9;
+
+function formatLocalPhone(digits: string) {
+  return [digits.slice(0, 3), digits.slice(3, 6), digits.slice(6, 9)]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function toLocalDigits(value: string) {
+  let digits = value.replace(/\D/g, '');
+  if (digits.startsWith('243')) digits = digits.slice(3);
+  if (digits.startsWith('0')) digits = digits.slice(1);
+  return digits.slice(0, LOCAL_LENGTH);
+}
 
 export default function RemainingInfo() {
   const navigate = useNavigate();
@@ -20,8 +37,17 @@ export default function RemainingInfo() {
     setFormData((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, phone: toLocalDigits(event.target.value) }));
+  };
+
+  const phoneComplete = formData.phone.length === LOCAL_LENGTH;
+
   const handleContinue = () => {
-    localStorage.setItem('remainingInfo', JSON.stringify(formData));
+    localStorage.setItem(
+      'remainingInfo',
+      JSON.stringify({ ...formData, phone: `${COUNTRY_CODE}${formData.phone}` })
+    );
     navigate('/onboarding/verify');
   };
 
@@ -50,11 +76,24 @@ export default function RemainingInfo() {
           <Grid item xs={12}>
             <TextField
               fullWidth
+              type="tel"
               label="Téléphone"
-              value={formData.phone}
-              onChange={handleChange('phone')}
-              placeholder="+243 XXX XXX XXX"
-              helperText="Nous enverrons un code de vérification"
+              value={formatLocalPhone(formData.phone)}
+              onChange={handlePhoneChange}
+              placeholder="XXX XXX XXX"
+              helperText="Numéro congolais, sans le 0. Nous enverrons un code de vérification"
+              autoComplete="tel-national"
+              inputProps={{ inputMode: 'numeric', maxLength: 11 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneIcon sx={{ color: '#0A0A0A', fontSize: 20, mr: 0.75 }} />
+                    <Box component="span" sx={{ fontWeight: 600, color: '#0A0A0A' }}>
+                      {COUNTRY_CODE}
+                    </Box>
+                  </InputAdornment>
+                ),
+              }}
             />
           </Grid>
 
@@ -104,7 +143,7 @@ export default function RemainingInfo() {
             variant="contained"
             size="large"
             onClick={handleContinue}
-            disabled={!formData.phone || !formData.address}
+            disabled={!phoneComplete || !formData.address}
           >
             Continuer
           </Button>
