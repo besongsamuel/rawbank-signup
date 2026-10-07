@@ -45,6 +45,33 @@ function messageFrom(errors: { message: string }[] | undefined, fallback: string
   return errors?.map((error) => error.message).filter(Boolean).join(' ') || fallback;
 }
 
+function jsonForApi(value: unknown) {
+  if (value == null || typeof value === 'string') return value;
+  return JSON.stringify(value);
+}
+
+function jsonFromApi(value: unknown): Record<string, unknown> | null {
+  if (value == null || value === '') return null;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  }
+  if (typeof value === 'object') return value as Record<string, unknown>;
+  return null;
+}
+
+function withReadableJson(record: UserProfileRecord): UserProfileRecord {
+  return {
+    ...record,
+    fatcaData: jsonFromApi(record.fatcaData) as UserProfileRecord['fatcaData'],
+    pepData: jsonFromApi(record.pepData) as UserProfileRecord['pepData'],
+  };
+}
+
 async function currentEmail(userId: string) {
   const user = await getCurrentUser();
   const loginId = user.signInDetails?.loginId;
@@ -72,8 +99,9 @@ export function useAmplifyProfile() {
       }
       const existing = listed.data[0];
       if (existing) {
-        setProfile(existing);
-        return existing;
+        const readable = withReadableJson(existing);
+        setProfile(readable);
+        return readable;
       }
       const email = await currentEmail(userId);
       const created = await dataClient.models.UserProfile.create({
@@ -85,8 +113,9 @@ export function useAmplifyProfile() {
       if (created.errors?.length || !created.data) {
         throw new Error(messageFrom(created.errors, 'Impossible de créer votre dossier.'));
       }
-      setProfile(created.data);
-      return created.data;
+      const readable = withReadableJson(created.data);
+      setProfile(readable);
+      return readable;
     } catch (err) {
       const text = err instanceof Error ? err.message : 'Impossible de charger votre dossier.';
       setError(text);
@@ -112,12 +141,15 @@ export function useAmplifyProfile() {
         const updated = await dataClient.models.UserProfile.update({
           id: current.id,
           ...patch,
+          ...('fatcaData' in patch ? { fatcaData: jsonForApi(patch.fatcaData) } : {}),
+          ...('pepData' in patch ? { pepData: jsonForApi(patch.pepData) } : {}),
         });
         if (updated.errors?.length || !updated.data) {
           throw new Error(messageFrom(updated.errors, 'Enregistrement impossible. Réessayez.'));
         }
-        setProfile(updated.data);
-        return updated.data;
+        const readable = withReadableJson(updated.data);
+        setProfile(readable);
+        return readable;
       } catch (err) {
         const text = err instanceof Error ? err.message : 'Enregistrement impossible. Réessayez.';
         setError(text);
